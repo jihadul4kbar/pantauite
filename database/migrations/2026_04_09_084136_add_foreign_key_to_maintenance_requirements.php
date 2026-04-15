@@ -1,0 +1,22 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::table('maintenance_requirements', function (Blueprint $table) {
+            $table->foreign('part_id')->references('id')->on('inventory_parts')->nullOnDelete();
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::table('maintenance_requirements', function (Blueprint $table) {
+            $table->dropForeign(['part_id']);
+        });
+    }
+};

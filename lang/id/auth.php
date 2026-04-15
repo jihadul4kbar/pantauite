@@ -1,0 +1,40 @@
+<?php
+
+return [
+    'login' => [
+        'page_title' => 'Masuk',
+        'platform_title' => 'Platform Manajemen Layanan IT',
+        'welcome' => 'Selamat datang kembali!',
+        'subtitle' => 'Silakan masuk ke akun Anda untuk melanjutkan',
+        'email' => 'Alamat Email',
+        'password' => 'Kata Sandi',
+        'remember' => 'Ingat saya selama 30 hari',
+        'submit' => 'Masuk',
+        'error_title' => 'Ada kesalahan pada pengisian Anda',
+        'footer' => 'PantauITE. Hak cipta dilindungi undang-undang.',
+    ],
+    'change_password' => [
+        'page_title' => 'Ubah Kata Sandi',
+        'title' => 'Ubah Kata Sandi',
+        'subtitle' => 'Silakan ubah kata sandi Anda sebelum melanjutkan.',
+        'info_title' => 'Perbarui kata sandi Anda.',
+        'first_login_notice' => 'Login pertama kali',
+        'security_notice' => 'Demi alasan keamanan, silakan ubah kata sandi Anda.',
+        'current_password' => 'Kata Sandi Saat Ini',
+        'new_password' => 'Kata Sandi Baru',
+        'password_hint' => 'Minimum 8 karakter, dengan huruf besar, huruf kecil, angka, dan karakter khusus.',
+        'confirm_password' => 'Konfirmasi Kata Sandi Baru',
+        'submit' => 'Perbarui Kata Sandi',
+        'back_to_dashboard' => 'Kembali ke Dashboard',
+    ],
+    'validation' => [
+        'current_password_required' => 'Kata sandi saat ini wajib diisi.',
+        'current_password_mismatch' => 'Kata sandi saat ini tidak sesuai.',
+        'new_password_required' => 'Kata sandi baru wajib diisi.',
+        'new_password_min' => 'Kata sandi baru minimal harus :min karakter.',
+        'new_password_mixed' => 'Kata sandi baru harus mengandung huruf besar, huruf kecil, angka, dan karakter khusus.',
+        'new_password_same' => 'Kata sandi baru tidak boleh sama dengan kata sandi saat ini.',
+        'confirm_password_required' => 'Konfirmasi kata sandi wajib diisi.',
+        'confirm_password_mismatch' => 'Konfirmasi kata sandi tidak cocok.',
+    ],
+];
