@@ -11,7 +11,7 @@
                 <svg class="w-5 h-5 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
                 </svg>
-                <span class="font-medium">Back to Assets</span>
+                <span class="font-medium">{{ __('assets.back_to_assets') }}</span>
             </a>
 
             <div class="relative bg-gradient-to-r from-green-600 via-emerald-600 to-teal-600 rounded-2xl shadow-xl overflow-hidden">
@@ -72,7 +72,7 @@
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
                                 </svg>
-                                <span>Edit</span>
+                                <span>{{ __('common.edit') }}</span>
                             </a>
                             @endcan
                             @can('delete', $asset)
@@ -83,7 +83,7 @@
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
                                     </svg>
-                                    <span>Delete</span>
+                                    <span>{{ __('common.delete') }}</span>
                                 </button>
                             </form>
                             @endcan
@@ -162,34 +162,34 @@
 
             <!-- Basic Information -->
             <div class="bg-white shadow-sm rounded-lg p-6">
-                <h3 class="text-lg font-medium text-gray-900 mb-4">Basic Information</h3>
+                <h3 class="text-lg font-medium text-gray-900 mb-4">Informasi Dasar</h3>
                 <dl class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <dt class="text-sm font-medium text-gray-500">Asset Code</dt>
+                        <dt class="text-sm font-medium text-gray-500">Kode Aset</dt>
                         <dd class="mt-1 text-sm text-gray-900">{{ $asset->asset_code }}</dd>
                     </div>
                     <div>
-                        <dt class="text-sm font-medium text-gray-500">Asset Type</dt>
+                        <dt class="text-sm font-medium text-gray-500">Tipe Aset</dt>
                         <dd class="mt-1 text-sm text-gray-900">{{ ucfirst($asset->asset_type) }}</dd>
                     </div>
                     <div>
-                        <dt class="text-sm font-medium text-gray-500">Name</dt>
+                        <dt class="text-sm font-medium text-gray-500">Nama</dt>
                         <dd class="mt-1 text-sm text-gray-900">{{ $asset->name }}</dd>
                     </div>
                     <div>
-                        <dt class="text-sm font-medium text-gray-500">Brand / Model</dt>
+                        <dt class="text-sm font-medium text-gray-500">Merek / Model</dt>
                         <dd class="mt-1 text-sm text-gray-900">{{ $asset->brand }} {{ $asset->model }}</dd>
                     </div>
                     <div>
-                        <dt class="text-sm font-medium text-gray-500">Serial Number</dt>
+                        <dt class="text-sm font-medium text-gray-500">Nomor Seri</dt>
                         <dd class="mt-1 text-sm text-gray-900">{{ $asset->serial_number ?? '-' }}</dd>
                     </div>
                     <div>
-                        <dt class="text-sm font-medium text-gray-500">Condition</dt>
+                        <dt class="text-sm font-medium text-gray-500">Kondisi</dt>
                         <dd class="mt-1 text-sm text-gray-900">{{ ucfirst($asset->condition) }}</dd>
                     </div>
                     <div>
-                        <dt class="text-sm font-medium text-gray-500">Location</dt>
+                        <dt class="text-sm font-medium text-gray-500">Lokasi</dt>
                         <dd class="mt-1 text-sm text-gray-900">{{ $asset->location ?? '-' }}</dd>
                     </div>
                 </dl>
@@ -197,22 +197,22 @@
 
             <!-- Purchase Information -->
             <div class="bg-white shadow-sm rounded-lg p-6">
-                <h3 class="text-lg font-medium text-gray-900 mb-4">Purchase Information</h3>
+                <h3 class="text-lg font-medium text-gray-900 mb-4">Informasi Pembelian</h3>
                 <dl class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <dt class="text-sm font-medium text-gray-500">Vendor</dt>
                         <dd class="mt-1 text-sm text-gray-900">{{ $asset->vendor?->name ?? $asset->vendor_name ?? '-' }}</dd>
                     </div>
                     <div>
-                        <dt class="text-sm font-medium text-gray-500">Purchase Date</dt>
+                        <dt class="text-sm font-medium text-gray-500">Tanggal Pembelian</dt>
                         <dd class="mt-1 text-sm text-gray-900">{{ $asset->purchase_date?->format('d M Y') ?? '-' }}</dd>
                     </div>
                     <div>
-                        <dt class="text-sm font-medium text-gray-500">Price</dt>
+                        <dt class="text-sm font-medium text-gray-500">Harga</dt>
                         <dd class="mt-1 text-sm text-gray-900">Rp {{ number_format($asset->price ?? 0, 0, ',', '.') }}</dd>
                     </div>
                     <div>
-                        <dt class="text-sm font-medium text-gray-500">PO Number</dt>
+                        <dt class="text-sm font-medium text-gray-500">Nomor PO</dt>
                         <dd class="mt-1 text-sm text-gray-900">{{ $asset->purchase_order_number ?? '-' }}</dd>
                     </div>
                 </dl>
@@ -220,18 +220,18 @@
 
             <!-- Assignment -->
             <div class="bg-white shadow-sm rounded-lg p-6">
-                <h3 class="text-lg font-medium text-gray-900 mb-4">Assignment</h3>
+                <h3 class="text-lg font-medium text-gray-900 mb-4">Penugasan</h3>
                 <dl class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <dt class="text-sm font-medium text-gray-500">Assigned To User</dt>
-                        <dd class="mt-1 text-sm text-gray-900">{{ $asset->assignedUser?->name ?? 'Unassigned' }}</dd>
+                        <dt class="text-sm font-medium text-gray-500">Ditugaskan Kepada</dt>
+                        <dd class="mt-1 text-sm text-gray-900">{{ $asset->assignedUser?->name ?? 'Belum Ditugaskan' }}</dd>
                     </div>
                     <div>
-                        <dt class="text-sm font-medium text-gray-500">Assigned To Department</dt>
+                        <dt class="text-sm font-medium text-gray-500">Departemen</dt>
                         <dd class="mt-1 text-sm text-gray-900">{{ $asset->assignedDepartment?->name ?? '-' }}</dd>
                     </div>
                     <div>
-                        <dt class="text-sm font-medium text-gray-500">Assigned At</dt>
+                        <dt class="text-sm font-medium text-gray-500">Tanggal Penugasan</dt>
                         <dd class="mt-1 text-sm text-gray-900">{{ $asset->assigned_at?->format('d M Y H:i') ?? '-' }}</dd>
                     </div>
                 </dl>
@@ -239,7 +239,7 @@
 
             <!-- Lifecycle Logs -->
             <div class="bg-white shadow-sm rounded-lg p-6">
-                <h3 class="text-lg font-medium text-gray-900 mb-4">Lifecycle History</h3>
+                <h3 class="text-lg font-medium text-gray-900 mb-4">Riwayat Siklus Hidup</h3>
                 <div class="flow-root">
                     <ul class="-mb-8">
                         @forelse($asset->lifecycleLogs as $log)
@@ -266,7 +266,7 @@
                             </div>
                         </li>
                         @empty
-                        <li class="text-sm text-gray-500 text-center py-4">No lifecycle logs</li>
+                        <li class="text-sm text-gray-500 text-center py-4">Tidak ada riwayat siklus hidup</li>
                         @endforelse
                     </ul>
                 </div>
@@ -275,9 +275,9 @@
             <!-- Related Tickets / Ticket History -->
             <div class="bg-white shadow-sm rounded-lg p-6">
                 <h3 class="text-lg font-medium text-gray-900 mb-4">
-                    Ticket History
+                    Riwayat Tiket
                     @if($asset->tickets->count() > 0)
-                    <span class="ml-2 px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full">{{ $asset->tickets->count() }} ticket{{ $asset->tickets->count() > 1 ? 's' : '' }}</span>
+                    <span class="ml-2 px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full">{{ $asset->tickets->count() }} tiket</span>
                     @endif
                 </h3>
                 
@@ -369,7 +369,7 @@
                     <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                     </svg>
-                    <h3 class="mt-2 text-sm font-medium text-gray-900">No tickets yet</h3>
+                    <h3 class="mt-2 text-sm font-medium text-gray-900">Belum ada tiket</h3>
                     <p class="mt-1 text-sm text-gray-500">No tickets have been created for this asset.</p>
                 </div>
                 @endif
@@ -380,70 +380,70 @@
         <div class="space-y-6">
             <!-- Warranty Card -->
             <div class="bg-white shadow-sm rounded-lg p-6">
-                <h3 class="text-lg font-medium text-gray-900 mb-4">Warranty</h3>
+                <h3 class="text-lg font-medium text-gray-900 mb-4">Garansi</h3>
                 <dl class="space-y-3">
                     <div>
                         <dt class="text-sm font-medium text-gray-500">Status</dt>
                         <dd class="mt-1">
                             @if($asset->isUnderWarranty())
-                            <span class="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">Under Warranty</span>
+                            <span class="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">Dalam Garansi</span>
                             @else
-                            <span class="px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">Expired</span>
+                            <span class="px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">Kadaluarsa</span>
                             @endif
                         </dd>
                     </div>
                     <div>
-                        <dt class="text-sm font-medium text-gray-500">Start Date</dt>
+                        <dt class="text-sm font-medium text-gray-500">Tanggal Mulai</dt>
                         <dd class="mt-1 text-sm text-gray-900">{{ $asset->warranty_start?->format('d M Y') ?? '-' }}</dd>
                     </div>
                     <div>
-                        <dt class="text-sm font-medium text-gray-500">End Date</dt>
+                        <dt class="text-sm font-medium text-gray-500">Tanggal Selesai</dt>
                         <dd class="mt-1 text-sm text-gray-900">{{ $asset->warranty_end?->format('d M Y') ?? '-' }}</dd>
                     </div>
                     <div>
-                        <dt class="text-sm font-medium text-gray-500">Provider</dt>
+                        <dt class="text-sm font-medium text-gray-500">Penyedia</dt>
                         <dd class="mt-1 text-sm text-gray-900">{{ $asset->warranty_provider ?? '-' }}</dd>
                     </div>
                     <div>
-                        <dt class="text-sm font-medium text-gray-500">Days Remaining</dt>
-                        <dd class="mt-1 text-sm text-gray-900">{{ $asset->warrantyDaysRemaining() }} days</dd>
+                        <dt class="text-sm font-medium text-gray-500">Sisa Hari</dt>
+                        <dd class="mt-1 text-sm text-gray-900">{{ $asset->warrantyDaysRemaining() ?? '-' }} hari</dd>
                     </div>
                 </dl>
             </div>
 
             <!-- Depreciation Card -->
             <div class="bg-white shadow-sm rounded-lg p-6">
-                <h3 class="text-lg font-medium text-gray-900 mb-4">Depreciation</h3>
+                <h3 class="text-lg font-medium text-gray-900 mb-4">Penyusutan</h3>
                 <dl class="space-y-3">
                     <div>
-                        <dt class="text-sm font-medium text-gray-500">Method</dt>
-                        <dd class="mt-1 text-sm text-gray-900">{{ str_replace('_', ' ', ucfirst($asset->depreciation_method ?? 'N/A')) }}</dd>
+                        <dt class="text-sm font-medium text-gray-500">Metode</dt>
+                        <dd class="mt-1 text-sm text-gray-900">{{ str_replace('_', ' ', ucfirst($asset->depreciation_method ?? '-')) }}</dd>
                     </div>
                     <div>
-                        <dt class="text-sm font-medium text-gray-500">Purchase Price</dt>
+                        <dt class="text-sm font-medium text-gray-500">Harga Beli</dt>
                         <dd class="mt-1 text-sm text-gray-900">Rp {{ number_format($asset->price ?? 0, 0, ',', '.') }}</dd>
                     </div>
                     <div>
-                        <dt class="text-sm font-medium text-gray-500">Current Value</dt>
+                        <dt class="text-sm font-medium text-gray-500">Nilai Saat Ini</dt>
                         <dd class="mt-1 text-sm text-gray-900 font-bold">Rp {{ number_format($currentDepreciatedValue ?? 0, 0, ',', '.') }}</dd>
                     </div>
                     <div>
-                        <dt class="text-sm font-medium text-gray-500">Useful Life</dt>
-                        <dd class="mt-1 text-sm text-gray-900">{{ $asset->useful_life_years ?? '-' }} years</dd>
+                        <dt class="text-sm font-medium text-gray-500">Masa Guna</dt>
+                        <dd class="mt-1 text-sm text-gray-900">{{ $asset->useful_life_years ?? '-' }} tahun</dd>
                     </div>
                 </dl>
             </div>
 
             <!-- Timestamps Card -->
             <div class="bg-white shadow-sm rounded-lg p-6">
-                <h3 class="text-lg font-medium text-gray-900 mb-4">Timestamps</h3>
+                <h3 class="text-lg font-medium text-gray-900 mb-4">Timestamp</h3>
                 <dl class="space-y-3">
                     <div>
-                        <dt class="text-sm font-medium text-gray-500">Created</dt>
+                        <dt class="text-sm font-medium text-gray-500">Dibuat</dt>
                         <dd class="mt-1 text-sm text-gray-900">{{ $asset->created_at->format('d M Y H:i') }}</dd>
                     </div>
                     <div>
-                        <dt class="text-sm font-medium text-gray-500">Last Updated</dt>
+                        <dt class="text-sm font-medium text-gray-500">Terakhir Diperbarui</dt>
                         <dd class="mt-1 text-sm text-gray-900">{{ $asset->updated_at->format('d M Y H:i') }}</dd>
                     </div>
                 </dl>

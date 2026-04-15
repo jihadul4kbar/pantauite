@@ -3,89 +3,168 @@
 @section('title', __('kb.categories'))
 
 @section('content')
-<div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
-    <!-- Header -->
-    <div class="mb-6">
-        <a href="{{ route('kb.categories.index') }}" class="text-sm text-blue-600 hover:text-blue-500 mb-2 inline-block">
-            ← Kembali ke Daftar Kategori
-        </a>
-        <h1 class="text-2xl font-bold text-gray-900">{{ __('kb.create_category') }}</h1>
-    </div>
-
-    <!-- Form -->
-    <form action="{{ route('kb.categories.store') }}" method="POST" class="bg-white shadow-sm rounded-lg overflow-hidden">
-        @csrf
-
-        <div class="p-6 space-y-6">
-            <!-- Name -->
-            <div>
-                <label for="name" class="block text-sm font-medium text-gray-700">
-                    {{ __('kb.category_name') }} <span class="text-red-500">*</span>
-                </label>
-                <input type="text" name="name" id="name" value="{{ old('name') }}" required
-                       class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
-                @error('name')
-                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                @enderror
-            </div>
-
-            <!-- Description -->
-            <div>
-                <label for="description" class="block text-sm font-medium text-gray-700">{{ __('kb.category_description') }}</label>
-                <textarea name="description" id="description" rows="3"
-                          class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">{{ old('description') }}</textarea>
-            </div>
-
-            <!-- Parent Category -->
-            <div>
-                <label for="parent_id" class="block text-sm font-medium text-gray-700">{{ __('kb.parent_category') }}</label>
-                <select name="parent_id" id="parent_id"
-                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
-                    <option value="">{{ __('kb.no_parent') }}</option>
-                    @foreach($parentCategories as $parent)
-                    <option value="{{ $parent->id }}" {{ old('parent_id') == $parent->id ? 'selected' : '' }}>
-                        {{ $parent->icon }} {{ $parent->name }}
-                    </option>
-                    @endforeach
-                </select>
-            </div>
-
-            <!-- Icon -->
-            <div>
-                <label for="icon" class="block text-sm font-medium text-gray-700">{{ __('kb.icon_label') }}</label>
-                <input type="text" name="icon" id="icon" value="{{ old('icon', '📁') }}"
-                       class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                       placeholder="📁">
-                <p class="mt-1 text-xs text-gray-500">{{ __('kb.icon_hint') }}</p>
-            </div>
-
-            <!-- Sort Order -->
-            <div>
-                <label for="sort_order" class="block text-sm font-medium text-gray-700">{{ __('kb.sort_order') }}</label>
-                <input type="number" name="sort_order" id="sort_order" value="{{ old('sort_order', 0) }}"
-                       class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
-                <p class="mt-1 text-xs text-gray-500">{{ __('kb.sort_order_hint') }}</p>
-            </div>
-
-            <!-- Active Status -->
-            <div>
-                <label class="flex items-center">
-                    <input type="checkbox" name="is_active" value="1" {{ old('is_active', true) ? 'checked' : '' }}
-                           class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
-                    <span class="ml-2 text-sm text-gray-700">{{ __('kb.active_label') }}</span>
-                </label>
-            </div>
-        </div>
-
-        <!-- Actions -->
-        <div class="px-6 py-4 bg-gray-50 border-t border-gray-200 flex justify-end space-x-3">
-            <a href="{{ route('kb.categories.index') }}" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300">
-                {{ __('common.cancel') }}
+<div class="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50 to-indigo-100">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Header Section -->
+        <div class="mb-8">
+            <a href="{{ route('kb.categories.index') }}" class="group inline-flex items-center space-x-2 text-sm text-purple-600 hover:text-purple-700 mb-4 transition-colors">
+                <svg class="w-5 h-5 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                </svg>
+                <span class="font-medium">Kembali ke Daftar Kategori</span>
             </a>
-            <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 font-medium">
-                {{ __('kb.create_category_btn') }}
-            </button>
+
+            <div class="relative bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 rounded-2xl shadow-xl overflow-hidden">
+                <div class="absolute inset-0 opacity-20">
+                    <div class="absolute top-0 right-0 w-96 h-96 bg-white rounded-full blur-3xl transform translate-x-32 -translate-y-32"></div>
+                </div>
+
+                <div class="relative px-8 py-8">
+                    <div class="flex items-center space-x-4">
+                        <div class="w-16 h-16 bg-white bg-opacity-20 backdrop-blur-lg rounded-xl flex items-center justify-center">
+                            <svg class="w-10 h-10 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h1 class="text-3xl font-bold text-white">{{ __('kb.create_category') }}</h1>
+                            <p class="mt-1 text-purple-100">Buat kategori baru untuk basis pengetahuan</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-    </form>
+
+        <!-- Form -->
+        <form action="{{ route('kb.categories.store') }}" method="POST" class="bg-white shadow-lg rounded-2xl overflow-hidden">
+            @csrf
+
+            <div class="p-8 space-y-6">
+                <!-- Name -->
+                <div>
+                    <label for="name" class="block text-sm font-bold text-gray-700 mb-2">
+                        {{ __('kb.category_name') }} <span class="text-red-500">*</span>
+                    </label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                            <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+                            </svg>
+                        </div>
+                        <input type="text" name="name" id="name" value="{{ old('name') }}" required
+                               class="block w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-xl shadow-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors @error('name') border-red-500 @enderror"
+                               placeholder="Masukkan nama kategori">
+                    </div>
+                    @error('name')
+                    <p class="mt-2 text-sm text-red-600 flex items-center">
+                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        {{ $message }}
+                    </p>
+                    @enderror
+                </div>
+
+                <!-- Description -->
+                <div>
+                    <label for="description" class="block text-sm font-bold text-gray-700 mb-2">{{ __('kb.category_description') }}</label>
+                    <div class="relative">
+                        <div class="absolute top-3 left-0 pl-4 flex items-start pointer-events-none">
+                            <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"></path>
+                            </svg>
+                        </div>
+                        <textarea name="description" id="description" rows="3"
+                                  class="block w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-xl shadow-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors resize-none"
+                                  placeholder="Deskripsi singkat tentang kategori ini">{{ old('description') }}</textarea>
+                    </div>
+                </div>
+
+                <!-- Parent Category & Icon -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Parent Category -->
+                    <div>
+                        <label for="parent_id" class="block text-sm font-bold text-gray-700 mb-2">{{ __('kb.parent_category') }}</label>
+                        <select name="parent_id" id="parent_id"
+                                class="block w-full border-2 border-gray-200 rounded-xl shadow-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors px-4 py-3">
+                            <option value="">{{ __('kb.no_parent') }}</option>
+                            @foreach($parentCategories as $parent)
+                            <option value="{{ $parent->id }}" {{ old('parent_id') == $parent->id ? 'selected' : '' }}>
+                                {{ $parent->icon }} {{ $parent->name }}
+                            </option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <!-- Icon -->
+                    <div>
+                        <label for="icon" class="block text-sm font-bold text-gray-700 mb-2">{{ __('kb.icon_label') }}</label>
+                        <div class="relative">
+                            <input type="text" name="icon" id="icon" value="{{ old('icon', '📁') }}"
+                                   class="block w-full border-2 border-gray-200 rounded-xl shadow-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors px-4 py-3 text-2xl"
+                                   placeholder="📁">
+                        </div>
+                        <p class="mt-2 text-xs text-gray-500 flex items-center">
+                            <svg class="w-4 h-4 mr-1.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            {{ __('kb.icon_hint') }}
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Sort Order & Active Status -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Sort Order -->
+                    <div>
+                        <label for="sort_order" class="block text-sm font-bold text-gray-700 mb-2">{{ __('kb.sort_order') }}</label>
+                        <input type="number" name="sort_order" id="sort_order" value="{{ old('sort_order', 0) }}"
+                               class="block w-full border-2 border-gray-200 rounded-xl shadow-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors px-4 py-3"
+                               placeholder="0">
+                        <p class="mt-2 text-xs text-gray-500 flex items-center">
+                            <svg class="w-4 h-4 mr-1.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            {{ __('kb.sort_order_hint') }}
+                        </p>
+                    </div>
+
+                    <!-- Active Status -->
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-2">Status Kategori</label>
+                        <label class="flex items-center p-4 bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl border border-green-200 cursor-pointer hover:from-green-100 hover:to-emerald-100 transition-colors">
+                            <input type="checkbox" name="is_active" value="1" {{ old('is_active', true) ? 'checked' : '' }}
+                                   class="rounded border-2 border-gray-300 text-green-600 focus:ring-green-500 w-5 h-5">
+                            <span class="ml-3 text-sm font-medium text-gray-700">{{ __('kb.active_label') }}</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="px-8 py-5 bg-gradient-to-r from-gray-50 to-white border-t border-gray-200 flex flex-col sm:flex-row items-center justify-between space-y-3 sm:space-y-0">
+                <p class="text-sm text-gray-600 flex items-center">
+                    <svg class="w-4 h-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    Pastikan semua informasi sudah benar sebelum menyimpan
+                </p>
+                <div class="flex space-x-3">
+                    <a href="{{ route('kb.categories.index') }}" class="group px-6 py-3 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 font-semibold transition-colors shadow-sm">
+                        <svg class="w-4 h-4 inline mr-1 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                        {{ __('common.cancel') }}
+                    </a>
+                    <button type="submit" class="group px-6 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-xl hover:from-purple-700 hover:to-indigo-700 font-semibold transition-all shadow-md hover:shadow-lg transform hover:scale-105">
+                        <svg class="w-5 h-5 inline mr-1 group-hover:rotate-12 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                        </svg>
+                        {{ __('kb.create_category_btn') }}
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
 </div>
 @endsection

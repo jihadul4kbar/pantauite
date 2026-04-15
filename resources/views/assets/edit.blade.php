@@ -11,7 +11,7 @@
                 <svg class="w-5 h-5 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
                 </svg>
-                <span class="font-medium">Back to Asset</span>
+                <span class="font-medium">{{ __('assets.back_to_asset') }}</span>
             </a>
 
             <div class="relative bg-gradient-to-r from-green-600 via-emerald-600 to-teal-600 rounded-2xl shadow-xl overflow-hidden">
@@ -27,8 +27,8 @@
                             </svg>
                         </div>
                         <div>
-                            <h1 class="text-3xl font-bold text-white">Edit Asset: {{ $asset->asset_code }}</h1>
-                            <p class="mt-1 text-green-100">Update asset information</p>
+                            <h1 class="text-3xl font-bold text-white">Ubah Aset: {{ $asset->asset_code }}</h1>
+                            <p class="mt-1 text-green-100">Perbarui informasi aset</p>
                         </div>
                     </div>
                 </div>
@@ -50,13 +50,13 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                 </svg>
                             </div>
-                            <h2 class="text-lg font-bold text-gray-900">Basic Information</h2>
+                            <h2 class="text-lg font-bold text-gray-900">Informasi Dasar</h2>
                         </div>
                     </div>
                     <div class="p-6">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
-                                <label class="block text-sm font-semibold text-gray-700 mb-2">Asset Type</label>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Tipe Aset</label>
                                 <select name="asset_type" class="w-full border-2 border-gray-200 rounded-xl shadow-sm focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors px-4 py-3 @error('asset_type') border-red-500 @enderror">
                                     @foreach($types as $type)
                                     <option value="{{ $type->value }}" {{ old('asset_type', $asset->asset_type) == $type->value ? 'selected' : '' }}>
@@ -70,25 +70,25 @@
                             <div>
                                 <label class="block text-sm font-semibold text-gray-700 mb-2">Status</label>
                                 <select name="status" class="w-full border-2 border-gray-200 rounded-xl shadow-sm focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors px-4 py-3 @error('status') border-red-500 @enderror">
-                                    <option value="procurement" {{ old('status', $asset->status) == 'procurement' ? 'selected' : '' }}>Procurement</option>
-                                    <option value="inventory" {{ old('status', $asset->status) == 'inventory' ? 'selected' : '' }}>Inventory</option>
-                                    <option value="deployed" {{ old('status', $asset->status) == 'deployed' ? 'selected' : '' }}>Deployed</option>
-                                    <option value="maintenance" {{ old('status', $asset->status) == 'maintenance' ? 'selected' : '' }}>Maintenance</option>
-                                    <option value="retired" {{ old('status', $asset->status) == 'retired' ? 'selected' : '' }}>Retired</option>
-                                    <option value="disposed" {{ old('status', $asset->status) == 'disposed' ? 'selected' : '' }}>Disposed</option>
+                                    <option value="procurement" {{ old('status', $asset->status) == 'procurement' ? 'selected' : '' }}>Pengadaan</option>
+                                    <option value="inventory" {{ old('status', $asset->status) == 'inventory' ? 'selected' : '' }}>Inventaris</option>
+                                    <option value="deployed" {{ old('status', $asset->status) == 'deployed' ? 'selected' : '' }}>Diterapkan</option>
+                                    <option value="maintenance" {{ old('status', $asset->status) == 'maintenance' ? 'selected' : '' }}>Pemeliharaan</option>
+                                    <option value="retired" {{ old('status', $asset->status) == 'retired' ? 'selected' : '' }}>Pensiun</option>
+                                    <option value="disposed" {{ old('status', $asset->status) == 'disposed' ? 'selected' : '' }}>Dibuang</option>
                                 </select>
                                 @error('status') <p class="mt-2 text-sm text-red-600 flex items-center"><svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> {{ $message }}</p> @enderror
                             </div>
 
                             <div class="md:col-span-2">
-                                <label class="block text-sm font-semibold text-gray-700 mb-2">Asset Name</label>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Nama Aset</label>
                                 <input type="text" name="name" value="{{ old('name', $asset->name) }}" required
                                        class="w-full border-2 border-gray-200 rounded-xl shadow-sm focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors px-4 py-3 @error('name') border-red-500 @enderror">
                                 @error('name') <p class="mt-2 text-sm text-red-600 flex items-center"><svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> {{ $message }}</p> @enderror
                             </div>
 
                             <div>
-                                <label class="block text-sm font-semibold text-gray-700 mb-2">Brand</label>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Merek</label>
                                 <input type="text" name="brand" value="{{ old('brand', $asset->brand) }}"
                                        class="w-full border-2 border-gray-200 rounded-xl shadow-sm focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors px-4 py-3">
                             </div>
@@ -100,7 +100,7 @@
                             </div>
 
                             <div>
-                                <label class="block text-sm font-semibold text-gray-700 mb-2">Serial Number</label>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Nomor Seri</label>
                                 <input type="text" name="serial_number" value="{{ old('serial_number', $asset->serial_number) }}"
                                        class="w-full border-2 border-gray-200 rounded-xl shadow-sm focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors px-4 py-3">
                             </div>
@@ -118,8 +118,8 @@
                             </div>
 
                             <div class="md:col-span-2">
-                                <label class="block text-sm font-semibold text-gray-700 mb-2">Location</label>
-                                <input type="text" name="location" value="{{ old('location', $asset->location) }}" placeholder="Building, Floor, Room"
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Lokasi</label>
+                                <input type="text" name="location" value="{{ old('location', $asset->location) }}" placeholder="Gedung, Lantai, Ruangan"
                                        class="w-full border-2 border-gray-200 rounded-xl shadow-sm focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors px-4 py-3">
                             </div>
                         </div>
@@ -135,7 +135,7 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path>
                                 </svg>
                             </div>
-                            <h2 class="text-lg font-bold text-gray-900">Purchase Information</h2>
+                            <h2 class="text-lg font-bold text-gray-900">Informasi Pembelian</h2>
                         </div>
                     </div>
                     <div class="p-6">
@@ -143,7 +143,7 @@
                             <div>
                                 <label class="block text-sm font-semibold text-gray-700 mb-2">Vendor</label>
                                 <select name="vendor_id" class="w-full border-2 border-gray-200 rounded-xl shadow-sm focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors px-4 py-3">
-                                    <option value="">Select Vendor</option>
+                                    <option value="">Pilih Vendor</option>
                                     @foreach($vendors as $vendor)
                                     <option value="{{ $vendor->id }}" {{ old('vendor_id', $asset->vendor_id) == $vendor->id ? 'selected' : '' }}>
                                         {{ $vendor->name }}
@@ -153,19 +153,19 @@
                             </div>
 
                             <div>
-                                <label class="block text-sm font-semibold text-gray-700 mb-2">Purchase Date</label>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Tanggal Pembelian</label>
                                 <input type="date" name="purchase_date" value="{{ old('purchase_date', $asset->purchase_date?->format('Y-m-d')) }}"
                                        class="w-full border-2 border-gray-200 rounded-xl shadow-sm focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors px-4 py-3">
                             </div>
 
                             <div>
-                                <label class="block text-sm font-semibold text-gray-700 mb-2">Price (IDR)</label>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Harga (IDR)</label>
                                 <input type="number" name="price" value="{{ old('price', $asset->price) }}" step="0.01"
                                        class="w-full border-2 border-gray-200 rounded-xl shadow-sm focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors px-4 py-3">
                             </div>
 
                             <div>
-                                <label class="block text-sm font-semibold text-gray-700 mb-2">PO Number</label>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Nomor PO</label>
                                 <input type="text" name="purchase_order_number" value="{{ old('purchase_order_number', $asset->purchase_order_number) }}"
                                        class="w-full border-2 border-gray-200 rounded-xl shadow-sm focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors px-4 py-3">
                             </div>
@@ -182,25 +182,25 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
                                 </svg>
                             </div>
-                            <h2 class="text-lg font-bold text-gray-900">Warranty Information</h2>
+                            <h2 class="text-lg font-bold text-gray-900">Informasi Garansi</h2>
                         </div>
                     </div>
                     <div class="p-6">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
-                                <label class="block text-sm font-semibold text-gray-700 mb-2">Warranty Start</label>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Tanggal Mulai Garansi</label>
                                 <input type="date" name="warranty_start" value="{{ old('warranty_start', $asset->warranty_start?->format('Y-m-d')) }}"
                                        class="w-full border-2 border-gray-200 rounded-xl shadow-sm focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors px-4 py-3">
                             </div>
 
                             <div>
-                                <label class="block text-sm font-semibold text-gray-700 mb-2">Warranty End</label>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Tanggal Selesai Garansi</label>
                                 <input type="date" name="warranty_end" value="{{ old('warranty_end', $asset->warranty_end?->format('Y-m-d')) }}"
                                        class="w-full border-2 border-gray-200 rounded-xl shadow-sm focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors px-4 py-3">
                             </div>
 
                             <div class="md:col-span-2">
-                                <label class="block text-sm font-semibold text-gray-700 mb-2">Warranty Provider</label>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Penyedia Garansi</label>
                                 <input type="text" name="warranty_provider" value="{{ old('warranty_provider', $asset->warranty_provider) }}"
                                        class="w-full border-2 border-gray-200 rounded-xl shadow-sm focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors px-4 py-3">
                             </div>
@@ -217,15 +217,15 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
                                 </svg>
                             </div>
-                            <h2 class="text-lg font-bold text-gray-900">Assignment</h2>
+                            <h2 class="text-lg font-bold text-gray-900">Penugasan</h2>
                         </div>
                     </div>
                     <div class="p-6">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
-                                <label class="block text-sm font-semibold text-gray-700 mb-2">Assigned To User</label>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Ditugaskan Kepada</label>
                                 <select name="assigned_to_user_id" class="w-full border-2 border-gray-200 rounded-xl shadow-sm focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors px-4 py-3">
-                                    <option value="">-- Unassigned --</option>
+                                    <option value="">-- Belum Ditugaskan --</option>
                                     @foreach($users as $user)
                                     <option value="{{ $user->id }}" {{ old('assigned_to_user_id', $asset->assigned_to_user_id) == $user->id ? 'selected' : '' }}>
                                         {{ $user->name }} ({{ $user->email }})
@@ -234,14 +234,14 @@
                                 </select>
                                 <p class="mt-2 text-xs text-gray-500 flex items-center">
                                     <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                                    Assign to a specific user
+                                    Tugaskan ke pengguna tertentu
                                 </p>
                             </div>
 
                             <div>
-                                <label class="block text-sm font-semibold text-gray-700 mb-2">Assigned To Department</label>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Ditugaskan ke Departemen</label>
                                 <select name="assigned_to_department_id" class="w-full border-2 border-gray-200 rounded-xl shadow-sm focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors px-4 py-3">
-                                    <option value="">-- None --</option>
+                                    <option value="">-- Tidak Ada --</option>
                                     @foreach($departments as $department)
                                     <option value="{{ $department->id }}" {{ old('assigned_to_department_id', $asset->assigned_to_department_id) == $department->id ? 'selected' : '' }}>
                                         {{ $department->name }}
@@ -250,7 +250,7 @@
                                 </select>
                                 <p class="mt-2 text-xs text-gray-500 flex items-center">
                                     <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                                    Assign to a department
+                                    Tugaskan ke departemen
                                 </p>
                             </div>
                         </div>
@@ -266,13 +266,13 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                 </svg>
                             </div>
-                            <h2 class="text-lg font-bold text-gray-900">Depreciation</h2>
+                            <h2 class="text-lg font-bold text-gray-900">Penyusutan</h2>
                         </div>
                     </div>
                     <div class="p-6">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
-                                <label class="block text-sm font-semibold text-gray-700 mb-2">Depreciation Method</label>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Metode Penyusutan</label>
                                 <select name="depreciation_method" class="w-full border-2 border-gray-200 rounded-xl shadow-sm focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors px-4 py-3">
                                     @foreach($depreciationMethods as $method)
                                     <option value="{{ $method }}" {{ old('depreciation_method', $asset->depreciation_method ?? 'straight_line') == $method ? 'selected' : '' }}>
@@ -283,7 +283,7 @@
                             </div>
 
                             <div>
-                                <label class="block text-sm font-semibold text-gray-700 mb-2">Useful Life (Years)</label>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Masa Guna (Tahun)</label>
                                 <input type="number" name="useful_life_years" value="{{ old('useful_life_years', $asset->useful_life_years) }}" min="1"
                                        class="w-full border-2 border-gray-200 rounded-xl shadow-sm focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors px-4 py-3">
                             </div>
@@ -300,7 +300,7 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
                                 </svg>
                             </div>
-                            <h2 class="text-lg font-bold text-gray-900">Additional Notes</h2>
+                            <h2 class="text-lg font-bold text-gray-900">Catatan Tambahan</h2>
                         </div>
                     </div>
                     <div class="p-6">
@@ -317,20 +317,20 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                                 </svg>
                             </div>
-                            <h2 class="text-lg font-bold text-gray-900">Asset Images</h2>
+                            <h2 class="text-lg font-bold text-gray-900">Gambar Aset</h2>
                         </div>
                     </div>
                     <div class="p-6">
                         <div class="space-y-4">
                             @if($asset->images && count($asset->images) > 0)
                             <div>
-                                <label class="block text-sm font-semibold text-gray-700 mb-3">Current Images</label>
+                                <label class="block text-sm font-semibold text-gray-700 mb-3">Gambar Saat Ini</label>
                                 <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
                                     @foreach($asset->images as $image)
                                     <div class="relative group">
                                         <img src="{{ asset('storage/' . $image) }}" class="w-full h-32 object-cover rounded-xl border-2 border-gray-200" alt="Asset image">
                                         <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent rounded-xl flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                                            <span class="text-white text-sm font-medium">Current</span>
+                                            <span class="text-white text-sm font-medium">Saat Ini</span>
                                         </div>
                                     </div>
                                     @endforeach
@@ -338,14 +338,14 @@
                                 <div class="mt-4 p-3 bg-green-50 rounded-xl border border-green-200">
                                     <label class="inline-flex items-center cursor-pointer">
                                         <input type="checkbox" name="delete_old_images" value="1" class="rounded border-2 border-gray-300 text-green-600 focus:ring-green-500 w-5 h-5">
-                                        <span class="ml-2 text-sm text-gray-700 font-medium">Delete all current images and replace with new uploads</span>
+                                        <span class="ml-2 text-sm text-gray-700 font-medium">Hapus semua gambar saat ini dan ganti dengan unggahan baru</span>
                                     </label>
                                 </div>
                             </div>
                             @endif
 
                             <div>
-                                <label class="block text-sm font-semibold text-gray-700 mb-3">Upload New Images</label>
+                                <label class="block text-sm font-semibold text-gray-700 mb-3">Unggah Gambar Baru</label>
                                 <div class="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:border-green-500 transition-colors bg-gradient-to-r from-gray-50 to-white">
                                     <svg class="mx-auto h-12 w-12 text-gray-400 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
@@ -356,7 +356,7 @@
                                         <svg class="w-4 h-4 mr-1.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                         </svg>
-                                        Max 5 images, 2MB each. Formats: JPEG, PNG, JPG, GIF.
+                                        Maks 5 gambar, 2MB setiapnya. Format: JPEG, PNG, JPG, GIF.
                                     </p>
                                 </div>
                                 @error('images') <p class="mt-2 text-sm text-red-600 flex items-center"><svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> {{ $message }}</p> @enderror
@@ -376,20 +376,20 @@
                         <svg class="w-4 h-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                         </svg>
-                        Make sure to review changes before saving
+                        Pastikan telah meninjau perubahan sebelum menyimpan
                     </p>
                     <div class="flex space-x-3">
                         <a href="{{ route('assets.show', $asset) }}" class="group px-6 py-3 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 font-semibold transition-colors shadow-sm">
                             <svg class="w-4 h-4 inline mr-1 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                             </svg>
-                            Cancel
+                            {{ __('common.cancel') }}
                         </a>
                         <button type="submit" class="group px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl hover:from-green-700 hover:to-emerald-700 font-semibold transition-all shadow-md hover:shadow-lg transform hover:scale-105">
                             <svg class="w-5 h-5 inline mr-1 group-hover:rotate-12 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                             </svg>
-                            Update Asset
+                            Perbarui Aset
                         </button>
                     </div>
                 </div>
@@ -410,7 +410,7 @@
             const files = Array.from(e.target.files);
 
             if (files.length > maxFiles) {
-                alert('Maximum ' + maxFiles + ' images allowed.');
+                alert('Maksimal ' + maxFiles + ' gambar diperbolehkan.');
                 fileInput.value = '';
                 return;
             }

@@ -21,8 +21,8 @@
                             </svg>
                         </div>
                         <div>
-                            <h1 class="text-3xl font-bold text-white">Asset Management</h1>
-                            <p class="mt-1 text-green-100 text-sm">Manage IT assets inventory and lifecycle</p>
+                            <h1 class="text-3xl font-bold text-white">Manajemen Aset</h1>
+                            <p class="mt-1 text-green-100 text-sm">Kelola inventaris dan siklus hidup aset TI</p>
                         </div>
                     </div>
                     @if(Auth::user()->hasPermission('manage-assets'))
@@ -126,9 +126,9 @@
                         </label>
                         <select name="type" class="w-full border-2 border-gray-200 rounded-xl shadow-sm focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors px-4 py-3">
                             <option value="">{{ __('common.all') }}</option>
-                            <option value="hardware" {{ ($filters['type'] ?? '') == 'hardware' ? 'selected' : '' }}>Hardware</option>
-                            <option value="software" {{ ($filters['type'] ?? '') == 'software' ? 'selected' : '' }}>Software</option>
-                            <option value="network" {{ ($filters['type'] ?? '') == 'network' ? 'selected' : '' }}>Network</option>
+                            <option value="hardware" {{ ($filters['type'] ?? '') == 'hardware' ? 'selected' : '' }}>Perangkat Keras</option>
+                            <option value="software" {{ ($filters['type'] ?? '') == 'software' ? 'selected' : '' }}>Perangkat Lunak</option>
+                            <option value="network" {{ ($filters['type'] ?? '') == 'network' ? 'selected' : '' }}>Jaringan</option>
                         </select>
                     </div>
                     <div>
@@ -140,12 +140,12 @@
                         </label>
                         <select name="status" class="w-full border-2 border-gray-200 rounded-xl shadow-sm focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors px-4 py-3">
                             <option value="">{{ __('common.all') }}</option>
-                            <option value="procurement" {{ ($filters['status'] ?? '') == 'procurement' ? 'selected' : '' }}>Procurement</option>
-                            <option value="inventory" {{ ($filters['status'] ?? '') == 'inventory' ? 'selected' : '' }}>Inventory</option>
-                            <option value="deployed" {{ ($filters['status'] ?? '') == 'deployed' ? 'selected' : '' }}>Deployed</option>
-                            <option value="maintenance" {{ ($filters['status'] ?? '') == 'maintenance' ? 'selected' : '' }}>Maintenance</option>
-                            <option value="retired" {{ ($filters['status'] ?? '') == 'retired' ? 'selected' : '' }}>Retired</option>
-                            <option value="disposed" {{ ($filters['status'] ?? '') == 'disposed' ? 'selected' : '' }}>Disposed</option>
+                            <option value="procurement" {{ ($filters['status'] ?? '') == 'procurement' ? 'selected' : '' }}>Pengadaan</option>
+                            <option value="inventory" {{ ($filters['status'] ?? '') == 'inventory' ? 'selected' : '' }}>Inventaris</option>
+                            <option value="deployed" {{ ($filters['status'] ?? '') == 'deployed' ? 'selected' : '' }}>Diterapkan</option>
+                            <option value="maintenance" {{ ($filters['status'] ?? '') == 'maintenance' ? 'selected' : '' }}>Pemeliharaan</option>
+                            <option value="retired" {{ ($filters['status'] ?? '') == 'retired' ? 'selected' : '' }}>Pensiun</option>
+                            <option value="disposed" {{ ($filters['status'] ?? '') == 'disposed' ? 'selected' : '' }}>Dibuang</option>
                         </select>
                     </div>
                     <div>

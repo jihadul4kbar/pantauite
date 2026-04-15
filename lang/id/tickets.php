@@ -99,4 +99,23 @@ return [
         'resolved' => 'Selesai',
         'closed' => 'Ditutup',
     ],
+
+    // Categories
+    'categories_title' => 'Kategori Tiket',
+    'categories_subtitle' => 'Kelola kategori untuk mengklasifikasikan tiket',
+    'add_category' => 'Kategori Baru',
+    'add_category_subtitle' => 'Buat kategori baru untuk mengklasifikasikan tiket',
+    'edit_category' => 'Ubah Kategori',
+    'edit_category_subtitle' => 'Perbarui informasi dan detail kategori',
+    'back_to_categories' => 'Kembali ke Kategori',
+    'category_info' => 'Informasi Kategori',
+    'category_name' => 'Nama Kategori',
+    'icon_emoji' => 'Ikon (Emoji)',
+    'parent_category' => 'Kategori Induk',
+    'none_root' => '-- Tidak Ada (Root) --',
+    'color_hex' => 'Warna',
+    'no_categories' => 'Tidak ada kategori ditemukan',
+    'get_started' => 'Mulai dengan membuat kategori pertama Anda.',
+    'parent' => 'Kategori Induk',
+    'tickets' => 'Tiket',
 ];
