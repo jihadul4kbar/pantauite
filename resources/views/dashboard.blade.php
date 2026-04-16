@@ -3,299 +3,121 @@
 @section('title', __('navigation.dashboard'))
 
 @section('content')
-<div class="min-h-screen bg-gradient-to-br from-slate-50 via-green-50 to-emerald-50">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <!-- Welcome Header with Gradient Background -->
-        <div class="relative mb-8 bg-gradient-to-r from-green-600 via-emerald-600 to-teal-600 rounded-2xl shadow-xl overflow-hidden">
-            <!-- Decorative Elements -->
-            <div class="absolute inset-0 opacity-20">
-                <div class="absolute top-0 right-0 w-96 h-96 bg-white rounded-full blur-3xl transform translate-x-32 -translate-y-32"></div>
-                <div class="absolute bottom-0 left-0 w-64 h-64 bg-green-200 rounded-full blur-3xl transform -translate-x-16 translate-y-16"></div>
-            </div>
+<div class="max-w-7xl mx-auto pt-20 py-2 lg:py-4">
+    <!-- Welcome Header: UCD (Personalized & Contextual) -->
+    <div class="relative mb-6 lg:mb-8 bg-gradient-to-r from-green-600 via-emerald-600 to-teal-600 rounded-2xl lg:rounded-3xl shadow-xl overflow-hidden group">
+        <!-- Decorative Elements -->
+        <div class="absolute inset-0 opacity-20 transition-transform duration-1000 group-hover:scale-110">
+            <div class="absolute top-0 right-0 w-64 lg:w-96 h-64 lg:h-96 bg-white rounded-full blur-3xl transform translate-x-32 -translate-y-32"></div>
+            <div class="absolute bottom-0 left-0 w-48 lg:w-64 h-48 lg:h-64 bg-green-200 rounded-full blur-3xl transform -translate-x-16 translate-y-16"></div>
+        </div>
 
-            <div class="relative px-8 py-10">
-                <div class="flex flex-col md:flex-row items-start md:items-center justify-between">
-                    <div>
-                        <div class="flex items-center space-x-3 mb-3">
-                            <div class="w-16 h-16 bg-white bg-opacity-20 backdrop-blur-lg rounded-xl flex items-center justify-center">
-                                <svg class="w-10 h-10 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
-                                </svg>
-                            </div>
-                            <div>
-                                <h1 class="text-3xl md:text-4xl font-bold text-white">
-                                    {{ __('dashboard.welcome_back', ['name' => Auth::user()->name]) }}
-                                </h1>
-                                <p class="mt-1 text-green-100 text-sm md:text-base">
-                                    {{ now()->locale('id')->isoFormat('dddd, D MMMM Y') }} • {{ __('dashboard.subtitle') }}
-                                </p>
-                            </div>
-                        </div>
+        <div class="relative px-6 py-8 lg:px-10 lg:py-12">
+            <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+                <div class="flex items-center space-x-4 lg:space-x-6">
+                    <div class="flex-shrink-0 w-16 h-16 lg:w-20 lg:h-20 bg-white/20 backdrop-blur-xl rounded-2xl lg:rounded-3xl flex items-center justify-center border border-white/30 shadow-2xl transition-transform group-hover:rotate-3">
+                        <svg class="w-10 h-10 lg:w-12 lg:h-12 text-white drop-shadow-md" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                        </svg>
                     </div>
-                    <div class="mt-4 md:mt-0 flex-shrink-0">
-                        <div class="bg-white bg-opacity-20 backdrop-blur-lg rounded-lg px-6 py-3 text-white">
-                            <p class="text-xs opacity-80 text-gray-800">{{ __('dashboard.role') }}</p>
-                            <p class="font-semibold text-gray-800">{{ Auth::user()->role->display_name }}</p>
+                    <div>
+                        <h1 class="text-2xl lg:text-4xl font-extrabold text-white tracking-tight drop-shadow-sm">
+                            {{ __('dashboard.welcome_back', ['name' => Auth::user()->name]) }}
+                        </h1>
+                        <p class="mt-1 lg:mt-2 text-green-50/90 text-sm lg:text-lg font-medium">
+                            {{ now()->locale('id')->isoFormat('dddd, D MMMM Y') }} <span class="mx-1 hidden lg:inline opacity-50">|</span> <span class="block lg:inline">{{ __('dashboard.subtitle') }}</span>
+                        </p>
+                    </div>
+                </div>
+                <div class="w-full md:w-auto">
+                    <div class="bg-white/10 backdrop-blur-md rounded-2xl p-4 lg:p-5 border border-white/20 shadow-inner group-hover:bg-white/20 transition-colors">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
+                            <span class="text-xs lg:text-sm font-bold text-white uppercase tracking-widest opacity-80">{{ __('dashboard.role') }}</span>
                         </div>
+                        <p class="mt-1 text-lg lg:text-xl font-black text-white drop-shadow-sm">{{ Auth::user()->role->display_name }}</p>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
 
-        <!-- Stats Cards Grid -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            <!-- Tickets Card -->
-            <a href="{{ route('tickets.index') }}" class="group relative bg-white overflow-hidden shadow-sm hover:shadow-xl rounded-2xl transition-all duration-300 transform hover:-translate-y-1">
-                <div class="absolute inset-0 bg-gradient-to-br from-green-500 to-emerald-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                <div class="relative p-6">
-                    <div class="flex items-start justify-between mb-4">
-                        <div class="flex-shrink-0">
-                            <div class="w-14 h-14 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
-                                <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"></path>
-                                </svg>
-                            </div>
-                        </div>
-                        <div class="flex items-center space-x-1">
-                            <svg class="w-5 h-5 text-gray-400 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-                            </svg>
-                        </div>
-                    </div>
-                    <div>
-                        <p class="text-sm font-medium text-gray-600 group-hover:text-green-100 transition-colors mb-1">{{ __('dashboard.total_tickets') }}</p>
-                        <p class="text-3xl font-bold text-gray-900 group-hover:text-white transition-colors">{{ $stats['tickets']['total'] }}</p>
-                    </div>
-                    <div class="mt-4 pt-4 border-t border-gray-100 group-hover:border-green-400">
-                        <div class="flex items-center justify-between text-xs">
-                            <div class="flex items-center space-x-3">
-                                <span class="flex items-center text-green-600 group-hover:text-green-200">
-                                    <span class="w-2 h-2 bg-green-500 rounded-full mr-1"></span>
-                                    {{ $stats['tickets']['open'] }}
-                                </span>
-                                <span class="flex items-center text-yellow-600 group-hover:text-yellow-200">
-                                    <span class="w-2 h-2 bg-yellow-500 rounded-full mr-1"></span>
-                                    {{ $stats['tickets']['in_progress'] }}
-                                </span>
-                                @if($stats['tickets']['overdue'] > 0)
-                                <span class="flex items-center text-red-600 group-hover:text-red-200">
-                                    <span class="w-2 h-2 bg-red-500 rounded-full mr-1"></span>
-                                    {{ $stats['tickets']['overdue'] }}
-                                </span>
-                                @endif
-                            </div>
-                        </div>
-                        <div class="mt-2 text-xs text-gray-500 group-hover:text-green-200">
-                            {{ __('dashboard.open') }} · {{ __('dashboard.in_progress') }} · {{ __('dashboard.overdue') }}
-                        </div>
-                    </div>
+    <!-- Stats Grid: Responsive 2-cols on mobile, 4-cols on desktop -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-6 mb-8">
+        <!-- Tickets Card -->
+        <a href="{{ route('tickets.index') }}" class="group relative bg-white rounded-2xl lg:rounded-3xl p-4 lg:p-6 shadow-sm border border-slate-100 hover:shadow-2xl hover:border-emerald-200 transition-all duration-300 transform hover:-translate-y-1">
+            <div class="flex items-start justify-between mb-4">
+                <div class="w-10 h-10 lg:w-14 lg:h-14 bg-emerald-50 rounded-xl lg:rounded-2xl flex items-center justify-center text-emerald-600 group-hover:bg-emerald-600 group-hover:text-white transition-all shadow-sm">
+                    <svg class="w-6 h-6 lg:w-8 lg:h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"></path>
+                    </svg>
                 </div>
-            </a>
-
-            <!-- Assets Card -->
-            @if(Auth::user()->hasPermission('view-assets') || Auth::user()->hasPermission('manage-assets'))
-            <a href="{{ route('assets.index') }}" class="group relative bg-white overflow-hidden shadow-sm hover:shadow-xl rounded-2xl transition-all duration-300 transform hover:-translate-y-1">
-                <div class="absolute inset-0 bg-gradient-to-br from-green-500 to-emerald-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                <div class="relative p-6">
-                    <div class="flex items-start justify-between mb-4">
-                        <div class="flex-shrink-0">
-                            <div class="w-14 h-14 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
-                                <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
-                                </svg>
-                            </div>
-                        </div>
-                        <div class="flex items-center space-x-1">
-                            <svg class="w-5 h-5 text-gray-400 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-                            </svg>
-                        </div>
-                    </div>
-                    <div>
-                        <p class="text-sm font-medium text-gray-600 group-hover:text-green-100 transition-colors mb-1">{{ __('dashboard.total_assets') }}</p>
-                        <p class="text-3xl font-bold text-gray-900 group-hover:text-white transition-colors">{{ $stats['assets']['total'] }}</p>
-                    </div>
-                    <div class="mt-4 pt-4 border-t border-gray-100 group-hover:border-green-400">
-                        <div class="flex items-center justify-between text-xs">
-                            <div class="flex items-center space-x-3">
-                                <span class="flex items-center text-green-600 group-hover:text-green-200">
-                                    <span class="w-2 h-2 bg-green-500 rounded-full mr-1"></span>
-                                    {{ $stats['assets']['deployed'] }}
-                                </span>
-                                <span class="flex items-center text-orange-600 group-hover:text-orange-200">
-                                    <span class="w-2 h-2 bg-orange-500 rounded-full mr-1"></span>
-                                    {{ $stats['assets']['maintenance'] }}
-                                </span>
-                            </div>
-                        </div>
-                        <div class="mt-2 text-xs text-gray-500 group-hover:text-green-200">
-                            {{ __('dashboard.deployed') }} · {{ __('dashboard.maintenance') }}
-                        </div>
-                    </div>
-                </div>
-            </a>
-            @endif
-
-            <!-- SLA Compliance Card -->
-            @if(Auth::user()->hasPermission('manage-sla'))
-            <div class="bg-white overflow-hidden shadow-sm hover:shadow-xl rounded-2xl transition-all duration-300">
-                <div class="p-6">
-                    <div class="flex items-start justify-between mb-4">
-                        <div class="flex-shrink-0">
-                            @if($stats['sla']['compliance'] >= 90)
-                                <div class="w-14 h-14 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-lg">
-                                    <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                    </svg>
-                                </div>
-                            @elseif($stats['sla']['compliance'] >= 70)
-                                <div class="w-14 h-14 bg-gradient-to-br from-yellow-500 to-orange-600 rounded-xl flex items-center justify-center shadow-lg">
-                                    <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                    </svg>
-                                </div>
-                            @else
-                                <div class="w-14 h-14 bg-gradient-to-br from-red-500 to-pink-600 rounded-xl flex items-center justify-center shadow-lg">
-                                    <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                    </svg>
-                                </div>
-                            @endif
-                        </div>
-                        <div class="text-right">
-                            <p class="text-3xl font-bold
-                                @if($stats['sla']['compliance'] >= 90) text-green-600
-                                @elseif($stats['sla']['compliance'] >= 70) text-yellow-600
-                                @else text-red-600
-                                @endif">
-                                {{ $stats['sla']['compliance'] }}%
-                            </p>
-                        </div>
-                    </div>
-                    <div>
-                        <p class="text-sm font-medium text-gray-600 mb-1">{{ __('dashboard.sla_compliance') }}</p>
-                    </div>
-                    <div class="mt-4 pt-4 border-t border-gray-100">
-                        <div class="w-full bg-gray-200 rounded-full h-2 mb-2">
-                            <div class="h-2 rounded-full transition-all duration-500
-                                @if($stats['sla']['compliance'] >= 90) bg-gradient-to-r from-green-500 to-emerald-600
-                                @elseif($stats['sla']['compliance'] >= 70) bg-gradient-to-r from-yellow-500 to-orange-600
-                                @else bg-gradient-to-r from-red-500 to-pink-600
-                                @endif"
-                                style="width: {{ $stats['sla']['compliance'] }}%">
-                            </div>
-                        </div>
-                        <div class="flex items-center justify-between text-xs">
-                            <span class="flex items-center text-green-600">
-                                <span class="w-2 h-2 bg-green-500 rounded-full mr-1"></span>
-                                {{ $stats['sla']['on_track'] }} {{ __('dashboard.on_track') }}
-                            </span>
-                            @if($stats['sla']['breached'] > 0)
-                            <span class="flex items-center text-red-600">
-                                <span class="w-2 h-2 bg-red-500 rounded-full mr-1"></span>
-                                {{ $stats['sla']['breached'] }} {{ __('dashboard.breached') }}
-                            </span>
-                            @else
-                            <span class="text-gray-400">0 {{ __('dashboard.breached') }}</span>
-                            @endif
-                        </div>
-                    </div>
-                </div>
+                <span class="flex items-center text-[10px] lg:text-xs font-bold text-slate-400 group-hover:text-emerald-500 transition-colors uppercase tracking-widest">Live</span>
             </div>
-            @endif
+            <p class="text-xs lg:text-sm font-bold text-slate-500 mb-1">{{ __('dashboard.total_tickets') }}</p>
+            <div class="flex items-end space-x-2">
+                <h3 class="text-2xl lg:text-4xl font-black text-slate-900">{{ $stats['tickets']['total'] }}</h3>
+                <span class="text-[10px] lg:text-xs font-bold text-emerald-500 mb-1.5">+{{ $stats['tickets']['open'] }}</span>
+            </div>
+        </a>
 
-            <!-- Knowledge Base Card -->
-            @if(Auth::user()->hasPermission('view-kb'))
-            <a href="{{ route('kb.index') }}" class="group relative bg-white overflow-hidden shadow-sm hover:shadow-xl rounded-2xl transition-all duration-300 transform hover:-translate-y-1">
-                <div class="absolute inset-0 bg-gradient-to-br from-green-500 to-emerald-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                <div class="relative p-6">
-                    <div class="flex items-start justify-between mb-4">
-                        <div class="flex-shrink-0">
-                            <div class="w-14 h-14 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
-                                <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
-                                </svg>
-                            </div>
-                        </div>
-                        <div class="flex items-center space-x-1">
-                            <svg class="w-5 h-5 text-gray-400 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-                            </svg>
-                        </div>
-                    </div>
-                    <div>
-                        <p class="text-sm font-medium text-gray-600 group-hover:text-green-100 transition-colors mb-1">{{ __('dashboard.kb_articles') }}</p>
-                        <p class="text-3xl font-bold text-gray-900 group-hover:text-white transition-colors">{{ $stats['kb']['published'] }}</p>
-                    </div>
-                    <div class="mt-4 pt-4 border-t border-gray-100 group-hover:border-green-400">
-                        <div class="flex items-center justify-between text-xs">
-                            <span class="flex items-center text-green-600 group-hover:text-green-200">
-                                <span class="w-2 h-2 bg-green-500 rounded-full mr-1"></span>
-                                {{ $stats['kb']['published'] }} {{ __('dashboard.published') }}
-                            </span>
-                            <span class="flex items-center text-gray-500 group-hover:text-green-200">
-                                <span class="w-2 h-2 bg-gray-400 rounded-full mr-1"></span>
-                                {{ $stats['kb']['recent'] }} {{ __('dashboard.new') }}
-                            </span>
-                        </div>
-                        <div class="mt-2 text-xs text-gray-500 group-hover:text-green-200">
-                            {{ __('dashboard.total') }} · {{ __('dashboard.this_week') }}
-                        </div>
-                    </div>
+        <!-- Assets Card -->
+        @if(Auth::user()->hasPermission('view-assets') || Auth::user()->hasPermission('manage-assets'))
+        <a href="{{ route('assets.index') }}" class="group relative bg-white rounded-2xl lg:rounded-3xl p-4 lg:p-6 shadow-sm border border-slate-100 hover:shadow-2xl hover:border-blue-200 transition-all duration-300 transform hover:-translate-y-1">
+            <div class="flex items-start justify-between mb-4">
+                <div class="w-10 h-10 lg:w-14 lg:h-14 bg-blue-50 rounded-xl lg:rounded-2xl flex items-center justify-center text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition-all shadow-sm">
+                    <svg class="w-6 h-6 lg:w-8 lg:h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                    </svg>
                 </div>
-            </a>
-            @endif
+                <span class="flex items-center text-[10px] lg:text-xs font-bold text-slate-400 group-hover:text-blue-500 transition-colors uppercase tracking-widest">Asset</span>
+            </div>
+            <p class="text-xs lg:text-sm font-bold text-slate-500 mb-1">{{ __('dashboard.total_assets') }}</p>
+            <div class="flex items-end space-x-2">
+                <h3 class="text-2xl lg:text-4xl font-black text-slate-900">{{ $stats['assets']['total'] }}</h3>
+                <span class="text-[10px] lg:text-xs font-bold text-blue-500 mb-1.5">{{ $stats['assets']['deployed'] }}</span>
+            </div>
+        </a>
+        @endif
 
-            <!-- Repair Requests Card -->
-            @if(Auth::user()->hasAnyPermission(['repair_requests.verify', 'manage-tickets']))
-            <a href="{{ route('repair-requests.admin.index') }}" class="group relative bg-white overflow-hidden shadow-sm hover:shadow-xl rounded-2xl transition-all duration-300 transform hover:-translate-y-1">
-                <div class="absolute inset-0 bg-gradient-to-br from-blue-500 to-cyan-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                <div class="relative p-6">
-                    <div class="flex items-start justify-between mb-4">
-                        <div class="flex-shrink-0">
-                            <div class="w-14 h-14 bg-gradient-to-br from-blue-500 to-cyan-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
-                                <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
-                                </svg>
-                            </div>
-                        </div>
-                        <div class="flex items-center space-x-1">
-                            <svg class="w-5 h-5 text-gray-400 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-                            </svg>
-                        </div>
-                    </div>
-                    <div>
-                        <p class="text-sm font-medium text-gray-600 group-hover:text-blue-100 transition-colors mb-1">Permintaan Perbaikan</p>
-                        <p class="text-3xl font-bold text-gray-900 group-hover:text-white transition-colors">{{ $stats['repair_requests']['pending'] }}</p>
-                    </div>
-                    <div class="mt-4 pt-4 border-t border-gray-100 group-hover:border-blue-400">
-                        <div class="flex items-center justify-between text-xs">
-                            <div class="flex items-center space-x-3">
-                                <span class="flex items-center text-green-600 group-hover:text-blue-200">
-                                    <span class="w-2 h-2 bg-green-500 rounded-full mr-1"></span>
-                                    {{ $stats['repair_requests']['approved'] }}
-                                </span>
-                                @if($stats['repair_requests']['rejected'] > 0)
-                                <span class="flex items-center text-red-600 group-hover:text-red-200">
-                                    <span class="w-2 h-2 bg-red-500 rounded-full mr-1"></span>
-                                    {{ $stats['repair_requests']['rejected'] }}
-                                </span>
-                                @endif
-                                <span class="flex items-center text-purple-600 group-hover:text-purple-200">
-                                    <span class="w-2 h-2 bg-purple-500 rounded-full mr-1"></span>
-                                    {{ $stats['repair_requests']['converted'] }}
-                                </span>
-                            </div>
-                        </div>
-                        <div class="mt-2 text-xs text-gray-500 group-hover:text-blue-200">
-                            Menunggu · Disetujui · Dikonversi
-                        </div>
-                    </div>
+        <!-- SLA Compliance Card -->
+        @if(Auth::user()->hasPermission('manage-sla'))
+        <div class="group relative bg-white rounded-2xl lg:rounded-3xl p-4 lg:p-6 shadow-sm border border-slate-100 transition-all duration-300">
+            <div class="flex items-start justify-between mb-4">
+                <div class="w-10 h-10 lg:w-14 lg:h-14 bg-orange-50 rounded-xl lg:rounded-2xl flex items-center justify-center text-orange-600 transition-all shadow-sm">
+                    <svg class="w-6 h-6 lg:w-8 lg:h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
                 </div>
-            </a>
-            @endif
+                <span class="flex items-center text-[10px] lg:text-xs font-bold text-slate-400 uppercase tracking-widest">SLA</span>
+            </div>
+            <p class="text-xs lg:text-sm font-bold text-slate-500 mb-1">Performance</p>
+            <div class="flex items-end space-x-2">
+                <h3 class="text-2xl lg:text-4xl font-black text-slate-900">{{ $stats['sla']['compliance'] }}%</h3>
+                <span class="text-[10px] lg:text-xs font-bold text-orange-500 mb-1.5">{{ $stats['sla']['on_track'] }} OK</span>
+            </div>
         </div>
+        @endif
+
+        <!-- Repair Requests Card -->
+        @if(Auth::user()->hasAnyPermission(['repair_requests.verify', 'manage-tickets']))
+        <a href="{{ route('repair-requests.admin.index') }}" class="group relative bg-white rounded-2xl lg:rounded-3xl p-4 lg:p-6 shadow-sm border border-slate-100 hover:shadow-2xl hover:border-purple-200 transition-all duration-300 transform hover:-translate-y-1">
+            <div class="flex items-start justify-between mb-4">
+                <div class="w-10 h-10 lg:w-14 lg:h-14 bg-purple-50 rounded-xl lg:rounded-2xl flex items-center justify-center text-purple-600 group-hover:bg-purple-600 group-hover:text-white transition-all shadow-sm">
+                    <svg class="w-6 h-6 lg:w-8 lg:h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                    </svg>
+                </div>
+                <span class="flex items-center text-[10px] lg:text-xs font-bold text-slate-400 group-hover:text-purple-500 transition-colors uppercase tracking-widest">Req</span>
+            </div>
+            <p class="text-xs lg:text-sm font-bold text-slate-500 mb-1">Repairs</p>
+            <div class="flex items-end space-x-2">
+                <h3 class="text-2xl lg:text-4xl font-black text-slate-900">{{ $stats['repair_requests']['pending'] }}</h3>
+                <span class="text-[10px] lg:text-xs font-bold text-purple-500 mb-1.5">New</span>
+            </div>
+        </a>
+        @endif
+    </div>
 
         <!-- Quick Actions Section -->
         <div class="mb-8 bg-white shadow-sm hover:shadow-lg rounded-2xl transition-shadow">
@@ -511,8 +333,6 @@
                         <div class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
                         <span class="text-sm font-medium text-gray-800">{{ __('common.active') }}</span>
                     </div>
-                </div>
-            </div>
         </div>
     </div>
 </div>
