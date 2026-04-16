@@ -14,6 +14,7 @@ use App\Http\Controllers\RepairRequestController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\TicketCategoryController;
 use App\Http\Controllers\TicketController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -131,6 +132,9 @@ Route::middleware(['auth', 'password.expired'])->group(function () {
 
     // Department Management (IT Manager & Super Admin only)
     Route::resource('departments', DepartmentController::class);
+
+    // User Management (IT Manager & Super Admin only)
+    Route::resource('users', UserController::class);
 
     // Maintenance Management Module
     Route::prefix('maintenance')->name('maintenance.')->group(function () {
