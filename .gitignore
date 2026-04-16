@@ -20,8 +20,8 @@ composer.lock
 .env.*
 
 # Build directories
-dist/
-build/
+#dist/
+#build/
 target/
 .coverage
 coverage/
