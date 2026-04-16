@@ -94,7 +94,11 @@
                                             @endif
                                             @if(Auth::user()->hasPermission('manage-users'))
                                             <a href="{{ route('users.index') }}" class="flex items-center px-4 py-2.5 text-sm text-gray-700 hover:bg-green-50 hover:text-green-700 transition-colors {{ request()->routeIs('users.*') ? 'bg-green-50 text-green-700 font-semibold' : '' }}">
+<<<<<<< HEAD
                                             <span class="mr-3 text-lg">👥</span> Users
+=======
+                                                <span class="mr-3 text-lg">👥</span> Users
+>>>>>>> 7470507c696abb1293b9dc1f4dbd7b95b9394097
                                             </a>
                                             @endif
                                         </div>

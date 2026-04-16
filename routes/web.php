@@ -211,6 +211,9 @@ Route::middleware(["auth", "password.expired"])->group(function () {
     // User Management (IT Manager & Super Admin only)
     Route::resource("users", UserController::class);
 
+    // User Management (IT Manager & Super Admin only)
+    Route::resource('users', UserController::class);
+
     // Maintenance Management Module
     Route::prefix("maintenance")
         ->name("maintenance.")

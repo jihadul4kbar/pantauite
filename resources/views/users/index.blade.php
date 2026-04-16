@@ -38,7 +38,11 @@
             <form action="{{ route('users.index') }}" method="GET" class="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Search</label>
+<<<<<<< HEAD
                     <input type="text" name="search" value="{{ $search ?? '' }}"
+=======
+                    <input type="text" name="search" value="{{ $search ?? '' }}" 
+>>>>>>> 7470507c696abb1293b9dc1f4dbd7b95b9394097
                            placeholder="Name, Email, or Employee ID"
                            class="w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500">
                 </div>
@@ -74,11 +78,19 @@
                 </div>
             </form>
             <div class="mt-4 flex justify-end">
+<<<<<<< HEAD
                 <button type="button" onclick="window.location.href='{{ route('users.index') }}'"
                         class="px-4 py-2 text-sm text-gray-600 hover:text-gray-800">
                     Reset Filters
                 </button>
                 <button type="submit" form="filter-form"
+=======
+                <button type="button" onclick="window.location.href='{{ route('users.index') }}'" 
+                        class="px-4 py-2 text-sm text-gray-600 hover:text-gray-800">
+                    Reset Filters
+                </button>
+                <button type="submit" form="filter-form" 
+>>>>>>> 7470507c696abb1293b9dc1f4dbd7b95b9394097
                         class="px-6 py-2 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-lg hover:from-blue-600 hover:to-indigo-700 transition-all shadow-md">
                     Apply Filters
                 </button>
