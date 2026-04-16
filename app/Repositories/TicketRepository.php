@@ -186,7 +186,8 @@ class TicketRepository
     public function generateTicketNumber(): string
     {
         $year = now()->year;
-        $lastTicket = Ticket::whereYear('created_at', $year)
+        $lastTicket = Ticket::withTrashed()
+            ->whereYear('created_at', $year)
             ->orderBy('id', 'desc')
             ->first();
 

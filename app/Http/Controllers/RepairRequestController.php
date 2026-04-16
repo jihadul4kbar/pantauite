@@ -10,11 +10,19 @@ use App\Models\Ticket;
 use App\Services\CaptchaService;
 use App\Services\PhotoUploadService;
 use App\Http\Requests\StoreRepairRequestRequest;
+use App\Services\TicketService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class RepairRequestController extends Controller
 {
+    /**
+     * Create a new controller instance.
+     */
+    public function __construct(
+        private TicketService $ticketService
+    ) {}
+
     /**
      * Show the public repair request form.
      */
@@ -232,18 +240,15 @@ class RepairRequestController extends Controller
                 throw new \Exception('Tidak ada user IT yang tersedia untuk membuat tiket.');
             }
 
-            // Create the ticket
-            $ticket = Ticket::create([
-                'ticket_number' => $this->generateTicketNumber(),
+            // Create the ticket using TicketService
+            $ticket = $this->ticketService->createTicket([
                 'subject' => $repairRequest->subject,
                 'description' => $repairRequest->description,
-                'status' => 'open',
                 'priority' => $repairRequest->priority,
-                'user_id' => $defaultUser->id,
-                'department_id' => null,
                 'category_id' => $repairRequest->category_id,
+                'department_id' => null,
                 'source' => 'web',
-            ]);
+            ], $defaultUser);
 
             // Mark repair request as converted
             $repairRequest->markAsConverted($ticket->id);
@@ -265,27 +270,13 @@ class RepairRequestController extends Controller
     private function generateRequestNumber(): string
     {
         $year = now()->year;
-        $lastRequest = RepairRequest::whereYear('created_at', $year)
+        $lastRequest = RepairRequest::withTrashed()
+            ->whereYear('created_at', $year)
             ->orderBy('id', 'desc')
             ->first();
 
         $sequence = $lastRequest ? (intval(substr($lastRequest->request_number, -4)) + 1) : 1;
 
         return 'REQ-' . $year . '-' . str_pad($sequence, 4, '0', STR_PAD_LEFT);
-    }
-
-    /**
-     * Generate ticket number (TKT-YYYY-NNNN).
-     */
-    private function generateTicketNumber(): string
-    {
-        $year = now()->year;
-        $lastTicket = Ticket::whereYear('created_at', $year)
-            ->orderBy('id', 'desc')
-            ->first();
-
-        $sequence = $lastTicket ? (intval(substr($lastTicket->ticket_number, -4)) + 1) : 1;
-
-        return 'TKT-' . $year . '-' . str_pad($sequence, 4, '0', STR_PAD_LEFT);
     }
 }
