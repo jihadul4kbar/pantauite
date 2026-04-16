@@ -189,19 +189,11 @@
 
                 <!-- Actions -->
                 <div class="mt-8 flex items-center justify-end space-x-4">
-<<<<<<< HEAD
                     <a href="{{ route('users.index') }}"
                        class="px-6 py-3 border border-gray-300 text-gray-700 font-semibold rounded-lg hover:bg-gray-50 transition-all">
                         Cancel
                     </a>
-                    <button type="submit"
-=======
-                    <a href="{{ route('users.index') }}" 
-                       class="px-6 py-3 border border-gray-300 text-gray-700 font-semibold rounded-lg hover:bg-gray-50 transition-all">
-                        Cancel
-                    </a>
-                    <button type="submit" 
->>>>>>> 7470507c696abb1293b9dc1f4dbd7b95b9394097
+                    <button type="submit" x
                             class="px-6 py-3 bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-semibold rounded-lg hover:from-blue-600 hover:to-indigo-700 transition-all shadow-md hover:shadow-lg">
                         Update User
                     </button>
