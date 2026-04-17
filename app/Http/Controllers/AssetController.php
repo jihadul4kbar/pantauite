@@ -295,6 +295,12 @@ class AssetController extends Controller
     {
         $uploadedPaths = [];
 
+        // Ensure the directory exists
+        if (!\Illuminate\Support\Facades\Storage::disk('public')->exists('assets/images')) {
+            \Illuminate\Support\Facades\Storage::disk('public')->makeDirectory('assets/images');
+            \Illuminate\Support\Facades\Log::info("Directory 'assets/images' created on public disk.");
+        }
+
         foreach ($files as $file) {
             if ($file && $file->isValid()) {
                 try {
