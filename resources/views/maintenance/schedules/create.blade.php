@@ -101,7 +101,7 @@
                             <input type="date" name="next_due_date" value="{{ old('next_due_date') }}" required class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-green-500 focus:border-green-500">
                         </div>
                         <div>
-                            <label class="block text-sm font-semibold text-gray-700 mb-2">{{ __('') }}</label>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">{{ __('maintenance.schedules.est_duration') }}</label>
                             <input type="number" name="estimated_duration_minutes" value="{{ old('estimated_duration_minutes') }}" min="0" class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-green-500 focus:border-green-500">
                         </div>
                     </div>
@@ -113,7 +113,7 @@
                         <div class="w-8 h-8 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg flex items-center justify-center mr-3">
                             <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
                         </div>
-                        {{ __('') }}
+                        {{ __('maintenance.schedules.assignment_cost') }}
                     </h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
@@ -126,7 +126,7 @@
                             </select>
                         </div>
                         <div>
-                            <label class="block text-sm font-semibold text-gray-700 mb-2">{{ __('common.vendor') }} ({{ __('') }})</label>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">{{ __('common.vendor') }} ({{ __('maintenance.schedules.external') }})</label>
                             <select name="vendor_id" class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-green-500 focus:border-green-500">
                                 <option value="">{{ __('common.none') }}</option>
                                 @foreach($vendors as $vendor)
@@ -135,13 +135,13 @@
                             </select>
                         </div>
                         <div>
-                            <label class="block text-sm font-semibold text-gray-700 mb-2">{{ __('') }}</label>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">{{ __('maintenance.schedules.est_cost') }}</label>
                             <input type="number" name="estimated_cost" value="{{ old('estimated_cost') }}" min="0" step="0.01" class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-green-500 focus:border-green-500">
                         </div>
                         <div>
-                            <label class="block text-sm font-semibold text-gray-700 mb-2">{{ __('') }}</label>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">{{ __('maintenance.schedules.approval_threshold') }}</label>
                             <input type="number" name="approval_threshold" value="{{ old('approval_threshold') }}" min="0" step="0.01" class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-green-500 focus:border-green-500">
-                            <p class="mt-1 text-xs text-gray-500">{{ __('') }}</p>
+                            <p class="mt-1 text-xs text-gray-500">{{ __('maintenance.schedules.approval_note') }}</p>
                         </div>
                         <div class="md:col-span-2 flex items-center">
                             <label class="flex items-center p-4 bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl border border-green-200 cursor-pointer">
@@ -165,4 +165,3 @@
     </div>
 </div>
 @endsection
-
