@@ -316,21 +316,21 @@ class AssetController extends Controller
         // Ensure the directory exists
         if (
             !\Illuminate\Support\Facades\Storage::disk("public")->exists(
-                "storage/assets/images",
+                "assets/images",
             )
         ) {
             \Illuminate\Support\Facades\Storage::disk("public")->makeDirectory(
-                "storage/assets/images",
+                "assets/images",
             );
             \Illuminate\Support\Facades\Log::info(
-                "Directory 'storage/assets/images' created on public disk.",
+                "Directory 'assets/images' created on public disk.",
             );
         }
 
         foreach ($files as $file) {
             if ($file && $file->isValid()) {
                 try {
-                    $path = $file->store("storage/assets/images", "public");
+                    $path = $file->store("assets/images", "public");
                     if ($path) {
                         $uploadedPaths[] = $path;
                         \Illuminate\Support\Facades\Log::info(
