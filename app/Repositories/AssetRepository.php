@@ -154,7 +154,8 @@ class AssetRepository
             default => 'OT',
         };
 
-        $lastAsset = Asset::where('asset_type', $type)
+        $lastAsset = Asset::withTrashed()
+            ->where('asset_type', $type)
             ->orderBy('id', 'desc')
             ->first();
 
