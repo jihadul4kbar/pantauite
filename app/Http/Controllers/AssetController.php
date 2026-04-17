@@ -16,37 +16,35 @@ use Illuminate\Support\Facades\Auth;
 
 class AssetController extends Controller
 {
-    public function __construct(
-        private AssetService $assetService
-    ) {}
+    public function __construct(private AssetService $assetService) {}
 
     /**
      * Display a listing of assets.
      */
     public function index(Request $request)
     {
-        $this->authorize('viewAny', Asset::class);
+        $this->authorize("viewAny", Asset::class);
 
         $filters = [];
 
-        if ($request->filled('status')) {
-            $filters['status'] = $request->status;
+        if ($request->filled("status")) {
+            $filters["status"] = $request->status;
         }
 
-        if ($request->filled('type')) {
-            $filters['type'] = $request->type;
+        if ($request->filled("type")) {
+            $filters["type"] = $request->type;
         }
 
-        if ($request->filled('vendor_id')) {
-            $filters['vendor_id'] = $request->vendor_id;
+        if ($request->filled("vendor_id")) {
+            $filters["vendor_id"] = $request->vendor_id;
         }
 
-        if ($request->filled('search')) {
-            $filters['search'] = $request->search;
+        if ($request->filled("search")) {
+            $filters["search"] = $request->search;
         }
 
         // Get per_page from request, default to 10
-        $perPage = $request->input('per_page', 10);
+        $perPage = $request->input("per_page", 10);
 
         $assets = $this->assetService->getPaginated($filters, $perPage);
 
@@ -54,12 +52,10 @@ class AssetController extends Controller
         $vendors = Vendor::active()->get();
         $departments = Department::active()->get();
 
-        return view('assets.index', compact(
-            'assets',
-            'vendors',
-            'departments',
-            'filters'
-        ));
+        return view(
+            "assets.index",
+            compact("assets", "vendors", "departments", "filters"),
+        );
     }
 
     /**
@@ -67,25 +63,28 @@ class AssetController extends Controller
      */
     public function create()
     {
-        $this->authorize('create', Asset::class);
+        $this->authorize("create", Asset::class);
 
         $types = AssetType::cases();
         $statuses = AssetStatus::cases();
-        $conditions = ['new', 'good', 'fair', 'poor', 'broken'];
-        $depreciationMethods = ['straight_line', 'declining_balance', 'none'];
+        $conditions = ["new", "good", "fair", "poor", "broken"];
+        $depreciationMethods = ["straight_line", "declining_balance", "none"];
         $vendors = Vendor::active()->get();
         $departments = Department::active()->get();
         $users = User::active()->get();
 
-        return view('assets.create', compact(
-            'types',
-            'statuses',
-            'conditions',
-            'depreciationMethods',
-            'vendors',
-            'departments',
-            'users'
-        ));
+        return view(
+            "assets.create",
+            compact(
+                "types",
+                "statuses",
+                "conditions",
+                "depreciationMethods",
+                "vendors",
+                "departments",
+                "users",
+            ),
+        );
     }
 
     /**
@@ -96,18 +95,20 @@ class AssetController extends Controller
         $validated = $request->validated();
 
         // Handle image uploads
-        if ($request->hasFile('images')) {
-            $validated['images'] = $this->uploadImages($request->file('images'));
+        if ($request->hasFile("images")) {
+            $validated["images"] = $this->uploadImages(
+                $request->file("images"),
+            );
         }
 
-        $asset = $this->assetService->createAsset(
-            $validated,
-            $request->user()
-        );
+        $asset = $this->assetService->createAsset($validated, $request->user());
 
         return redirect()
-            ->route('assets.show', $asset)
-            ->with('success', 'Asset ' . $asset->asset_code . ' created successfully.');
+            ->route("assets.show", $asset)
+            ->with(
+                "success",
+                "Asset " . $asset->asset_code . " created successfully.",
+            );
     }
 
     /**
@@ -115,26 +116,25 @@ class AssetController extends Controller
      */
     public function show(Asset $asset)
     {
-        $this->authorize('view', $asset);
+        $this->authorize("view", $asset);
 
         // Load relationships
         $asset->load([
-            'vendor',
-            'assignedUser',
-            'assignedDepartment',
-            'lifecycleLogs.user',
-            'maintenanceLogs',
-            'documents.uploadedBy',
-            'tickets' => function ($query) {
-                $query->with(['user', 'assignee', 'category'])
-                      ->latest();
+            "vendor",
+            "assignedUser",
+            "assignedDepartment",
+            "lifecycleLogs.user",
+            "maintenanceLogs",
+            "documents.uploadedBy",
+            "tickets" => function ($query) {
+                $query->with(["user", "assignee", "category"])->latest();
             },
         ]);
 
         // Calculate current depreciation
         $currentDepreciatedValue = $asset->calculateDepreciation();
 
-        return view('assets.show', compact('asset', 'currentDepreciatedValue'));
+        return view("assets.show", compact("asset", "currentDepreciatedValue"));
     }
 
     /**
@@ -142,26 +142,29 @@ class AssetController extends Controller
      */
     public function edit(Asset $asset)
     {
-        $this->authorize('update', $asset);
+        $this->authorize("update", $asset);
 
         $types = AssetType::cases();
         $statuses = AssetStatus::cases();
-        $conditions = ['new', 'good', 'fair', 'poor', 'broken'];
-        $depreciationMethods = ['straight_line', 'declining_balance', 'none'];
+        $conditions = ["new", "good", "fair", "poor", "broken"];
+        $depreciationMethods = ["straight_line", "declining_balance", "none"];
         $vendors = Vendor::active()->get();
         $departments = Department::active()->get();
         $users = User::active()->get();
 
-        return view('assets.edit', compact(
-            'asset',
-            'types',
-            'statuses',
-            'conditions',
-            'depreciationMethods',
-            'vendors',
-            'departments',
-            'users'
-        ));
+        return view(
+            "assets.edit",
+            compact(
+                "asset",
+                "types",
+                "statuses",
+                "conditions",
+                "depreciationMethods",
+                "vendors",
+                "departments",
+                "users",
+            ),
+        );
     }
 
     /**
@@ -172,28 +175,28 @@ class AssetController extends Controller
         $validated = $request->validated();
 
         // Handle image uploads
-        if ($request->hasFile('images')) {
+        if ($request->hasFile("images")) {
             // Delete old images if replace is requested
-            if ($request->boolean('delete_old_images')) {
+            if ($request->boolean("delete_old_images")) {
                 $this->deleteImages($asset->images ?? []);
-                $validated['images'] = [];
+                $validated["images"] = [];
             }
 
             // Upload new images
             $existingImages = $asset->images ?? [];
-            $newImages = $this->uploadImages($request->file('images'));
-            $validated['images'] = array_merge($existingImages, $newImages);
+            $newImages = $this->uploadImages($request->file("images"));
+            $validated["images"] = array_merge($existingImages, $newImages);
         }
 
         $asset = $this->assetService->updateAsset(
             $asset,
             $validated,
-            $request->user()
+            $request->user(),
         );
 
         return redirect()
-            ->route('assets.show', $asset)
-            ->with('success', 'Asset updated successfully.');
+            ->route("assets.show", $asset)
+            ->with("success", "Asset updated successfully.");
     }
 
     /**
@@ -201,13 +204,13 @@ class AssetController extends Controller
      */
     public function destroy(Asset $asset)
     {
-        $this->authorize('delete', $asset);
+        $this->authorize("delete", $asset);
 
         $this->assetService->deleteAsset($asset, auth()->user());
 
         return redirect()
-            ->route('assets.index')
-            ->with('success', 'Asset deleted successfully.');
+            ->route("assets.index")
+            ->with("success", "Asset deleted successfully.");
     }
 
     /**
@@ -215,31 +218,34 @@ class AssetController extends Controller
      */
     public function assign(Request $request, Asset $asset)
     {
-        $this->authorize('update', $asset);
+        $this->authorize("update", $asset);
 
         $validated = $request->validate([
-            'assigned_to_user_id' => ['nullable', 'exists:users,id'],
-            'assigned_to_department_id' => ['nullable', 'exists:departments,id'],
-            'assigned_notes' => ['nullable', 'string'],
+            "assigned_to_user_id" => ["nullable", "exists:users,id"],
+            "assigned_to_department_id" => [
+                "nullable",
+                "exists:departments,id",
+            ],
+            "assigned_notes" => ["nullable", "string"],
         ]);
 
-        if ($validated['assigned_to_user_id']) {
+        if ($validated["assigned_to_user_id"]) {
             $this->assetService->assignToUser(
                 $asset,
-                $validated['assigned_to_user_id'],
-                $request->user()
+                $validated["assigned_to_user_id"],
+                $request->user(),
             );
         } else {
             $this->assetService->assignToDepartment(
                 $asset,
-                $validated['assigned_to_department_id'] ?? null,
-                $request->user()
+                $validated["assigned_to_department_id"] ?? null,
+                $request->user(),
             );
         }
 
         return redirect()
-            ->route('assets.show', $asset)
-            ->with('success', 'Asset assigned successfully.');
+            ->route("assets.show", $asset)
+            ->with("success", "Asset assigned successfully.");
     }
 
     /**
@@ -247,23 +253,31 @@ class AssetController extends Controller
      */
     public function changeStatus(Request $request, Asset $asset)
     {
-        $this->authorize('update', $asset);
+        $this->authorize("update", $asset);
 
         $validated = $request->validate([
-            'status' => ['required', 'in:procurement,inventory,deployed,maintenance,retired,disposed'],
-            'reason' => ['nullable', 'string'],
+            "status" => [
+                "required",
+                "in:procurement,inventory,deployed,maintenance,retired,disposed",
+            ],
+            "reason" => ["nullable", "string"],
         ]);
 
         $this->assetService->changeStatus(
             $asset,
-            $validated['status'],
+            $validated["status"],
             $request->user(),
-            $validated['reason'] ?? null
+            $validated["reason"] ?? null,
         );
 
         return redirect()
-            ->route('assets.show', $asset)
-            ->with('success', 'Asset status updated to ' . ucfirst($validated['status']) . '.');
+            ->route("assets.show", $asset)
+            ->with(
+                "success",
+                "Asset status updated to " .
+                    ucfirst($validated["status"]) .
+                    ".",
+            );
     }
 
     /**
@@ -271,21 +285,25 @@ class AssetController extends Controller
      */
     public function logMaintenance(Request $request, Asset $asset)
     {
-        $this->authorize('update', $asset);
+        $this->authorize("update", $asset);
 
         $validated = $request->validate([
-            'description' => ['required', 'string'],
-            'cost' => ['nullable', 'numeric', 'min:0'],
-            'performed_by' => ['nullable', 'string'],
-            'date' => ['nullable', 'date'],
-            'vendor_id' => ['nullable', 'exists:vendors,id'],
+            "description" => ["required", "string"],
+            "cost" => ["nullable", "numeric", "min:0"],
+            "performed_by" => ["nullable", "string"],
+            "date" => ["nullable", "date"],
+            "vendor_id" => ["nullable", "exists:vendors,id"],
         ]);
 
-        $this->assetService->logMaintenance($asset, $validated, $request->user());
+        $this->assetService->logMaintenance(
+            $asset,
+            $validated,
+            $request->user(),
+        );
 
         return redirect()
-            ->route('assets.show', $asset)
-            ->with('success', 'Maintenance logged successfully.');
+            ->route("assets.show", $asset)
+            ->with("success", "Maintenance logged successfully.");
     }
 
     /**
@@ -296,30 +314,48 @@ class AssetController extends Controller
         $uploadedPaths = [];
 
         // Ensure the directory exists
-        if (!\Illuminate\Support\Facades\Storage::disk('public')->exists('assets/images')) {
-            \Illuminate\Support\Facades\Storage::disk('public')->makeDirectory('assets/images');
-            \Illuminate\Support\Facades\Log::info("Directory 'assets/images' created on public disk.");
+        if (
+            !\Illuminate\Support\Facades\Storage::disk("public")->exists(
+                "storage/assets/images",
+            )
+        ) {
+            \Illuminate\Support\Facades\Storage::disk("public")->makeDirectory(
+                "storage/assets/images",
+            );
+            \Illuminate\Support\Facades\Log::info(
+                "Directory 'storage/assets/images' created on public disk.",
+            );
         }
 
         foreach ($files as $file) {
             if ($file && $file->isValid()) {
                 try {
-                    $path = $file->store('assets/images', 'public');
+                    $path = $file->store("storage/assets/images", "public");
                     if ($path) {
                         $uploadedPaths[] = $path;
-                        \Illuminate\Support\Facades\Log::info("Image uploaded successfully: {$path}");
+                        \Illuminate\Support\Facades\Log::info(
+                            "Image uploaded successfully: {$path}",
+                        );
                     } else {
-                        \Illuminate\Support\Facades\Log::error("Failed to upload image: store() returned null");
+                        \Illuminate\Support\Facades\Log::error(
+                            "Failed to upload image: store() returned null",
+                        );
                     }
                 } catch (\Exception $e) {
-                    \Illuminate\Support\Facades\Log::error("Image upload error: " . $e->getMessage());
+                    \Illuminate\Support\Facades\Log::error(
+                        "Image upload error: " . $e->getMessage(),
+                    );
                 }
             } else {
-                \Illuminate\Support\Facades\Log::warning("Invalid file skipped in uploadImages()");
+                \Illuminate\Support\Facades\Log::warning(
+                    "Invalid file skipped in uploadImages()",
+                );
             }
         }
 
-        \Illuminate\Support\Facades\Log::info("Upload complete. Total images: " . count($uploadedPaths));
+        \Illuminate\Support\Facades\Log::info(
+            "Upload complete. Total images: " . count($uploadedPaths),
+        );
 
         return $uploadedPaths;
     }
@@ -330,7 +366,7 @@ class AssetController extends Controller
     protected function deleteImages(array $imagePaths): void
     {
         foreach ($imagePaths as $path) {
-            \Illuminate\Support\Facades\Storage::disk('public')->delete($path);
+            \Illuminate\Support\Facades\Storage::disk("public")->delete($path);
         }
     }
 }
