@@ -15,7 +15,7 @@
             <div class="p-6 space-y-6">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">{{ __('maintenance.inventory.part_number', 'Nomor Suku Cadang') }} <span class="text-red-500">*</span></label>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">{{ __('') }} <span class="text-red-500">*</span></label>
                         <input type="text" name="part_number" value="{{ old('part_number', $inventory->part_number) }}" required class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-green-500 @error('part_number') border-red-500 @enderror">
                         @error('part_number') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
                     </div>
@@ -28,27 +28,27 @@
                         <textarea name="description" rows="2" class="w-full border-2 border-gray-200 rounded-xl px-4 py-3">{{ old('description', $inventory->description) }}</textarea>
                     </div>
                     <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">{{ __('maintenance.inventory.category', 'Kategori') }}</label>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">{{ __('') }}</label>
                         <input type="text" name="category" value="{{ old('category', $inventory->category) }}" class="w-full border-2 border-gray-200 rounded-xl px-4 py-3">
                     </div>
                     <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">{{ __('maintenance.inventory.manufacturer', 'Produsen') }}</label>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">{{ __('') }}</label>
                         <input type="text" name="manufacturer" value="{{ old('manufacturer', $inventory->manufacturer) }}" class="w-full border-2 border-gray-200 rounded-xl px-4 py-3">
                     </div>
                     <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">{{ __('maintenance.inventory.current_stock', 'Stok Saat Ini') }}</label>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">{{ __('') }}</label>
                         <input type="number" name="quantity_in_stock" value="{{ old('quantity_in_stock', $inventory->quantity_in_stock) }}" min="0" step="0.01" class="w-full border-2 border-gray-200 rounded-xl px-4 py-3">
                     </div>
                     <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">{{ __('maintenance.inventory.reorder_point', 'Titik Pesan Ulang') }}</label>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">{{ __('') }}</label>
                         <input type="number" name="reorder_point" value="{{ old('reorder_point', $inventory->reorder_point) }}" min="0" step="0.01" class="w-full border-2 border-gray-200 rounded-xl px-4 py-3">
                     </div>
                     <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">{{ __('maintenance.inventory.unit_cost', 'Harga Satuan') }}</label>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">{{ __('') }}</label>
                         <input type="number" name="unit_cost" value="{{ old('unit_cost', $inventory->unit_cost) }}" min="0" step="0.01" class="w-full border-2 border-gray-200 rounded-xl px-4 py-3">
                     </div>
                     <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">{{ __('maintenance.inventory.unit', 'Satuan') }}</label>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">{{ __('') }}</label>
                         <select name="unit" class="w-full border-2 border-gray-200 rounded-xl px-4 py-3">
                             <option value="pcs" {{ old('unit', $inventory->unit) == 'pcs' ? 'selected' : '' }}>PCS</option>
                             <option value="box" {{ old('unit', $inventory->unit) == 'box' ? 'selected' : '' }}>Box</option>
@@ -59,7 +59,7 @@
                         </select>
                     </div>
                     <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">{{ __('maintenance.inventory.vendor_supplier', 'Vendor/Pemasok') }}</label>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">{{ __('') }}</label>
                         <select name="vendor_id" class="w-full border-2 border-gray-200 rounded-xl px-4 py-3">
                             <option value="">{{ __('common.none') }}</option>
                             @foreach($vendors as $vendor) <option value="{{ $vendor->id }}" {{ old('vendor_id', $inventory->vendor_id) == $vendor->id ? 'selected' : '' }}>{{ $vendor->name }}</option> @endforeach
@@ -79,9 +79,10 @@
             </div>
             <div class="px-6 py-5 bg-gray-50 border-t flex justify-end space-x-3">
                 <a href="{{ route('maintenance.inventory.index') }}" class="px-6 py-3 bg-gray-100 text-gray-700 font-semibold rounded-xl hover:bg-gray-200">{{ __('common.cancel') }}</a>
-                <button type="submit" class="px-6 py-3 bg-green-600 text-white font-semibold rounded-xl hover:bg-green-700">{{ __('maintenance.inventory.edit_part', 'Perbarui Suku Cadang') }}</button>
+                <button type="submit" class="px-6 py-3 bg-green-600 text-white font-semibold rounded-xl hover:bg-green-700">{{ __('') }}</button>
             </div>
         </form>
     </div>
 </div>
 @endsection
+

@@ -19,7 +19,7 @@
                         </div>
                         <div>
                             <h1 class="text-3xl font-bold text-white">{{ __('common.create') }} {{ __('maintenance.tasks.title') }}</h1>
-                            <p class="mt-1 text-green-100">{{ __('maintenance.tasks.create_subtitle', 'Buat perintah kerja pemeliharaan baru') }}</p>
+                            <p class="mt-1 text-green-100">{{ __('') }}</p>
                         </div>
                     </div>
                 </div>
@@ -36,11 +36,11 @@
                         <div class="w-8 h-8 bg-gradient-to-br from-green-500 to-emerald-600 rounded-lg flex items-center justify-center mr-3">
                             <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                         </div>
-                        {{ __('common.basic_information', 'Informasi Dasar') }}
+                        {{ __('') }}
                     </h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="md:col-span-2">
-                            <label class="block text-sm font-semibold text-gray-700 mb-2">{{ __('maintenance.tasks.task_title', 'Judul Tugas') }} <span class="text-red-500">*</span></label>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">{{ __('') }} <span class="text-red-500">*</span></label>
                             <input type="text" name="title" value="{{ old('title') }}" required class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-green-500 focus:border-green-500 @error('title') border-red-500 @enderror">
                             @error('title') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
                         </div>
@@ -59,9 +59,9 @@
                             @error('asset_id') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
                         </div>
                         <div>
-                            <label class="block text-sm font-semibold text-gray-700 mb-2">{{ __('maintenance.tasks.schedule_optional', 'Jadwal (Opsional)') }}</label>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">{{ __('') }}</label>
                             <select name="schedule_id" class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-green-500 focus:border-green-500">
-                                <option value="">{{ __('maintenance.tasks.no_schedule', 'Tanpa Jadwal (Tugas Manual)') }}</option>
+                                <option value="">{{ __('') }}</option>
                                 @foreach($schedules as $schedule)
                                 <option value="{{ $schedule->id }}" {{ old('schedule_id') == $schedule->id ? 'selected' : '' }}>{{ $schedule->name }}</option>
                                 @endforeach
@@ -76,25 +76,25 @@
                         <div class="w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center mr-3">
                             <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path></svg>
                         </div>
-                        {{ __('maintenance.tasks.type_priority', 'Tipe & Prioritas') }}
+                        {{ __('') }}
                     </h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
-                            <label class="block text-sm font-semibold text-gray-700 mb-2">{{ __('maintenance.tasks.maintenance_type', 'Tipe Pemeliharaan') }} <span class="text-red-500">*</span></label>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">{{ __('') }} <span class="text-red-500">*</span></label>
                             <select name="maintenance_type" required class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-green-500 focus:border-green-500">
-                                <option value="preventive" {{ old('maintenance_type') == 'preventive' ? 'selected' : '' }}>{{ __('maintenance.tasks.preventive', 'Pencegahan') }}</option>
-                                <option value="corrective" {{ old('maintenance_type') == 'corrective' ? 'selected' : '' }}>{{ __('maintenance.tasks.corrective', 'Perbaikan') }}</option>
-                                <option value="predictive" {{ old('maintenance_type') == 'predictive' ? 'selected' : '' }}>{{ __('maintenance.tasks.predictive', 'Prediktif') }}</option>
-                                <option value="emergency" {{ old('maintenance_type') == 'emergency' ? 'selected' : '' }}>{{ __('maintenance.tasks.emergency', 'Darurat') }}</option>
+                                <option value="preventive" {{ old('maintenance_type') == 'preventive' ? 'selected' : '' }}>{{ __('') }}</option>
+                                <option value="corrective" {{ old('maintenance_type') == 'corrective' ? 'selected' : '' }}>{{ __('') }}</option>
+                                <option value="predictive" {{ old('maintenance_type') == 'predictive' ? 'selected' : '' }}>{{ __('') }}</option>
+                                <option value="emergency" {{ old('maintenance_type') == 'emergency' ? 'selected' : '' }}>{{ __('') }}</option>
                             </select>
                         </div>
                         <div>
                             <label class="block text-sm font-semibold text-gray-700 mb-2">{{ __('maintenance.tasks.priority') }} <span class="text-red-500">*</span></label>
                             <select name="priority" required class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-green-500 focus:border-green-500">
-                                <option value="low" {{ old('priority') == 'low' ? 'selected' : '' }}>{{ __('enums.maintenance_task_priority.low', 'Rendah') }}</option>
-                                <option value="medium" {{ old('priority') == 'medium' ? 'selected' : '' }}>{{ __('enums.maintenance_task_priority.medium', 'Sedang') }}</option>
-                                <option value="high" {{ old('priority') == 'high' ? 'selected' : '' }}>{{ __('enums.maintenance_task_priority.high', 'Tinggi') }}</option>
-                                <option value="critical" {{ old('priority') == 'critical' ? 'selected' : '' }}>{{ __('enums.maintenance_task_priority.critical', 'Kritis') }}</option>
+                                <option value="low" {{ old('priority') == 'low' ? 'selected' : '' }}>{{ __('') }}</option>
+                                <option value="medium" {{ old('priority') == 'medium' ? 'selected' : '' }}>{{ __('') }}</option>
+                                <option value="high" {{ old('priority') == 'high' ? 'selected' : '' }}>{{ __('') }}</option>
+                                <option value="critical" {{ old('priority') == 'critical' ? 'selected' : '' }}>{{ __('') }}</option>
                             </select>
                         </div>
                     </div>
@@ -106,7 +106,7 @@
                         <div class="w-8 h-8 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg flex items-center justify-center mr-3">
                             <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                         </div>
-                        {{ __('maintenance.tasks.scheduling_assignment', 'Penjadwalan & Penugasan') }}
+                        {{ __('') }}
                     </h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
@@ -114,7 +114,7 @@
                             <input type="date" name="scheduled_date" value="{{ old('scheduled_date') }}" required class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-green-500 focus:border-green-500">
                         </div>
                         <div>
-                            <label class="block text-sm font-semibold text-gray-700 mb-2">{{ __('maintenance.tasks.assigned_to_multiple', 'Ditugaskan Kepada (Beberapa)') }}</label>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">{{ __('') }}</label>
                             <select name="assigned_to_user_ids[]" multiple class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-green-500 focus:border-green-500" size="5">
                                 @foreach($users as $user)
                                 <option value="{{ $user->id }}" {{ in_array($user->id, old('assigned_to_user_ids', [])) ? 'selected' : '' }}>
@@ -122,10 +122,10 @@
                                 </option>
                                 @endforeach
                             </select>
-                            <p class="mt-1 text-xs text-gray-500">{{ __('maintenance.tasks.select_multiple_hint', 'Tahan Ctrl/Cmd untuk memilih beberapa pengguna. Hanya Manajer IT & Staf IT yang tersedia.') }}</p>
+                            <p class="mt-1 text-xs text-gray-500">{{ __('') }}</p>
                         </div>
                         <div>
-                            <label class="block text-sm font-semibold text-gray-700 mb-2">{{ __('maintenance.tasks.vendor_external', 'Vendor (Eksternal)') }}</label>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">{{ __('') }}</label>
                             <select name="vendor_id" class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-green-500 focus:border-green-500">
                                 <option value="">{{ __('common.none') }}</option>
                                 @foreach($vendors as $vendor)
@@ -134,7 +134,7 @@
                             </select>
                         </div>
                         <div>
-                            <label class="block text-sm font-semibold text-gray-700 mb-2">{{ __('maintenance.tasks.est_cost', 'Est. Biaya') }}</label>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">{{ __('') }}</label>
                             <input type="number" name="estimated_cost" value="{{ old('estimated_cost') }}" min="0" step="0.01" class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-green-500 focus:border-green-500">
                         </div>
                     </div>
@@ -146,10 +146,11 @@
                 <a href="{{ route('maintenance.tasks.index') }}" class="px-6 py-3 bg-gray-100 text-gray-700 font-semibold rounded-xl hover:bg-gray-200 transition-colors">{{ __('common.cancel') }}</a>
                 <button type="submit" class="px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white font-semibold rounded-xl hover:from-green-700 hover:to-emerald-700 transition-all shadow-md">
                     <svg class="w-5 h-5 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                    {{ __('maintenance.tasks.create_task', 'Buat Tugas') }}
+                    {{ __('') }}
                 </button>
             </div>
         </form>
     </div>
 </div>
 @endsection
+

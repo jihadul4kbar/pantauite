@@ -57,6 +57,7 @@ return [
     'next' => 'Selanjutnya',
 
     // Form
+    'basic_information' => 'Informasi Dasar',
     'required_fields' => 'Kolom bertanda * wajib diisi',
     'select' => '-- Pilih --',
     'description' => 'Deskripsi',

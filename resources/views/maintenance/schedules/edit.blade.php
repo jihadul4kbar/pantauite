@@ -23,7 +23,7 @@
                         </div>
                         <div>
                             <h1 class="text-3xl font-bold text-white">{{ __('common.edit') }} {{ __('maintenance.schedules.schedule') }}: {{ $schedule->name }}</h1>
-                            <p class="mt-1 text-green-100">{{ __('maintenance.schedules.update_schedule', 'Perbarui jadwal pemeliharaan') }}</p>
+                            <p class="mt-1 text-green-100">{{ __('') }}</p>
                         </div>
                     </div>
                 </div>
@@ -35,7 +35,7 @@
             @csrf @method('PUT')
             <div class="p-6 space-y-6">
                 <div>
-                    <h3 class="text-lg font-bold text-gray-900 mb-4">{{ __('common.basic_information', 'Informasi Dasar') }}</h3>
+                    <h3 class="text-lg font-bold text-gray-900 mb-4">{{ __('') }}</h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="md:col-span-2">
                             <label class="block text-sm font-semibold text-gray-700 mb-2">{{ __('common.name') }} <span class="text-red-500">*</span></label>
@@ -70,11 +70,11 @@
                         <div>
                             <label class="block text-sm font-semibold text-gray-700 mb-2">{{ __('maintenance.schedules.frequency') }}</label>
                             <select name="frequency_type" required class="w-full border-2 border-gray-200 rounded-xl px-4 py-3">
-                                <option value="daily" {{ old('frequency_type', $schedule->frequency_type) == 'daily' ? 'selected' : '' }}>{{ __('enums.maintenance_frequency.daily', 'Harian') }}</option>
-                                <option value="weekly" {{ old('frequency_type', $schedule->frequency_type) == 'weekly' ? 'selected' : '' }}>{{ __('enums.maintenance_frequency.weekly', 'Mingguan') }}</option>
-                                <option value="monthly" {{ old('frequency_type', $schedule->frequency_type) == 'monthly' ? 'selected' : '' }}>{{ __('enums.maintenance_frequency.monthly', 'Bulanan') }}</option>
-                                <option value="yearly" {{ old('frequency_type', $schedule->frequency_type) == 'yearly' ? 'selected' : '' }}>{{ __('enums.maintenance_frequency.annual', 'Tahunan') }}</option>
-                                <option value="custom" {{ old('frequency_type', $schedule->frequency_type) == 'custom' ? 'selected' : '' }}>{{ __('maintenance.schedules.custom', 'Kustom') }}</option>
+                                <option value="daily" {{ old('frequency_type', $schedule->frequency_type) == 'daily' ? 'selected' : '' }}>{{ __('') }}</option>
+                                <option value="weekly" {{ old('frequency_type', $schedule->frequency_type) == 'weekly' ? 'selected' : '' }}>{{ __('') }}</option>
+                                <option value="monthly" {{ old('frequency_type', $schedule->frequency_type) == 'monthly' ? 'selected' : '' }}>{{ __('') }}</option>
+                                <option value="yearly" {{ old('frequency_type', $schedule->frequency_type) == 'yearly' ? 'selected' : '' }}>{{ __('') }}</option>
+                                <option value="custom" {{ old('frequency_type', $schedule->frequency_type) == 'custom' ? 'selected' : '' }}>{{ __('') }}</option>
                             </select>
                         </div>
                         <div>
@@ -86,14 +86,14 @@
                             <input type="date" name="next_due_date" value="{{ old('next_due_date', $schedule->next_due_date->format('Y-m-d')) }}" required class="w-full border-2 border-gray-200 rounded-xl px-4 py-3">
                         </div>
                         <div>
-                            <label class="block text-sm font-semibold text-gray-700 mb-2">{{ __('maintenance.schedules.est_duration', 'Est. Durasi (mnt)') }}</label>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">{{ __('') }}</label>
                             <input type="number" name="estimated_duration_minutes" value="{{ old('estimated_duration_minutes', $schedule->estimated_duration_minutes) }}" class="w-full border-2 border-gray-200 rounded-xl px-4 py-3">
                         </div>
                     </div>
                 </div>
 
                 <div>
-                    <h3 class="text-lg font-bold text-gray-900 mb-4">{{ __('maintenance.schedules.assignment_cost', 'Penugasan & Biaya') }}</h3>
+                    <h3 class="text-lg font-bold text-gray-900 mb-4">{{ __('') }}</h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                             <label class="block text-sm font-semibold text-gray-700 mb-2">{{ __('maintenance.schedules.assigned_to') }}</label>
@@ -114,11 +114,11 @@
                             </select>
                         </div>
                         <div>
-                            <label class="block text-sm font-semibold text-gray-700 mb-2">{{ __('maintenance.schedules.est_cost', 'Est. Biaya') }}</label>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">{{ __('') }}</label>
                             <input type="number" name="estimated_cost" value="{{ old('estimated_cost', $schedule->estimated_cost) }}" step="0.01" class="w-full border-2 border-gray-200 rounded-xl px-4 py-3">
                         </div>
                         <div>
-                            <label class="block text-sm font-semibold text-gray-700 mb-2">{{ __('maintenance.schedules.approval_threshold', 'Batas Persetujuan') }}</label>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">{{ __('') }}</label>
                             <input type="number" name="approval_threshold" value="{{ old('approval_threshold', $schedule->approval_threshold) }}" step="0.01" class="w-full border-2 border-gray-200 rounded-xl px-4 py-3">
                         </div>
                         <div class="md:col-span-2">
@@ -139,3 +139,4 @@
     </div>
 </div>
 @endsection
+
