@@ -71,7 +71,7 @@
                                 <a href="{{ route('maintenance.tasks.show', $task) }}" class="text-sm font-bold text-green-600 hover:text-green-800">{{ $task->task_number }}</a>
                                 <div class="text-xs text-gray-500">{{ Str::limit($task->title, 40) }}</div>
                             </td>
-                            <td class="px-6 py-4 text-sm">{{ $task->asset->asset_code }}</td>
+                            <td class="px-6 py-4 text-sm">{{ $task->asset?->asset_code ?? __('common.na') }}</td>
                             <td class="px-6 py-4 text-sm {{ $task->isOverdue() ? 'text-red-600 font-semibold' : '' }}">{{ $task->scheduled_date->format('d M Y') }}</td>
                             <td class="px-6 py-4">
                                 @if($task->assigned_users->count() > 0)
