@@ -94,8 +94,8 @@
                                 <div class="text-xs text-gray-500">{{ $schedule->maintenance_type }}</div>
                             </td>
                             <td class="px-6 py-4">
-                                <div class="text-sm text-gray-900">{{ $schedule->asset->asset_code }}</div>
-                                <div class="text-xs text-gray-500">{{ Str::limit($schedule->asset->name, 30) }}</div>
+                                <div class="text-sm text-gray-900">{{ $schedule->asset?->asset_code ?? __('common.na') }}</div>
+                                <div class="text-xs text-gray-500">{{ $schedule->asset ? Str::limit($schedule->asset->name, 30) : __('common.no_asset') }}</div>
                             </td>
                             <td class="px-6 py-4 text-sm text-gray-700">{{ $schedule->frequency_display }}</td>
                             <td class="px-6 py-4">
