@@ -210,15 +210,10 @@ class RepairRequestController extends Controller
     }
 
     /**
-     * Delete a repair request (IT Manager & Super Admin only).
+     * Delete a repair request (SUPER ADMIN ONLY).
      */
     public function destroy(RepairRequest $repairRequest)
     {
-        // Authorization: Only IT Manager and Super Admin can delete
-        if (! auth()->user()->hasAnyPermission(['repair_requests.verify', 'manage-tickets'])) {
-            abort(403, 'Unauthorized action.');
-        }
-
         // Cannot delete if already converted to ticket
         if ($repairRequest->isConverted()) {
             return back()->with('error', 'Tidak dapat menghapus permintaan yang sudah dikonversi menjadi tiket.');

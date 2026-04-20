@@ -313,6 +313,12 @@ Route::middleware(["auth", "password.expired"])->group(function () {
                 RepairRequestController::class,
                 "convertToTicket",
             ])->name("convert");
+            
+            Route::delete("/{repairRequest}", [
+                RepairRequestController::class,
+                "destroy",
+            ])->name("destroy")
+              ->can("delete", "repairRequest");
         });
 });
 
