@@ -9,6 +9,7 @@ use App\Models\KbArticle;
 use App\Models\KbCategory;
 use App\Models\MaintenanceSchedule;
 use App\Models\MaintenanceTask;
+use App\Models\RepairRequest;
 use App\Models\Ticket;
 use App\Models\TicketCategory;
 use App\Policies\AssetPolicy;
@@ -18,6 +19,7 @@ use App\Policies\KbArticlePolicy;
 use App\Policies\KbCategoryPolicy;
 use App\Policies\MaintenanceSchedulePolicy;
 use App\Policies\MaintenanceTaskPolicy;
+use App\Policies\RepairRequestPolicy;
 use App\Policies\TicketCategoryPolicy;
 use App\Policies\TicketPolicy;
 use Illuminate\Support\Facades\Gate;
@@ -40,6 +42,7 @@ class AuthServiceProvider extends ServiceProvider
         MaintenanceSchedule::class => MaintenanceSchedulePolicy::class,
         MaintenanceTask::class => MaintenanceTaskPolicy::class,
         InventoryPart::class => InventoryPartPolicy::class,
+        RepairRequest::class => RepairRequestPolicy::class,
     ];
 
     /**

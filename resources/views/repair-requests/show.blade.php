@@ -274,6 +274,27 @@
                             @endif
                         </div>
                     @endif
+
+                    {{-- DELETE BUTTON - ONLY SUPER ADMIN --}}
+                    @can('delete', $repairRequest)
+                        <div class="mt-6 pt-6 border-t border-gray-200">
+                            <form 
+                                action="{{ route('repair-requests.admin.destroy', $repairRequest->id) }}" 
+                                method="POST" 
+                                class="mb-0"
+                                onsubmit="return confirm('Apakah Anda yakin ingin menghapus permintaan perbaikan ini secara permanen?')"
+                            >
+                                @csrf
+                                @method('DELETE')
+                                <button 
+                                    type="submit" 
+                                    class="w-full bg-red-700 hover:bg-red-800 text-white font-semibold py-2 px-4 rounded-lg shadow transition duration-150 ease-in-out"
+                                >
+                                    🗑️ Hapus Permanen
+                                </button>
+                            </form>
+                        </div>
+                    @endcan
                 </div>
             </div>
         </div>
