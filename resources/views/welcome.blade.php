@@ -101,7 +101,7 @@
 
                 <!-- Subtitle -->
                 <p class="max-w-3xl mx-auto text-xl text-gray-600 mb-12 leading-relaxed">
-                    Platform all-in-one untuk manajemen tiket, aset TI, basis pengetahuan, dan pemeliharaan. 
+                    Platform all-in-one untuk manajemen tiket, aset TI, basis pengetahuan, dan pemeliharaan.
                     Tingkatkan produktivitas tim IT Anda dengan solusi yang terstruktur dan terukur.
                 </p>
 
@@ -460,13 +460,13 @@
                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
-                            Dibangun dengan Laravel 13
+                            Unit SISTEM INFORMASI RUMAH SAKIT
                         </li>
                         <li class="flex items-center">
                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
-                            v{{ app()->version() }}
+                            RSUD PRAYA
                         </li>
                         <li class="flex items-center">
                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">

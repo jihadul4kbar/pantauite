@@ -42,7 +42,7 @@
                     <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
                     </svg>
-                    <span>Tanpa Login Diperlukan</span>
+                    <span>Silahkan Mengisi</span>
                 </div>
                 <h1 class="text-3xl sm:text-4xl md:text-5xl font-extrabold text-gray-900 mb-3 sm:mb-4 leading-tight px-2">
                     Form Permintaan
@@ -283,7 +283,7 @@
                                 <!-- Departemen -->
                                 <div class="group">
                                     <label for="requester_department" class="block text-sm font-semibold text-gray-700 mb-2">
-                                        Departemen <span class="text-gray-400 font-normal">(Opsional)</span>
+                                        Departemen / Bagian / Unit / Rungan / Poli<span class="text-gray-400 font-normal">(Opsional)</span>
                                     </label>
                                     <div class="relative">
                                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -297,7 +297,7 @@
                                             id="requester_department"
                                             value="{{ old('requester_department') }}"
                                             class="block w-full pl-9 sm:pl-10 pr-3 py-2.5 sm:py-3 border-2 border-gray-200 rounded-lg sm:rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all text-sm sm:text-base @error('requester_department') border-red-500 @enderror"
-                                            placeholder="Nama departemen"
+                                            placeholder="Poliklinik Mata / Radiologi / Rungan Melati"
                                         >
                                     </div>
                                     @error('requester_department')
@@ -784,9 +784,9 @@
             </div>
 
             <!-- Info Cards - Mobile Optimized -->
-            <div class="mt-8 sm:mt-12 grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
+            <!--<div class="mt-8 sm:mt-12 grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">-->
                 <!-- Card 1 -->
-                <div class="bg-white/80 backdrop-blur-lg rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-lg border border-white/20 hover:shadow-xl transition-shadow">
+                <!--<div class="bg-white/80 backdrop-blur-lg rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-lg border border-white/20 hover:shadow-xl transition-shadow">
                     <div class="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg sm:rounded-xl flex items-center justify-center mb-3 sm:mb-4">
                         <svg class="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -794,10 +794,10 @@
                     </div>
                     <h3 class="font-bold text-gray-900 mb-2 text-sm sm:text-base">Proses Cepat</h3>
                     <p class="text-xs sm:text-sm text-gray-600">Permintaan Anda akan ditinjau oleh IT Manager dalam waktu 1x24 jam</p>
-                </div>
+                </div>-->
 
                 <!-- Card 2 -->
-                <div class="bg-white/80 backdrop-blur-lg rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-lg border border-white/20 hover:shadow-xl transition-shadow">
+                <!--<div class="bg-white/80 backdrop-blur-lg rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-lg border border-white/20 hover:shadow-xl transition-shadow">
                     <div class="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-green-500 to-emerald-600 rounded-lg sm:rounded-xl flex items-center justify-center mb-3 sm:mb-4">
                         <svg class="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
@@ -805,10 +805,10 @@
                     </div>
                     <h3 class="font-bold text-gray-900 mb-2 text-sm sm:text-base">Notifikasi Email</h3>
                     <p class="text-xs sm:text-sm text-gray-600">Anda akan menerima notifikasi melalui email yang terdaftar</p>
-                </div>
+                </div>-->
 
                 <!-- Card 3 -->
-                <div class="bg-white/80 backdrop-blur-lg rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-lg border border-white/20 hover:shadow-xl transition-shadow">
+                <!--<div class="bg-white/80 backdrop-blur-lg rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-lg border border-white/20 hover:shadow-xl transition-shadow">
                     <div class="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-purple-500 to-pink-600 rounded-lg sm:rounded-xl flex items-center justify-center mb-3 sm:mb-4">
                         <svg class="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -816,8 +816,8 @@
                     </div>
                     <h3 class="font-bold text-gray-900 mb-2 text-sm sm:text-base">Simpan Nomor</h3>
                     <p class="text-xs sm:text-sm text-gray-600">Catat nomor permintaan untuk tracking status permintaan Anda</p>
-                </div>
-            </div>
+                </div>-->
+            <!--</div>-->
         </div>
     </main>
 
@@ -826,7 +826,7 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
             <div class="text-center text-xs sm:text-sm text-gray-600">
                 <p>© {{ date('Y') }} <span class="font-semibold">PantauITE</span> - Sistem Manajemen Layanan TI</p>
-                <p class="mt-1 text-xs text-gray-500">Form Permintaan Perbaikan • Tanpa Login Diperlukan</p>
+                <p class="mt-1 text-xs text-gray-500">Form Permintaan Perbaikan</p>
             </div>
         </div>
     </footer>
@@ -838,11 +838,11 @@
 
         function handlePhotoUpload(input) {
             const files = Array.from(input.files);
-            
+
             // Check if adding these files would exceed the limit
             const currentCount = photoPreviews.length;
             const remainingSlots = MAX_PHOTOS - currentCount;
-            
+
             if (files.length > remainingSlots) {
                 alert('Maksimal ' + MAX_PHOTOS + ' foto. Anda dapat menambahkan ' + remainingSlots + ' foto lagi.');
             }
@@ -888,12 +888,12 @@
 
                 // Get current timestamp for display
                 const now = new Date();
-                const timestamp = now.toLocaleString('id-ID', { 
-                    day: '2-digit', 
-                    month: '2-digit', 
+                const timestamp = now.toLocaleString('id-ID', {
+                    day: '2-digit',
+                    month: '2-digit',
                     year: 'numeric',
-                    hour: '2-digit', 
-                    minute: '2-digit' 
+                    hour: '2-digit',
+                    minute: '2-digit'
                 });
 
                 div.innerHTML = `
@@ -933,7 +933,7 @@
 
         function clearAllPhotos() {
             if (!confirm('Hapus semua foto?')) return;
-            
+
             photoPreviews = [];
             document.getElementById('photoPreview').innerHTML = '';
             document.getElementById('photoPreview').classList.add('hidden');
@@ -944,11 +944,11 @@
             const count = photoPreviews.filter(p => p !== null).length;
             const countText = document.getElementById('photoCountText');
             const countInfo = document.getElementById('photoCountInfo');
-            
+
             if (count > 0) {
                 countInfo.classList.remove('hidden');
                 countText.textContent = count + '/' + MAX_PHOTOS + ' foto';
-                
+
                 // Show warning if at max
                 if (count >= MAX_PHOTOS) {
                     countText.classList.add('text-red-600', 'font-semibold');
@@ -995,7 +995,7 @@
             function handleDrop(e) {
                 const dt = e.dataTransfer;
                 const files = dt.files;
-                
+
                 // Use gallery input to handle the files
                 const input = document.getElementById('gallery_input');
                 input.files = files;
