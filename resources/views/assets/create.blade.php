@@ -329,13 +329,13 @@
                                     <svg class="mx-auto h-12 w-12 text-gray-400 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
                                     </svg>
-                                    <input type="file" name="images[]" multiple accept="image/jpeg,image/png,image/jpg,image/gif" capture="environment"
+                                    <input type="file" name="images[]" multiple accept="image/jpeg,image/png,image/jpg,image/gif" capture="user"
                                            class="block w-full text-sm text-gray-600 file:mr-4 file:py-3 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-gradient-to-r file:from-green-50 file:to-emerald-50 file:text-green-700 hover:file:from-green-100 hover:file:to-emerald-100 file:cursor-pointer file:transition-colors cursor-pointer">
                                     <p class="mt-3 text-xs text-gray-500 flex items-center justify-center">
                                         <svg class="w-4 h-4 mr-1.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                         </svg>
-                                        {{ __('assets.max_images') }}
+                                        {{ __('assets.min_images_required') }}
                                     </p>
                                 </div>
                                 @error('images') <p class="mt-2 text-sm text-red-600 flex items-center"><svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> {{ $message }}</p> @enderror
@@ -383,6 +383,7 @@
     // Image preview functionality
     const fileInput = document.querySelector('input[name="images[]"]');
     const previewContainer = document.getElementById('image-preview');
+    const minFiles = 5;
     const maxFiles = 5;
 
     if (fileInput) {
@@ -392,7 +393,13 @@
             if (files.length > maxFiles) {
                 alert('Maximum ' + maxFiles + ' images allowed.');
                 fileInput.value = '';
+                previewContainer.innerHTML = '';
+                previewContainer.classList.add('hidden');
                 return;
+            }
+
+            if (files.length < minFiles) {
+                alert('Minimum ' + minFiles + ' images required. You have selected ' + files.length + ' image(s).');
             }
 
             previewContainer.innerHTML = '';

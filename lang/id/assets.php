@@ -57,6 +57,7 @@ return [
     'asset_images' => 'Gambar Aset',
     'upload_images' => 'Unggah Gambar',
     'max_images' => 'Maks 5 file, 2MB masing-masing. Format: jpg, jpeg, png, gif, webp.',
+    'min_images_required' => 'Wajib upload tepat 5 gambar (kamera depan).',
     'create_asset' => 'Buat Aset',
     'update_asset' => 'Perbarui Aset',
 

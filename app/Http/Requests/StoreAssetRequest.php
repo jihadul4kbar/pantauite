@@ -49,7 +49,7 @@ class StoreAssetRequest extends FormRequest
 
         // Only validate images if files are actually uploaded
         if ($this->hasFile('images')) {
-            $rules['images'] = ['required', 'array', 'max:5'];
+            $rules['images'] = ['required', 'array', 'min:5', 'max:5'];
             $rules['images.*'] = ['image', 'mimes:jpeg,png,jpg,gif', 'max:2048'];
         }
 
@@ -69,6 +69,7 @@ class StoreAssetRequest extends FormRequest
             'condition.required' => 'Asset condition is required.',
             'price.numeric' => 'Price must be a valid number.',
             'warranty_end.after_or_equal' => 'Warranty end date must be after start date.',
+            'images.min' => 'Minimum 5 images required.',
             'images.max' => 'Maximum 5 images allowed.',
             'images.*.image' => 'Each file must be an image.',
             'images.*.mimes' => 'Images must be: jpeg, png, jpg, or gif.',
