@@ -60,6 +60,7 @@ return [
     'no_comments' => 'Belum ada komentar',
     'first_comment' => 'Jadilah yang pertama menambahkan komentar',
     'add_comment' => 'Tambah Komentar',
+    'comment' => 'Komentar',
     'comment_placeholder' => 'Ketik komentar atau pembaruan Anda di sini...',
     'add_internal_note' => 'Tambah Catatan Internal',
     'attach_files' => 'Lampirkan File',
@@ -99,6 +100,43 @@ return [
         'resolved' => 'Selesai',
         'closed' => 'Ditutup',
     ],
+
+    // New UX keys
+    'timeline' => 'Timeline',
+    'first_response' => 'Respon Pertama',
+    'solution_evidence' => 'Solusi & Bukti',
+    'evidence_photos' => 'Foto Bukti',
+    'resolved_at' => 'Diselesaikan pada',
+    'resolved_by' => 'Diselesaikan oleh',
+    'rate_service' => 'Beri Nilai Layanan',
+    'how_was_your_experience' => 'Bagaimana pengalaman Anda dengan layanan kami?',
+    'feedback_optional' => 'Feedback (opsional)',
+    'feedback_placeholder' => 'Berikan feedback Anda untuk membantu kami meningkatkan layanan...',
+    'submit_feedback' => 'Kirim Feedback',
+    'knowledge_base' => 'Basis Pengetahuan',
+    'link' => 'Tautkan',
+    'reported_by' => 'Dilaporkan Oleh',
+    'comments' => 'Komentar',
+    'info' => 'Info',
+    'sla_status' => 'Status SLA',
+    'ticket_info' => 'Info Tiket',
+    
+    // SLA Information
+    'sla_information' => 'Informasi SLA',
+    'policy' => 'Kebijakan',
+    'response_time' => 'Waktu Respon',
+    'resolution_time' => 'Waktu Penyelesaian',
+    'sla_deadline' => 'Batas Waktu SLA',
+    'on_track' => 'Tepat Waktu',
+    'breached' => 'Dilanggar',
+    'overdue' => 'Terlambat',
+    'pause_sla_timer' => 'Jeda Timer SLA',
+    'resume' => 'Lanjutkan',
+    'pause_sla_hint' => 'Jeda SLA jika menunggu respons user atau pihak ketiga',
+    'paused_since' => 'Dijeda sejak :time',
+    
+    // KB Article
+    'views' => 'dilihat',
 
     // Categories
     'categories_title' => 'Kategori Tiket',

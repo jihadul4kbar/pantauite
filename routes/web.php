@@ -134,6 +134,13 @@ Route::middleware(["auth", "password.expired"])->group(function () {
         ->name("tickets.comments.add")
         ->can("comment", "ticket");
 
+    // Ticket rating
+    Route::post("tickets/{ticket}/rate", [
+        TicketController::class,
+        "rateTicket",
+    ])
+        ->name("tickets.rate");
+
     // SLA pause/resume
     Route::post("tickets/{ticket}/sla/pause", [
         TicketController::class,

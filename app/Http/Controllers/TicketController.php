@@ -399,4 +399,26 @@ class TicketController extends Controller
             ->route('tickets.show', $ticket)
             ->with('error', 'Failed to toggle SLA pause state.');
     }
+
+    /**
+     * Rate ticket satisfaction.
+     */
+    public function rateTicket(Request $request, Ticket $ticket)
+    {
+        $this->authorize('view', $ticket);
+
+        $validated = $request->validate([
+            'satisfaction_rating' => ['required', 'integer', 'min:1', 'max:5'],
+            'satisfaction_feedback' => ['nullable', 'string', 'max:1000'],
+        ]);
+
+        $ticket->update([
+            'satisfaction_rating' => $validated['satisfaction_rating'],
+            'satisfaction_feedback' => $validated['satisfaction_feedback'] ?? null,
+        ]);
+
+        return redirect()
+            ->route('tickets.show', $ticket)
+            ->with('success', 'Thank you for your feedback!');
+    }
 }

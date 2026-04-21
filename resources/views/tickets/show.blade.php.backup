@@ -1,0 +1,710 @@
+@extends('layouts.app')
+
+@section('title', __('tickets.ticket_number') . ' ' . $ticket->ticket_number)
+
+@section('content')
+<div class="min-h-screen bg-gradient-to-br from-slate-50 via-green-50 to-emerald-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Breadcrumb & Header -->
+        <div class="mb-6">
+            <a href="{{ route('tickets.index') }}" class="group inline-flex items-center space-x-2 text-sm text-gray-600 hover:text-green-600 mb-4 transition-colors">
+                <svg class="w-5 h-5 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                </svg>
+                <span class="font-medium">{{ __('tickets.back_to_tickets') }}</span>
+            </a>
+
+            <div class="relative bg-gradient-to-r from-green-600 via-emerald-600 to-teal-600 rounded-2xl shadow-xl overflow-hidden">
+                <div class="absolute inset-0 opacity-20">
+                    <div class="absolute top-0 right-0 w-96 h-96 bg-white rounded-full blur-3xl transform translate-x-32 -translate-y-32"></div>
+                </div>
+
+                <div class="relative px-8 py-6">
+                    <div class="flex flex-col md:flex-row items-start md:items-center justify-between">
+                        <div class="flex items-start space-x-4 mb-4 md:mb-0">
+                            <div class="w-16 h-16 bg-white bg-opacity-20 backdrop-blur-lg rounded-xl flex items-center justify-center flex-shrink-0">
+                                <svg class="w-10 h-10 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <div class="flex items-center space-x-3 mb-2">
+                                    <h1 class="text-2xl md:text-3xl font-bold text-white">{{ $ticket->ticket_number }}</h1>
+                                    <span class="px-3 py-1 text-xs font-bold rounded-full
+                                        @if($ticket->status === 'open') bg-blue-400 text-white
+                                        @elseif($ticket->status === 'in_progress') bg-yellow-400 text-white
+                                        @elseif($ticket->status === 'resolved') bg-green-400 text-white
+                                        @elseif($ticket->status === 'closed') bg-gray-400 text-white
+                                        @else bg-red-400 text-white
+                                        @endif shadow-lg">
+                                        {{ __('enums.ticket_status.' . $ticket->status) ?: ucfirst(str_replace('_', ' ', $ticket->status)) }}
+                                    </span>
+                                    <span class="px-3 py-1 text-xs font-bold rounded-full
+                                        @if($ticket->priority === 'critical') bg-red-600 text-white
+                                        @elseif($ticket->priority === 'high') bg-orange-500 text-white
+                                        @elseif($ticket->priority === 'medium') bg-yellow-500 text-white
+                                        @else bg-green-500 text-white
+                                        @endif shadow-lg">
+                                        {{ __('enums.ticket_priority.' . $ticket->priority) ?: ucfirst($ticket->priority) }}
+                                    </span>
+                                </div>
+                                <p class="text-green-100 text-lg">{{ $ticket->subject }}</p>
+                            </div>
+                        </div>
+                        <div class="flex space-x-3">
+                            @can('update', $ticket)
+                            <a href="{{ route('tickets.edit', $ticket) }}" class="group/btn inline-flex items-center space-x-2 bg-white bg-opacity-20 backdrop-blur-lg hover:bg-opacity-30 text-gray-800 font-semibold px-5 py-3 rounded-xl transition-all duration-300 shadow-lg">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                </svg>
+                                <span>{{ __('common.edit') }}</span>
+                            </a>
+                            @endcan
+                            @can('delete', $ticket)
+                            <form action="{{ route('tickets.destroy', $ticket) }}" method="POST" onsubmit="return confirm('{{ __('common.confirm_delete') }}')">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="group/btn inline-flex items-center space-x-2 bg-red-600 bg-opacity-80 hover:bg-opacity-100 text-white font-semibold px-5 py-3 rounded-xl transition-all duration-300 shadow-lg">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                    </svg>
+                                    <span>{{ __('common.delete') }}</span>
+                                </button>
+                            </form>
+                            @endcan
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Main Content -->
+            <div class="lg:col-span-2 space-y-6">
+                <!-- Ticket Details -->
+                <div class="bg-white shadow-sm hover:shadow-lg rounded-2xl overflow-hidden transition-shadow">
+                    <div class="px-6 py-5 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-600 rounded-lg flex items-center justify-center">
+                                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                </svg>
+                            </div>
+                            <h2 class="text-lg font-bold text-gray-900">{{ __('tickets.ticket_details') }}</h2>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div class="prose max-w-none text-gray-700 leading-relaxed">
+                            {{ nl2br(e($ticket->description)) }}
+                        </div>
+
+                        <!-- Attachments -->
+                        @if($ticket->attachments->where('comment_id', null)->count() > 0)
+                        <div class="mt-6 pt-6 border-t border-gray-200">
+                            <h3 class="text-sm font-bold text-gray-700 mb-3 flex items-center">
+                                <svg class="w-5 h-5 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"></path>
+                                </svg>
+                                {{ __('tickets.attachments') }} ({{ $ticket->attachments->where('comment_id', null)->count() }})
+                            </h3>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                @foreach($ticket->attachments->where('comment_id', null) as $attachment)
+                                <a href="{{ asset('storage/' . $attachment->file_path) }}"
+                                   class="group flex items-center space-x-3 p-3 bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl hover:from-green-100 hover:to-emerald-100 transition-all border border-green-200"
+                                   target="_blank">
+                                    <div class="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-600 rounded-lg flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
+                                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+                                        </svg>
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <p class="text-sm font-medium text-gray-900 truncate">{{ $attachment->original_filename }}</p>
+                                        <p class="text-xs text-gray-500">{{ $attachment->file_size ? number_format($attachment->file_size / 1024, 2) : '-' }} KB</p>
+                                    </div>
+                                </a>
+                                @endforeach
+                            </div>
+                        </div>
+                        @endif
+                    </div>
+                </div>
+
+                <!-- Comments -->
+                <div class="bg-white shadow-sm hover:shadow-lg rounded-2xl overflow-hidden transition-shadow">
+                    <div class="px-6 py-5 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-600 rounded-lg flex items-center justify-center">
+                                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                                </svg>
+                            </div>
+                            <h2 class="text-lg font-bold text-gray-900">{{ __('tickets.comments_updates') }}</h2>
+                            <span class="ml-auto px-3 py-1 bg-gradient-to-r from-green-500 to-emerald-600 text-white text-xs font-bold rounded-full">
+                                {{ $ticket->comments->count() }}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        @if($ticket->comments->count() > 0)
+                        <div class="space-y-4">
+                            @foreach($ticket->comments as $comment)
+                            @can('view', $ticket)
+                            @if(!$comment->is_internal || auth()->user()->hasPermission('manage-tickets'))
+                            <div class="group border-l-4 {{ $comment->is_internal ? 'border-yellow-400 bg-gradient-to-r from-yellow-50 to-orange-50' : 'border-green-400 bg-gradient-to-r from-green-50 to-emerald-50' }} p-5 rounded-xl hover:shadow-md transition-all">
+                                <div class="flex items-start justify-between mb-3">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center text-white font-bold shadow-md">
+                                            {{ substr($comment->user->name, 0, 1) }}
+                                        </div>
+                                        <div>
+                                            <span class="font-bold text-gray-900">{{ $comment->user->name }}</span>
+                                            <div class="flex items-center text-sm text-gray-500 mt-0.5">
+                                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                                </svg>
+                                                {{ $comment->created_at->diffForHumans() }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="flex space-x-2">
+                                        @if($comment->is_internal)
+                                        <span class="px-3 py-1 bg-gradient-to-r from-yellow-400 to-orange-500 text-white text-xs font-bold rounded-full shadow-sm">
+                                            <svg class="w-3 h-3 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                                            </svg>
+                                            {{ __('tickets.internal') }}
+                                        </span>
+                                        @endif
+                                        @if($comment->is_solution)
+                                        <span class="px-3 py-1 bg-gradient-to-r from-green-400 to-emerald-600 text-white text-xs font-bold rounded-full shadow-sm">
+                                            <svg class="w-3 h-3 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                            </svg>
+                                            {{ __('tickets.solution') }}
+                                        </span>
+                                        @endif
+                                    </div>
+                                </div>
+                                <div class="text-gray-700 leading-relaxed ml-13">
+                                    {{ nl2br(e($comment->comment)) }}
+                                </div>
+
+                                {{-- Comment Attachments (Images, Files) --}}
+                                @php
+                                    $commentAttachments = $ticket->attachments->where('comment_id', $comment->id);
+                                @endphp
+                                @if($commentAttachments->count() > 0)
+                                <div class="mt-4 pt-4 border-t border-gray-200">
+                                    <p class="text-xs font-semibold text-gray-500 mb-2 flex items-center">
+                                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"></path>
+                                        </svg>
+                                        {{ __('tickets.attachments') }} ({{ $commentAttachments->count() }})
+                                    </p>
+                                    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+                                        @foreach($commentAttachments as $attachment)
+                                            @php
+                                                $filePath = $attachment->file_path;
+                                                $fileName = $attachment->original_filename ?? basename($filePath);
+                                                $fileSize = $attachment->file_size;
+                                                $isImage = in_array(strtolower(pathinfo($fileName, PATHINFO_EXTENSION)), ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg']);
+                                            @endphp
+                                            @if($isImage)
+                                                {{-- Display Image --}}
+                                                <a href="{{ asset('storage/' . $filePath) }}" target="_blank" class="group relative block overflow-hidden rounded-xl border-2 border-gray-200 hover:border-green-400 transition-colors">
+                                                    <img src="{{ asset('storage/' . $filePath) }}" alt="{{ $fileName }}" class="w-full h-32 object-cover group-hover:scale-105 transition-transform duration-300">
+                                                    <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all flex items-center justify-center">
+                                                        <svg class="w-8 h-8 text-white opacity-0 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                                                        </svg>
+                                                    </div>
+                                                </a>
+                                                <p class="text-xs text-gray-500 mt-1 truncate">{{ $fileName }}</p>
+                                                @if($fileSize)
+                                                <p class="text-xs text-gray-400">{{ number_format($fileSize / 1024, 1) }} KB</p>
+                                                @endif
+                                            @else
+                                                {{-- Display File Link --}}
+                                                <a href="{{ asset('storage/' . $filePath) }}" target="_blank" class="flex items-center space-x-3 p-3 bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl hover:from-green-100 hover:to-emerald-100 transition-all border border-green-200 group">
+                                                    <div class="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-600 rounded-lg flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
+                                                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+                                                        </svg>
+                                                    </div>
+                                                    <div class="flex-1 min-w-0">
+                                                        <p class="text-xs font-medium text-gray-900 truncate">{{ $fileName }}</p>
+                                                        @if($fileSize)
+                                                        <p class="text-xs text-gray-500">{{ number_format($fileSize / 1024, 1) }} KB</p>
+                                                        @endif
+                                                    </div>
+                                                </a>
+                                            @endif
+                                        @endforeach
+                                    </div>
+                                </div>
+                                @endif
+                            </div>
+                            @endif
+                            @endcan
+                            @endforeach
+                        </div>
+                        @else
+                        <div class="text-center py-12">
+                            <div class="w-20 h-20 mx-auto bg-gradient-to-br from-gray-100 to-gray-200 rounded-full flex items-center justify-center mb-4">
+                                <svg class="h-10 w-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                                </svg>
+                            </div>
+                            <p class="text-gray-500 font-medium">{{ __('tickets.no_comments') }}</p>
+                            <p class="text-sm text-gray-400 mt-1">{{ __('tickets.first_comment') }}</p>
+                        </div>
+                        @endif
+                    </div>
+                </div>
+
+                <!-- Add Comment Form -->
+                @can('comment', $ticket)
+                <div class="bg-white shadow-sm hover:shadow-lg rounded-2xl overflow-hidden transition-shadow">
+                    <div class="px-6 py-5 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-600 rounded-lg flex items-center justify-center">
+                                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                                </svg>
+                            </div>
+                            <h2 class="text-lg font-bold text-gray-900">{{ __('tickets.add_comment') }}</h2>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <form action="{{ route('tickets.comments.add', $ticket) }}" method="POST" enctype="multipart/form-data">
+                            @csrf
+                            <div class="space-y-5">
+                                <div>
+                                    <label for="comment" class="block text-sm font-semibold text-gray-700 mb-2">
+                                        {{ __('tickets.comment') }} <span class="text-red-500">*</span>
+                                    </label>
+                                    <textarea name="comment"
+                                              id="comment"
+                                              rows="5"
+                                              required
+                                              class="w-full border-2 border-gray-200 rounded-xl shadow-sm focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors px-4 py-3 resize-none"
+                                              placeholder="{{ __('tickets.comment_placeholder') }}"></textarea>
+                                </div>
+                                <div class="flex flex-col sm:flex-row sm:items-center space-y-3 sm:space-y-0 sm:space-x-4">
+                                    @can('addInternalNote', $ticket)
+                                    <label class="inline-flex items-center cursor-pointer group">
+                                        <input type="checkbox" name="is_internal" value="1" class="rounded border-2 border-gray-300 text-yellow-600 focus:ring-yellow-500 w-5 h-5">
+                                        <span class="ml-2 text-sm font-medium text-gray-700 group-hover:text-yellow-600 transition-colors">
+                                            <svg class="w-4 h-4 inline mr-1 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                                            </svg>
+                                            {{ __('tickets.add_internal_note') }}
+                                        </span>
+                                    </label>
+                                    @endcan
+                                    <label class="inline-flex items-center cursor-pointer group">
+                                        <input type="checkbox" name="is_solution" value="1" class="rounded border-2 border-gray-300 text-green-600 focus:ring-green-500 w-5 h-5">
+                                        <span class="ml-2 text-sm font-medium text-gray-700 group-hover:text-green-600 transition-colors">
+                                            <svg class="w-4 h-4 inline mr-1 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                            </svg>
+                                            {{ __('tickets.mark_as_solution') }}
+                                        </span>
+                                    </label>
+                                </div>
+                                <div>
+                                    <label for="attachments" class="block text-sm font-semibold text-gray-700 mb-2">
+                                        <svg class="w-4 h-4 inline mr-1 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"></path>
+                                        </svg>
+                                        {{ __('tickets.attach_files') }}
+                                    </label>
+                                    <input type="file" name="attachments[]" multiple id="attachments" accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.txt,.log" class="block w-full text-sm text-gray-600 file:mr-4 file:py-3 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-gradient-to-r file:from-green-50 file:to-emerald-50 file:text-green-700 hover:file:from-green-100 hover:file:to-emerald-100 file:cursor-pointer file:transition-colors">
+                                    <p class="mt-2 text-xs text-gray-500 flex items-center">
+                                        <svg class="w-4 h-4 mr-1 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                        </svg>
+                                        {{ __('common.max_files') }}
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="mt-6">
+                                <button type="submit" class="w-full sm:w-auto px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white font-semibold rounded-xl hover:from-green-700 hover:to-emerald-700 transition-all shadow-md hover:shadow-lg transform hover:scale-105">
+                                    <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                                    </svg>
+                                    {{ __('tickets.post_comment') }}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                @endcan
+            </div>
+
+            <!-- Sidebar -->
+            <div class="space-y-6">
+                <!-- Status & Info -->
+                <div class="bg-white shadow-sm hover:shadow-lg rounded-2xl overflow-hidden transition-shadow">
+                    <div class="px-6 py-5 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-600 rounded-lg flex items-center justify-center">
+                                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                            </div>
+                            <h2 class="text-lg font-bold text-gray-900">{{ __('common.status') }}</h2>
+                        </div>
+                    </div>
+                    <div class="p-6 space-y-5">
+                        <!-- Status -->
+                        <div class="group">
+                            <label class="block text-sm font-semibold text-gray-500 mb-2 flex items-center">
+                                <svg class="w-4 h-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                                {{ __('common.status') }}
+                            </label>
+                            <div class="mb-2">
+                                <span class="px-3 py-1.5 text-xs font-bold rounded-full inline-block
+                                    @if($ticket->status === 'open') bg-gradient-to-r from-blue-500 to-blue-600 text-white
+                                    @elseif($ticket->status === 'in_progress') bg-gradient-to-r from-yellow-500 to-orange-600 text-white
+                                    @elseif($ticket->status === 'resolved') bg-gradient-to-r from-green-500 to-emerald-600 text-white
+                                    @elseif($ticket->status === 'closed') bg-gradient-to-r from-gray-500 to-gray-600 text-white
+                                    @else bg-gradient-to-r from-red-500 to-red-600 text-white
+                                    @endif shadow-sm">
+                                    {{ __('enums.ticket_status.' . $ticket->status) ?: ucfirst(str_replace('_', ' ', $ticket->status)) }}
+                                </span>
+                            </div>
+                            @can('changeStatus', $ticket)
+                            <form action="{{ route('tickets.status.change', $ticket) }}" method="POST" class="mt-3">
+                                @csrf
+                                <select name="status" onchange="this.form.submit()" class="w-full text-sm border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 px-4 py-2.5 transition-colors">
+                                    <option value="">{{ __('tickets.update_status') }}</option>
+                                    @if($ticket->isOpen() || $ticket->isReopened())
+                                    <option value="in_progress">{{ __('enums.ticket_status.in_progress') }}</option>
+                                    <option value="closed">{{ __('enums.ticket_status.closed') }}</option>
+                                    @elseif($ticket->isInProgress())
+                                    <option value="resolved">{{ __('enums.ticket_status.resolved') }}</option>
+                                    <option value="open">{{ __('enums.ticket_status.open') }}</option>
+                                    @elseif($ticket->isResolved())
+                                    <option value="closed">{{ __('enums.ticket_status.closed') }}</option>
+                                    <option value="reopened">{{ __('enums.ticket_status.reopened') }}</option>
+                                    @elseif($ticket->isClosed())
+                                    <option value="reopened">{{ __('enums.ticket_status.reopened') }}</option>
+                                    @endif
+                                </select>
+                            </form>
+                            @endcan
+                        </div>
+
+                        <!-- Priority -->
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-500 mb-2 flex items-center">
+                                <svg class="w-4 h-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 11l5-5m0 0l5 5m-5-5v12"></path>
+                                </svg>
+                                {{ __('common.priority') }}
+                            </label>
+                            <div>
+                                <span class="px-3 py-1.5 text-xs font-bold rounded-full inline-block
+                                    @if($ticket->priority === 'critical') bg-gradient-to-r from-red-500 to-pink-600 text-white
+                                    @elseif($ticket->priority === 'high') bg-gradient-to-r from-orange-500 to-orange-600 text-white
+                                    @elseif($ticket->priority === 'medium') bg-gradient-to-r from-yellow-500 to-yellow-600 text-white
+                                    @else bg-gradient-to-r from-green-500 to-green-600 text-white
+                                    @endif shadow-sm">
+                                    {{ __('enums.ticket_priority.' . $ticket->priority) ?: ucfirst($ticket->priority) }}
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Category -->
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-500 mb-2 flex items-center">
+                                <svg class="w-4 h-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+                                </svg>
+                                {{ __('common.category') }}
+                            </label>
+                            <p class="text-sm font-medium text-gray-900 bg-gray-50 px-4 py-2.5 rounded-xl">{{ $ticket->category->name ?? '-' }}</p>
+                        </div>
+
+                        <!-- Assignee -->
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-500 mb-2 flex items-center">
+                                <svg class="w-4 h-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                </svg>
+                                {{ __('common.assigned_to') }}
+                            </label>
+                            @if($ticket->assignee)
+                            <div class="flex items-center space-x-3 bg-gradient-to-r from-green-50 to-emerald-50 px-4 py-3 rounded-xl border border-green-200">
+                                <div class="w-8 h-8 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center text-white font-bold text-sm">
+                                    {{ substr($ticket->assignee->name, 0, 1) }}
+                                </div>
+                                <p class="text-sm font-medium text-gray-900">{{ $ticket->assignee->name }}</p>
+                            </div>
+                            @else
+                            <p class="text-sm text-gray-500 bg-gray-50 px-4 py-2.5 rounded-xl italic">{{ __('tickets.unassigned') }}</p>
+                            @endif
+                            @can('assign', $ticket)
+                            <form action="{{ route('tickets.assign', $ticket) }}" method="POST" class="mt-3">
+                                @csrf
+                                <select name="assignee_id" onchange="this.form.submit()" class="w-full text-sm border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 px-4 py-2.5 transition-colors">
+                                    <option value="">{{ __('tickets.assign_to') }}</option>
+                                    @foreach(\App\Models\User::whereRole('it_staff', 'it_manager')->active()->get() as $user)
+                                    <option value="{{ $user->id }}">{{ $user->name }} ({{ $user->role->display_name }})</option>
+                                    @endforeach
+                                </select>
+                            </form>
+                            @endcan
+                        </div>
+
+                        <!-- Created By -->
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-500 mb-2 flex items-center">
+                                <svg class="w-4 h-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                </svg>
+                                {{ __('common.created_by', ['default' => 'Dibuat Oleh']) }}
+                            </label>
+                            <div class="flex items-center space-x-3 bg-gradient-to-r from-green-50 to-emerald-50 px-4 py-3 rounded-xl border border-green-200">
+                                <div class="w-8 h-8 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center text-white font-bold text-sm">
+                                    {{ substr($ticket->user->name, 0, 1) }}
+                                </div>
+                                <p class="text-sm font-medium text-gray-900">{{ $ticket->user->name }}</p>
+                            </div>
+                        </div>
+
+                        <!-- Department -->
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-500 mb-2 flex items-center">
+                                <svg class="w-4 h-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                                </svg>
+                                {{ __('common.department') }}
+                            </label>
+                            <p class="text-sm font-medium text-gray-900 bg-gray-50 px-4 py-2.5 rounded-xl">{{ $ticket->department->name ?? '-' }}</p>
+                        </div>
+
+                        <!-- Created At -->
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-500 mb-2 flex items-center">
+                                <svg class="w-4 h-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                </svg>
+                                {{ __('common.created_at') }}
+                            </label>
+                            <p class="text-sm font-medium text-gray-900 bg-gray-50 px-4 py-2.5 rounded-xl flex items-center">
+                                <svg class="w-4 h-4 mr-2 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                                {{ $ticket->created_at->format('M d, Y H:i') }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLA Information -->
+                @if($ticket->slaPolicy)
+                <div class="bg-white shadow-sm hover:shadow-lg rounded-2xl overflow-hidden transition-shadow">
+                    <div class="px-6 py-5 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 bg-gradient-to-br from-orange-500 to-red-600 rounded-lg flex items-center justify-center">
+                                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                            </div>
+                            <h2 class="text-lg font-bold text-gray-900">{{ __('tickets.sla_information') }}</h2>
+                        </div>
+                    </div>
+                    <div class="p-6 space-y-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-500 mb-1.5 uppercase tracking-wide">{{ __('tickets.policy') }}</label>
+                            <p class="text-sm font-bold text-gray-900 bg-gradient-to-r from-orange-50 to-red-50 px-4 py-2.5 rounded-xl border border-orange-200">{{ $ticket->slaPolicy->name }}</p>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-500 mb-1.5 uppercase tracking-wide">{{ __('tickets.response_time') }}</label>
+                                <p class="text-sm font-semibold text-gray-900 bg-gray-50 px-3 py-2 rounded-lg text-center">{{ $ticket->slaPolicy->response_time_minutes }} min</p>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-500 mb-1.5 uppercase tracking-wide">{{ __('tickets.resolution_time') }}</label>
+                                <p class="text-sm font-semibold text-gray-900 bg-gray-50 px-3 py-2 rounded-lg text-center">{{ $ticket->slaPolicy->resolution_time_minutes }} min</p>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-500 mb-1.5 uppercase tracking-wide">{{ __('tickets.sla_deadline') }}</label>
+                            <p class="text-sm font-semibold text-gray-900 bg-gray-50 px-4 py-2.5 rounded-lg flex items-center justify-center">
+                                <svg class="w-4 h-4 mr-2 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                </svg>
+                                {{ $ticket->sla_deadline ? $ticket->sla_deadline->format('M d, Y H:i') : '-' }}
+                            </p>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-500 mb-1.5 uppercase tracking-wide">{{ __('common.status') }}</label>
+                            @if($ticket->sla_breached)
+                            <span class="mt-1.5 px-4 py-2.5 text-xs font-bold rounded-xl inline-block bg-gradient-to-r from-red-500 to-red-600 text-white w-full text-center shadow-sm">
+                                <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                                {{ __('tickets.breached') }}
+                            </span>
+                            @elseif($ticket->sla_deadline && $ticket->sla_deadline->isPast() && !in_array($ticket->status, ['closed', 'resolved']))
+                            <span class="mt-1.5 px-4 py-2.5 text-xs font-bold rounded-xl inline-block bg-gradient-to-r from-orange-500 to-orange-600 text-white w-full text-center shadow-sm">
+                                <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                                </svg>
+                                {{ __('tickets.overdue') }}
+                            </span>
+                            @else
+                            <span class="mt-1.5 px-4 py-2.5 text-xs font-bold rounded-xl inline-block bg-gradient-to-r from-green-500 to-emerald-600 text-white w-full text-center shadow-sm">
+                                <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                                {{ __('tickets.on_track') }}
+                            </span>
+                            @endif
+                        </div>
+                        @if($ticket->paused_at)
+                        <div class="mt-3">
+                            <label class="block text-xs font-semibold text-gray-500 mb-1.5 uppercase tracking-wide">{{ __('tickets.pause_status') }}</label>
+                            <div class="bg-gradient-to-r from-yellow-50 to-orange-50 border border-yellow-200 rounded-xl px-4 py-3">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center space-x-2">
+                                        <svg class="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                        </svg>
+                                        <div>
+                                            <p class="text-sm font-bold text-yellow-800">{{ __('tickets.sla_paused') }}</p>
+                                            <p class="text-xs text-yellow-600">{{ __('tickets.paused_since', ['time' => $ticket->paused_at->diffForHumans()]) }}</p>
+                                        </div>
+                                    </div>
+                                    @can('update', $ticket)
+                                    <form action="{{ route('tickets.sla.pause', $ticket) }}" method="POST" class="inline">
+                                        @csrf
+                                        <button type="submit" class="px-3 py-1.5 bg-gradient-to-r from-green-500 to-emerald-600 text-white text-xs font-semibold rounded-lg hover:from-green-600 hover:to-emerald-700 transition-all shadow-sm">
+                                            <svg class="w-3 h-3 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path>
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                            </svg>
+                                            {{ __('tickets.resume') }}
+                                        </button>
+                                    </form>
+                                    @endcan
+                                </div>
+                            </div>
+                        </div>
+                        @else
+                        @can('update', $ticket)
+                        @if(!in_array($ticket->status, ['closed', 'resolved']) && !$ticket->sla_breached)
+                        <div class="mt-3">
+                            <form action="{{ route('tickets.sla.pause', $ticket) }}" method="POST" class="inline w-full">
+                                @csrf
+                                <button type="submit" class="w-full px-4 py-2.5 bg-gradient-to-r from-yellow-500 to-orange-500 text-white text-xs font-bold rounded-xl hover:from-yellow-600 hover:to-orange-600 transition-all shadow-sm flex items-center justify-center space-x-2">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                    <span>{{ __('tickets.pause_sla_timer') }}</span>
+                                </button>
+                            </form>
+                            <p class="text-xs text-gray-500 text-center mt-1">{{ __('tickets.pause_sla_hint') }}</p>
+                        </div>
+                        @endif
+                        @endcan
+                        @endif
+                    </div>
+                </div>
+                @endif
+
+                <!-- Related Knowledge Base Article -->
+                <div class="bg-white shadow-sm hover:shadow-lg rounded-2xl overflow-hidden transition-shadow">
+                    <div class="px-6 py-5 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg flex items-center justify-center">
+                                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                                </svg>
+                            </div>
+                            <h2 class="text-lg font-bold text-gray-900">{{ __('tickets.link_kb') }}</h2>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        @if($ticket->relatedKbArticle)
+                            {{-- Display Linked KB Article --}}
+                            <div class="bg-gradient-to-r from-purple-50 to-indigo-50 border border-purple-200 rounded-xl p-4">
+                                <div class="flex items-start justify-between mb-2">
+                                    <a href="{{ route('kb.show', $ticket->relatedKbArticle) }}" target="_blank" class="text-sm font-bold text-purple-700 hover:text-purple-900 transition-colors">
+                                        {{ $ticket->relatedKbArticle->title }}
+                                    </a>
+                                    @can('update', $ticket)
+                                    <form action="{{ route('tickets.link-kb', $ticket->id) }}" method="POST" class="inline">
+                                        @csrf
+                                        <button type="submit" name="kb_article_id" value="" class="text-gray-400 hover:text-red-500 transition-colors" title="{{ __('tickets.remove_kb_link') }}">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                            </svg>
+                                        </button>
+                                    </form>
+                                    @endcan
+                                </div>
+                                <p class="text-xs text-gray-600 line-clamp-2">{{ Str::limit($ticket->relatedKbArticle->summary ?? $ticket->relatedKbArticle->content, 100) }}</p>
+                                <div class="flex items-center mt-3 space-x-3">
+                                    <span class="px-2 py-0.5 bg-purple-200 text-purple-800 text-xs font-bold rounded-full">
+                                        {{ $ticket->relatedKbArticle->category->name ?? __('common.na') }}
+                                    </span>
+                                    <span class="text-xs text-gray-500 flex items-center">
+                                        <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                        </svg>
+                                        {{ number_format($ticket->relatedKbArticle->views) }} {{ __('tickets.views') }}
+                                    </span>
+                                </div>
+                                <a href="{{ route('kb.show', $ticket->relatedKbArticle) }}" target="_blank" class="mt-3 inline-flex items-center text-xs font-semibold text-purple-600 hover:text-purple-800 transition-colors">
+                                    {{ __('tickets.read_full_article') }}
+                                    <svg class="w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                                    </svg>
+                                </a>
+                            </div>
+                        @else
+                            {{-- Link KB Article Form --}}
+                            @can('update', $ticket)
+                            <form action="{{ route('tickets.link-kb', $ticket->id) }}" method="POST">
+                                @csrf
+                                <label class="block text-xs font-semibold text-gray-500 mb-2 uppercase tracking-wide">{{ __('tickets.link_kb_article') }}</label>
+                                <select name="kb_article_id" class="w-full border-2 border-gray-200 rounded-xl shadow-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors px-3 py-2.5 text-sm mb-3">
+                                    <option value="">{{ __('tickets.select_kb_article') }}</option>
+                                    @foreach(\App\Models\KbArticle::where('status', 'published')->orderBy('title')->get() as $article)
+                                    <option value="{{ $article->id }}">
+                                        {{ $article->article_number }} - {{ Str::limit($article->title, 60) }}
+                                    </option>
+                                    @endforeach
+                                </select>
+                                <button type="submit" class="w-full px-4 py-2.5 bg-gradient-to-r from-purple-500 to-purple-600 text-white text-xs font-bold rounded-xl hover:from-purple-600 hover:to-purple-700 transition-all shadow-sm flex items-center justify-center space-x-2">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path>
+                                    </svg>
+                                    <span>{{ __('tickets.link_kb_article') }}</span>
+                                </button>
+                            </form>
+                            <p class="text-xs text-gray-500 text-center mt-2">{{ __('tickets.link_kb_hint') }}</p>
+                            @else
+                            <div class="text-center py-4">
+                                <svg class="w-12 h-12 mx-auto text-gray-300 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                                </svg>
+                                <p class="text-sm text-gray-500">{{ __('tickets.no_kb_linked') }}</p>
+                                <p class="text-xs text-gray-400 mt-1">{{ __('tickets.contact_it_for_kb') }}</p>
+                            </div>
+                            @endcan
+                        @endif
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@endsection
