@@ -13,6 +13,10 @@ use App\Models\Vendor;
 use App\Services\AssetService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
+use Intervention\Image\ImageManager;
+use Intervention\Image\Drivers\Gd\Driver;
+use Illuminate\Support\Facades\Log;
 
 class AssetController extends Controller
 {
@@ -313,16 +317,15 @@ class AssetController extends Controller
     {
         $uploadedPaths = [];
 
-        // Ensure the directory exists
         if (
-            !\Illuminate\Support\Facades\Storage::disk("public")->exists(
+            !Storage::disk("public")->exists(
                 "assets/images",
             )
         ) {
-            \Illuminate\Support\Facades\Storage::disk("public")->makeDirectory(
+            Storage::disk("public")->makeDirectory(
                 "assets/images",
             );
-            \Illuminate\Support\Facades\Log::info(
+            Log::info(
                 "Directory 'assets/images' created on public disk.",
             );
         }
@@ -330,34 +333,65 @@ class AssetController extends Controller
         foreach ($files as $file) {
             if ($file && $file->isValid()) {
                 try {
-                    $path = $file->store("assets/images", "public");
+                    $mimeType = $file->getMimeType();
+                    if (in_array($mimeType, ['image/jpeg', 'image/png', 'image/jpg', 'image/gif', 'image/webp'])) {
+                        $path = $this->processImageToWebp($file, 'assets/images');
+                    } else {
+                        $path = $file->store("assets/images", "public");
+                    }
+                    
                     if ($path) {
                         $uploadedPaths[] = $path;
-                        \Illuminate\Support\Facades\Log::info(
+                        Log::info(
                             "Image uploaded successfully: {$path}",
                         );
                     } else {
-                        \Illuminate\Support\Facades\Log::error(
+                        Log::error(
                             "Failed to upload image: store() returned null",
                         );
                     }
                 } catch (\Exception $e) {
-                    \Illuminate\Support\Facades\Log::error(
+                    Log::error(
                         "Image upload error: " . $e->getMessage(),
                     );
                 }
             } else {
-                \Illuminate\Support\Facades\Log::warning(
+                Log::warning(
                     "Invalid file skipped in uploadImages()",
                 );
             }
         }
 
-        \Illuminate\Support\Facades\Log::info(
+        Log::info(
             "Upload complete. Total images: " . count($uploadedPaths),
         );
 
         return $uploadedPaths;
+    }
+
+    /**
+     * Process image and convert to WebP format
+     */
+    protected function processImageToWebp($file, string $directory): string
+    {
+        $manager = new ImageManager(new Driver());
+        $image = $manager->read($file->getRealPath());
+
+        $originalWidth = $image->width();
+        $originalHeight = $image->height();
+
+        if ($originalWidth > 1920 || $originalHeight > 1080) {
+            $image->scale(width: 1920, height: 1080, upSize: false);
+        }
+
+        $webpContent = $image->toWebp(80)->encode();
+        
+        $filename = uniqid('asset_') . '_' . time() . '.webp';
+        $path = $directory . '/' . $filename;
+        
+        Storage::disk('public')->put($path, $webpContent);
+
+        return $path;
     }
 
     /**

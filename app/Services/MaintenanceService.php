@@ -13,6 +13,9 @@ use App\Models\MaintenanceApproval;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
+use Intervention\Image\ImageManager;
+use Intervention\Image\Drivers\Gd\Driver;
 
 class MaintenanceService
 {
@@ -153,16 +156,51 @@ class MaintenanceService
      */
     public function uploadPhoto(MaintenanceTask $task, $file, string $type, User $user): MaintenancePhoto
     {
-        $path = $file->store('maintenance/' . $task->id, 'public');
+        $mimeType = $file->getMimeType();
+        
+        if (in_array($mimeType, ['image/jpeg', 'image/png', 'image/jpg', 'image/gif', 'image/webp'])) {
+            $path = $this->processImageToWebp($file, 'maintenance/' . $task->id);
+            $fileSize = Storage::disk('public')->size($path);
+            $mimeType = 'image/webp';
+        } else {
+            $path = $file->store('maintenance/' . $task->id, 'public');
+            $fileSize = $file->getSize();
+        }
 
         return MaintenancePhoto::create([
             'task_id' => $task->id,
             'file_path' => $path,
             'original_filename' => $file->getClientOriginalName(),
-            'file_size' => $file->getSize(),
-            'photo_type' => $type, // before/after/during/evidence
+            'file_size' => $fileSize,
+            'mime_type' => $mimeType,
+            'photo_type' => $type,
             'uploaded_by_user_id' => $user->id,
         ]);
+    }
+
+    /**
+     * Process image and convert to WebP format
+     */
+    protected function processImageToWebp($file, string $directory): string
+    {
+        $manager = new ImageManager(new Driver());
+        $image = $manager->read($file->getRealPath());
+
+        $originalWidth = $image->width();
+        $originalHeight = $image->height();
+
+        if ($originalWidth > 1920 || $originalHeight > 1080) {
+            $image->scale(width: 1920, height: 1080, upSize: false);
+        }
+
+        $webpContent = $image->toWebp(80)->encode();
+        
+        $filename = uniqid('maintenance_') . '_' . time() . '.webp';
+        $path = $directory . '/' . $filename;
+        
+        Storage::disk('public')->put($path, $webpContent);
+
+        return $path;
     }
 
     /**

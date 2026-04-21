@@ -8,6 +8,9 @@ use App\Models\KbArticle;
 use App\Models\KbCategory;
 use App\Services\KbService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use Intervention\Image\ImageManager;
+use Intervention\Image\Drivers\Gd\Driver;
 
 class KbArticleController extends Controller
 {
@@ -225,15 +228,13 @@ class KbArticleController extends Controller
 
         if ($request->hasFile('upload')) {
             $file = $request->file('upload');
-            $filename = time() . '_' . \Str::slug(pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME)) . '.' . $file->getClientOriginalExtension();
             
-            // Store in storage/app/public/articles
-            $path = $file->storeAs('articles', $filename, 'public');
+            $path = $this->processImageToWebp($file, 'articles');
             
-            // Generate URL
+            $filename = basename($path);
+            
             $url = asset('storage/' . $path);
             
-            // CKEditor expects 'url' in the response
             return response()->json([
                 'url' => $url,
                 'uploaded' => true,
@@ -245,5 +246,30 @@ class KbArticleController extends Controller
             'error' => ['message' => 'No file uploaded'],
             'uploaded' => false,
         ], 400);
+    }
+
+    /**
+     * Process image and convert to WebP format
+     */
+    protected function processImageToWebp($file, string $directory): string
+    {
+        $manager = new ImageManager(new Driver());
+        $image = $manager->read($file->getRealPath());
+
+        $originalWidth = $image->width();
+        $originalHeight = $image->height();
+
+        if ($originalWidth > 1920 || $originalHeight > 1080) {
+            $image->scale(width: 1920, height: 1080, upSize: false);
+        }
+
+        $webpContent = $image->toWebp(80)->encode();
+        
+        $filename = uniqid('kb_') . '_' . time() . '.webp';
+        $path = $directory . '/' . $filename;
+        
+        Storage::disk('public')->put($path, $webpContent);
+
+        return $path;
     }
 }

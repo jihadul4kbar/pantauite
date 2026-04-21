@@ -15,6 +15,8 @@ use App\Services\TicketService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Intervention\Image\ImageManager;
+use Intervention\Image\Drivers\Gd\Driver;
 
 class TicketController extends Controller
 {
@@ -305,14 +307,21 @@ class TicketController extends Controller
      */
     protected function attachFile(Ticket $ticket, $file): void
     {
-        $path = $file->store('tickets/' . $ticket->id, 'public');
+        $mimeType = $file->getMimeType();
+        
+        if (in_array($mimeType, ['image/jpeg', 'image/png', 'image/jpg', 'image/gif', 'image/webp'])) {
+            $path = $this->processImageToWebp($file, 'tickets/' . $ticket->id);
+            $mimeType = 'image/webp';
+        } else {
+            $path = $file->store('tickets/' . $ticket->id, 'public');
+        }
 
         $ticket->attachments()->create([
             'filename' => basename($path),
             'original_filename' => $file->getClientOriginalName(),
             'file_path' => $path,
-            'file_size' => $file->getSize(),
-            'mime_type' => $file->getMimeType(),
+            'file_size' => Storage::disk('public')->size($path),
+            'mime_type' => $mimeType,
             'uploaded_by' => auth()->id(),
         ]);
     }
@@ -322,17 +331,49 @@ class TicketController extends Controller
      */
     protected function attachFileToComment(Ticket $ticket, $comment, $file): void
     {
-        $path = $file->store('tickets/' . $ticket->id . '/comments', 'public');
+        $mimeType = $file->getMimeType();
+        
+        if (in_array($mimeType, ['image/jpeg', 'image/png', 'image/jpg', 'image/gif', 'image/webp'])) {
+            $path = $this->processImageToWebp($file, 'tickets/' . $ticket->id . '/comments');
+            $mimeType = 'image/webp';
+        } else {
+            $path = $file->store('tickets/' . $ticket->id . '/comments', 'public');
+        }
 
         $ticket->attachments()->create([
             'comment_id' => $comment->id,
             'filename' => basename($path),
             'original_filename' => $file->getClientOriginalName(),
             'file_path' => $path,
-            'file_size' => $file->getSize(),
-            'mime_type' => $file->getMimeType(),
+            'file_size' => Storage::disk('public')->size($path),
+            'mime_type' => $mimeType,
             'uploaded_by' => auth()->id(),
         ]);
+    }
+
+    /**
+     * Process image and convert to WebP format
+     */
+    protected function processImageToWebp($file, string $directory): string
+    {
+        $manager = new ImageManager(new Driver());
+        $image = $manager->read($file->getRealPath());
+
+        $originalWidth = $image->width();
+        $originalHeight = $image->height();
+
+        if ($originalWidth > 1920 || $originalHeight > 1080) {
+            $image->scale(width: 1920, height: 1080, upSize: false);
+        }
+
+        $webpContent = $image->toWebp(80)->encode();
+        
+        $filename = uniqid('ticket_') . '_' . time() . '.webp';
+        $path = $directory . '/' . $filename;
+        
+        Storage::disk('public')->put($path, $webpContent);
+
+        return $path;
     }
 
     /**
