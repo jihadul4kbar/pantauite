@@ -356,24 +356,35 @@ class TicketController extends Controller
      */
     protected function processImageToWebp($file, string $directory): string
     {
-        $manager = new ImageManager(new Driver());
-        $image = $manager->decodePath($file->getRealPath());
+        try {
+            // Intervention Image 4.x API
+            $manager = new ImageManager(Driver::class);
+            $image = $manager->decode($file->getRealPath());
 
-        $originalWidth = $image->width();
-        $originalHeight = $image->height();
+            $originalWidth = $image->width();
+            $originalHeight = $image->height();
 
-        if ($originalWidth > 1920 || $originalHeight > 1080) {
-            $image->scale(width: 1920, height: 1080, upSize: false);
+            if ($originalWidth > 1920 || $originalHeight > 1080) {
+                $image->scale(width: 1920, height: 1080, upSize: false);
+            }
+
+            $filename = uniqid('ticket_') . '_' . time() . '.webp';
+            $path = $directory . '/' . $filename;
+            
+            // Ensure directory exists
+            if (!Storage::disk('public')->exists($directory)) {
+                Storage::disk('public')->makeDirectory($directory);
+            }
+            
+            // Save as WebP format
+            $image->save(Storage::disk('public')->path($path), 80, 'webp');
+
+            return $path;
+        } catch (\Exception $e) {
+            \Log::error('Ticket image processing error: ' . $e->getMessage());
+            // Fallback: store original file
+            return $file->store($directory, 'public');
         }
-
-        $webpContent = (string) $image->toWebp(80);
-        
-        $filename = uniqid('ticket_') . '_' . time() . '.webp';
-        $path = $directory . '/' . $filename;
-        
-        Storage::disk('public')->put($path, $webpContent);
-
-        return $path;
     }
 
     /**
