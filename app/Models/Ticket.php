@@ -103,6 +103,11 @@ class Ticket extends Model
         return $this->belongsTo(KbArticle::class, 'related_kb_article_id');
     }
 
+    public function repairRequest(): BelongsTo
+    {
+        return $this->belongsTo(RepairRequest::class, 'ticket_id', 'id');
+    }
+
     public function comments(): HasMany
     {
         return $this->hasMany(TicketComment::class);

@@ -358,14 +358,98 @@
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                                 </svg>
                                                 {{ $comment->created_at->diffForHumans() }}
-                                            </div>
-                                        </div>
+                    </div>
+                </div>
+
+                <!-- Repair Request Photos -->
+                @if($ticket->repairRequest && $ticket->repairRequest->photos->count() > 0)
+                <div class="bg-white shadow-sm rounded-2xl overflow-hidden">
+                    <div class="px-6 py-4 border-b border-gray-100 bg-gradient-to-r from-blue-50 to-indigo-50">
+                        <h2 class="text-lg font-bold text-gray-900 flex items-center">
+                            <svg class="w-5 h-5 mr-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                            </svg>
+                            📸 Foto Permintaan Perbaikan ({{ $ticket->repairRequest->photos->count() }})
+                        </h2>
+                        <p class="text-xs text-gray-600 mt-1">
+                            Dari: {{ $ticket->repairRequest->request_number }} - {{ $ticket->repairRequest->requester_name }}
+                        </p>
+                    </div>
+                    <div class="p-6">
+                        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                            @foreach($ticket->repairRequest->photos as $index => $photo)
+                                <div class="relative group aspect-square cursor-pointer" onclick="openRepairPhotoModal({{ $index }})">
+                                    <img src="{{ $photo->url }}" 
+                                         alt="Photo {{ $loop->iteration }}" 
+                                         class="w-full h-full object-cover rounded-xl border-2 border-gray-200 group-hover:border-blue-500 transition-all shadow-md group-hover:shadow-lg"/>
+                                    <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all rounded-xl flex items-center justify-center">
+                                        <svg class="w-8 h-8 text-white opacity-0 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"></path>
+                                        </svg>
+                                    </div>
+                                    <div class="absolute bottom-2 right-2 bg-black bg-opacity-60 text-white text-xs px-2 py-1 rounded-md">
+                                        {{ $loop->iteration }} / {{ $ticket->repairRequest->photos->count() }}
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Repair Request Photo Modal -->
+                <div id="repairPhotoModal" class="fixed inset-0 z-50 hidden overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+                    <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+                        <!-- Background overlay -->
+                        <div class="fixed inset-0 bg-gray-900 bg-opacity-90 transition-opacity" aria-hidden="true" onclick="closeRepairPhotoModal()"></div>
+
+                        <!-- Centering trick -->
+                        <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+
+                        <!-- Modal panel -->
+                        <div class="inline-block align-bottom bg-transparent rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-5xl sm:w-full">
+                            <div class="relative">
+                                <!-- Close button -->
+                                <button type="button" class="absolute top-4 right-4 text-white hover:text-gray-300 focus:outline-none z-10" onclick="closeRepairPhotoModal()">
+                                    <svg class="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                </button>
+                                
+                                <!-- Image container -->
+                                <div class="flex items-center justify-center p-4">
+                                    <img id="repairModalImage" src="" alt="Full size photo" class="max-h-[80vh] max-w-full object-contain rounded-lg shadow-2xl">
+                                </div>
+                                
+                                <!-- Navigation buttons (if more than 1 photo) -->
+                                @if($ticket->repairRequest->photos->count() > 1)
+                                <button type="button" class="absolute left-4 top-1/2 transform -translate-y-1/2 text-white hover:text-gray-300 focus:outline-none bg-black bg-opacity-30 rounded-full p-2 hover:bg-opacity-50 transition-all" onclick="prevRepairPhoto()">
+                                    <svg class="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                                    </svg>
+                                </button>
+                                <button type="button" class="absolute right-4 top-1/2 transform -translate-y-1/2 text-white hover:text-gray-300 focus:outline-none bg-black bg-opacity-30 rounded-full p-2 hover:bg-opacity-50 transition-all" onclick="nextRepairPhoto()">
+                                    <svg class="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                                    </svg>
+                                </button>
+                                @endif
+                            </div>
+                            <div class="bg-black bg-opacity-60 px-4 py-3 sm:px-6 flex justify-between items-center">
+                                <p class="text-sm text-white" id="repairPhotoCaption">Photo</p>
+                                <div class="text-sm text-gray-300">
+                                    <span id="currentPhotoIndex">1</span> / {{ $ticket->repairRequest->photos->count() }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                @endif
                                     </div>
                                     <div class="flex space-x-2">
                                         @if($comment->is_internal)
                                         <span class="px-3 py-1 bg-gradient-to-r from-yellow-400 to-orange-500 text-white text-xs font-bold rounded-full shadow-sm">
                                             <svg class="w-3 h-3 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 11-18 0 4 4 0 0118 0z"></path>
                                             </svg>
                                             {{ __('tickets.internal') }}
                                         </span>
@@ -864,7 +948,7 @@
                                         <p class="text-xs font-semibold text-gray-500 mb-1.5 uppercase tracking-wide">{{ __('tickets.sla_deadline') }}</p>
                                         <p class="text-sm font-bold text-gray-900 bg-white px-3.5 py-2.5 rounded-lg flex items-center justify-center">
                                             <svg class="w-4 h-4 mr-2 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                             </svg>
                                             {{ $ticket->sla_deadline->format('M d, H:i') }}
                                         </p>

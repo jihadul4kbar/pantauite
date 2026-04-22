@@ -143,6 +143,7 @@ class TicketController extends Controller
             'comments.user',
             'attachments.uploadedBy',
             'auditLogs.user',
+            'repairRequest.photos',
         ]);
 
         return view('tickets.show', compact('ticket'));

@@ -35,7 +35,7 @@
 
     <!-- Main Content -->
     <main class="relative py-6 sm:py-12 px-4 sm:px-6 lg:px-8">
-        <div class="max-w-5xl mx-auto">
+        <div class="max-w-4xl mx-auto">
             <!-- Hero Header - Mobile Optimized -->
             <div class="text-center mb-6 sm:mb-12">
                 <div class="inline-flex items-center space-x-2 px-3 py-1.5 sm:px-4 sm:py-2 bg-green-100 text-green-700 rounded-full text-xs sm:text-sm font-medium mb-4 sm:mb-6">
@@ -86,87 +86,41 @@
                 </div>
             @endif
 
-            <!-- Form Container - Mobile Optimized -->
+            <!-- Form Container - Modern Design -->
             <div class="bg-white/90 backdrop-blur-lg rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden border border-white/20">
                 <!-- Form Header Gradient -->
                 <div class="h-1.5 sm:h-2 bg-gradient-to-r from-green-500 via-emerald-500 to-teal-500"></div>
 
-                <div class="p-4 sm:p-8 md:p-12">
+                <div class="p-4 sm:p-6 md:p-8">
                     <form action="{{ route('repair-requests.store') }}" method="POST" enctype="multipart/form-data" novalidate>
                         @csrf
 
-                        <!-- Progress Steps - Mobile Vertical, Desktop Horizontal -->
+                        <!-- Progress Steps - Modern Stepper -->
                         <div class="mb-8 sm:mb-12">
-                            <!-- Mobile: Vertical Steps -->
-                            <div class="sm:hidden space-y-3">
-                                <div class="flex items-center">
-                                    <div class="w-9 h-9 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center text-white text-sm font-bold shadow-lg">
+                            <div class="flex justify-between relative">
+                                <div class="absolute top-1/2 left-0 right-0 h-0.5 bg-gray-200 -translate-y-1/2 -z-10 mx-4"></div>
+                                <div class="flex-1 text-center">
+                                    <div class="w-10 h-10 mx-auto bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center text-white font-bold shadow-lg">
                                         1
                                     </div>
-                                    <div class="ml-3">
+                                    <div class="mt-2">
                                         <p class="text-sm font-semibold text-gray-900">Data Pemohon</p>
-                                        <p class="text-xs text-gray-500">Informasi kontak</p>
                                     </div>
                                 </div>
-                                <div class="flex items-center">
-                                    <div class="w-9 h-9 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center text-white text-sm font-bold shadow-lg">
+                                <div class="flex-1 text-center">
+                                    <div class="w-10 h-10 mx-auto bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-bold shadow-lg">
                                         2
                                     </div>
-                                    <div class="ml-3">
+                                    <div class="mt-2">
                                         <p class="text-sm font-semibold text-gray-900">Detail Masalah</p>
-                                        <p class="text-xs text-gray-500">Deskripsi masalah</p>
                                     </div>
                                 </div>
-                                <div class="flex items-center">
-                                    <div class="w-9 h-9 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full flex items-center justify-center text-white text-sm font-bold shadow-lg">
+                                <div class="flex-1 text-center">
+                                    <div class="w-10 h-10 mx-auto bg-gradient-to-br from-purple-500 to-pink-600 rounded-full flex items-center justify-center text-white font-bold shadow-lg">
                                         3
                                     </div>
-                                    <div class="ml-3">
+                                    <div class="mt-2">
                                         <p class="text-sm font-semibold text-gray-900">Verifikasi</p>
-                                        <p class="text-xs text-gray-500">CAPTCHA keamanan</p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Desktop: Horizontal Steps -->
-                            <div class="hidden sm:flex items-center justify-between">
-                                <div class="flex-1">
-                                    <div class="flex items-center">
-                                        <div class="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center text-white font-bold shadow-lg">
-                                            1
-                                        </div>
-                                        <div class="ml-3 text-left">
-                                            <p class="text-sm font-semibold text-gray-900">Data Pemohon</p>
-                                            <p class="text-xs text-gray-500">Informasi kontak</p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="flex-1 mx-4">
-                                    <div class="h-1 bg-gradient-to-r from-green-500 to-gray-300 rounded-full"></div>
-                                </div>
-                                <div class="flex-1">
-                                    <div class="flex items-center">
-                                        <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-bold shadow-lg">
-                                            2
-                                        </div>
-                                        <div class="ml-3 text-left">
-                                            <p class="text-sm font-semibold text-gray-900">Detail Masalah</p>
-                                            <p class="text-xs text-gray-500">Deskripsi masalah</p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="flex-1 mx-4">
-                                    <div class="h-1 bg-gradient-to-r from-blue-500 to-gray-300 rounded-full"></div>
-                                </div>
-                                <div class="flex-1">
-                                    <div class="flex items-center">
-                                        <div class="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full flex items-center justify-center text-white font-bold shadow-lg">
-                                            3
-                                        </div>
-                                        <div class="ml-3 text-left">
-                                            <p class="text-sm font-semibold text-gray-900">Verifikasi</p>
-                                            <p class="text-xs text-gray-500">CAPTCHA keamanan</p>
-                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -204,7 +158,7 @@
                                             id="requester_name"
                                             value="{{ old('requester_name') }}"
                                             required
-                                            class="block w-full pl-9 sm:pl-10 pr-3 py-2.5 sm:py-3 border-2 border-gray-200 rounded-lg sm:rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all text-sm sm:text-base @error('requester_name') border-red-500 @enderror"
+                                            class="block w-full pl-9 sm:pl-10 pr-3 py-2.5 sm:py-3 border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all text-sm sm:text-base @error('requester_name') border-red-500 @enderror"
                                             placeholder="Masukkan nama lengkap"
                                         >
                                     </div>
@@ -235,7 +189,7 @@
                                             id="requester_email"
                                             value="{{ old('requester_email') }}"
                                             required
-                                            class="block w-full pl-9 sm:pl-10 pr-3 py-2.5 sm:py-3 border-2 border-gray-200 rounded-lg sm:rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all text-sm sm:text-base @error('requester_email') border-red-500 @enderror"
+                                            class="block w-full pl-9 sm:pl-10 pr-3 py-2.5 sm:py-3 border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all text-sm sm:text-base @error('requester_email') border-red-500 @enderror"
                                             placeholder="contoh@email.com"
                                         >
                                     </div>
@@ -266,7 +220,7 @@
                                             id="requester_phone"
                                             value="{{ old('requester_phone') }}"
                                             inputmode="tel"
-                                            class="block w-full pl-9 sm:pl-10 pr-3 py-2.5 sm:py-3 border-2 border-gray-200 rounded-lg sm:rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all text-sm sm:text-base @error('requester_phone') border-red-500 @enderror"
+                                            class="block w-full pl-9 sm:pl-10 pr-3 py-2.5 sm:py-3 border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all text-sm sm:text-base @error('requester_phone') border-red-500 @enderror"
                                             placeholder="08xxxxxxxxxx"
                                         >
                                     </div>
@@ -296,7 +250,7 @@
                                             name="requester_department"
                                             id="requester_department"
                                             value="{{ old('requester_department') }}"
-                                            class="block w-full pl-9 sm:pl-10 pr-3 py-2.5 sm:py-3 border-2 border-gray-200 rounded-lg sm:rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all text-sm sm:text-base @error('requester_department') border-red-500 @enderror"
+                                            class="block w-full pl-9 sm:pl-10 pr-3 py-2.5 sm:py-3 border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all text-sm sm:text-base @error('requester_department') border-red-500 @enderror"
                                             placeholder="Poliklinik Mata / Radiologi / Rungan Melati"
                                         >
                                     </div>
@@ -313,7 +267,7 @@
                         </div>
 
                         <!-- Divider -->
-                        <div class="border-t-2 border-gray-100 my-8 sm:my-10"></div>
+                        <div class="border-t border-gray-100 my-8 sm:my-10"></div>
 
                         <!-- Section 2: Detail Permasalahan -->
                         <div class="mb-8 sm:mb-10">
@@ -347,7 +301,7 @@
                                             id="subject"
                                             value="{{ old('subject') }}"
                                             required
-                                            class="block w-full pl-9 sm:pl-10 pr-3 py-2.5 sm:py-3 border-2 border-gray-200 rounded-lg sm:rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-sm sm:text-base @error('subject') border-red-500 @enderror"
+                                            class="block w-full pl-9 sm:pl-10 pr-3 py-2.5 sm:py-3 border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-sm sm:text-base @error('subject') border-red-500 @enderror"
                                             placeholder="Ringkasan singkat permasalahan"
                                         >
                                     </div>
@@ -377,7 +331,7 @@
                                             id="description"
                                             rows="5"
                                             required
-                                            class="block w-full pl-9 sm:pl-10 pr-3 py-2.5 sm:py-3 border-2 border-gray-200 rounded-lg sm:rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all resize-none text-sm sm:text-base @error('description') border-red-500 @enderror"
+                                            class="block w-full pl-9 sm:pl-10 pr-3 py-2.5 sm:py-3 border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all resize-none text-sm sm:text-base @error('description') border-red-500 @enderror"
                                             placeholder="Jelaskan detail permasalahan yang dialami, kapan mulai terjadi, dan langkah yang sudah dicoba..."
                                         >{{ old('description') }}</textarea>
                                     </div>
@@ -402,7 +356,7 @@
                                             <select
                                                 name="category_id"
                                                 id="category_id"
-                                                class="block w-full px-3 sm:px-4 py-2.5 sm:py-3 border-2 border-gray-200 rounded-lg sm:rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all appearance-none bg-white text-sm sm:text-base @error('category_id') border-red-500 @enderror"
+                                                class="block w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all appearance-none bg-white text-sm sm:text-base @error('category_id') border-red-500 @enderror"
                                             >
                                                 <option value="">-- Pilih Kategori --</option>
                                                 @foreach($categories as $category)
@@ -437,7 +391,7 @@
                                                 name="priority"
                                                 id="priority"
                                                 required
-                                                class="block w-full px-3 sm:px-4 py-2.5 sm:py-3 border-2 border-gray-200 rounded-lg sm:rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all appearance-none bg-white text-sm sm:text-base @error('priority') border-red-500 @enderror"
+                                                class="block w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all appearance-none bg-white text-sm sm:text-base @error('priority') border-red-500 @enderror"
                                             >
                                                 <option value="">-- Pilih Prioritas --</option>
                                                 <option value="critical" {{ old('priority') == 'critical' ? 'selected' : '' }}>
@@ -473,7 +427,7 @@
                         </div>
 
                         <!-- Divider -->
-                        <div class="border-t-2 border-gray-100 my-8 sm:my-10"></div>
+                        <div class="border-t border-gray-100 my-8 sm:my-10"></div>
 
                         <!-- Section 3: Informasi Perangkat -->
                         <div class="mb-8 sm:mb-10">
@@ -506,7 +460,7 @@
                                             name="asset_name"
                                             id="asset_name"
                                             value="{{ old('asset_name') }}"
-                                            class="block w-full pl-9 sm:pl-10 pr-3 py-2.5 sm:py-3 border-2 border-gray-200 rounded-lg sm:rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all text-sm sm:text-base @error('asset_name') border-red-500 @enderror"
+                                            class="block w-full pl-9 sm:pl-10 pr-3 py-2.5 sm:py-3 border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all text-sm sm:text-base @error('asset_name') border-red-500 @enderror"
                                             placeholder="Contoh: Laptop Dell Latitude"
                                         >
                                     </div>
@@ -536,7 +490,7 @@
                                             name="asset_serial"
                                             id="asset_serial"
                                             value="{{ old('asset_serial') }}"
-                                            class="block w-full pl-9 sm:pl-10 pr-3 py-2.5 sm:py-3 border-2 border-gray-200 rounded-lg sm:rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all text-sm sm:text-base @error('asset_serial') border-red-500 @enderror"
+                                            class="block w-full pl-9 sm:pl-10 pr-3 py-2.5 sm:py-3 border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all text-sm sm:text-base @error('asset_serial') border-red-500 @enderror"
                                             placeholder="Nomor seri perangkat"
                                         >
                                     </div>
@@ -567,7 +521,7 @@
                                             name="location"
                                             id="location"
                                             value="{{ old('location') }}"
-                                            class="block w-full pl-9 sm:pl-10 pr-3 py-2.5 sm:py-3 border-2 border-gray-200 rounded-lg sm:rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all text-sm sm:text-base @error('location') border-red-500 @enderror"
+                                            class="block w-full pl-9 sm:pl-10 pr-3 py-2.5 sm:py-3 border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all text-sm sm:text-base @error('location') border-red-500 @enderror"
                                             placeholder="Contoh: Gedung A, Lantai 2, Ruang 201"
                                         >
                                     </div>
@@ -584,7 +538,7 @@
                         </div>
 
                         <!-- Divider -->
-                        <div class="border-t-2 border-gray-100 my-8 sm:my-10"></div>
+                        <div class="border-t border-gray-100 my-8 sm:my-10"></div>
 
                         <!-- Section 4: Upload Foto -->
                         <div class="mb-8 sm:mb-10">
@@ -602,7 +556,7 @@
                             </div>
 
                             <!-- Photo Upload Area -->
-                            <div class="bg-gradient-to-br from-teal-50 to-cyan-50 rounded-xl sm:rounded-2xl p-4 sm:p-6 border-2 border-teal-100">
+                            <div class="bg-gradient-to-br from-teal-50 to-cyan-50 rounded-xl p-4 sm:p-6 border border-teal-100">
                                 <!-- Upload Buttons -->
                                 <div class="grid grid-cols-2 gap-3 sm:gap-4 mb-4">
                                     <!-- Camera Button -->
@@ -684,11 +638,8 @@
                             </div>
                         </div>
 
-                        <!-- Hidden file inputs for form submission -->
-                        <!-- Photo inputs are placed below and triggered by labels above -->
-
                         <!-- Divider -->
-                        <div class="border-t-2 border-gray-100 my-8 sm:my-10"></div>
+                        <div class="border-t border-gray-100 my-8 sm:my-10"></div>
 
                         <!-- Section 5: CAPTCHA Verification -->
                         <div class="mb-8 sm:mb-10">
@@ -704,10 +655,10 @@
                                 </div>
                             </div>
 
-                            <div class="bg-gradient-to-br from-slate-50 to-blue-50 rounded-xl sm:rounded-2xl p-4 sm:p-6 border-2 border-blue-100">
+                            <div class="bg-gradient-to-br from-slate-50 to-blue-50 rounded-xl p-4 sm:p-6 border border-blue-100">
                                 <div class="flex flex-col gap-4">
                                     <!-- CAPTCHA Question -->
-                                    <div class="flex-shrink-0 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-lg sm:rounded-xl font-mono text-lg sm:text-xl font-bold shadow-lg select-none text-center">
+                                    <div class="flex-shrink-0 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-lg font-mono text-lg sm:text-xl font-bold shadow-lg select-none text-center">
                                         {{ $captcha['question'] }}
                                     </div>
 
@@ -721,12 +672,12 @@
                                             required
                                             autocomplete="off"
                                             inputmode="numeric"
-                                            class="flex-1 sm:flex-none sm:w-32 px-3 sm:px-4 py-3 sm:py-4 border-2 border-gray-300 rounded-lg sm:rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-center font-mono text-lg sm:text-xl font-bold transition-all @error('captcha') border-red-500 @enderror"
+                                            class="flex-1 sm:flex-none sm:w-32 px-3 sm:px-4 py-3 sm:py-4 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-center font-mono text-lg sm:text-xl font-bold transition-all @error('captcha') border-red-500 @enderror"
                                             placeholder="?"
                                         >
                                         <a
                                             href="{{ route('repair-requests.create') }}"
-                                            class="flex-shrink-0 p-2.5 sm:p-3 bg-white hover:bg-gray-50 border-2 border-gray-200 hover:border-gray-300 rounded-lg sm:rounded-xl transition-all shadow-sm hover:shadow-md group"
+                                            class="flex-shrink-0 p-2.5 sm:p-3 bg-white hover:bg-gray-50 border border-gray-200 hover:border-gray-300 rounded-lg transition-all shadow-sm hover:shadow-md group"
                                             title="Ganti Soal CAPTCHA"
                                         >
                                             <svg class="w-5 h-5 text-gray-600 group-hover:text-blue-600 group-hover:rotate-180 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -757,8 +708,8 @@
                         </div>
 
                         <!-- Submit Button - Mobile Full Width -->
-                        <div class="pt-6 sm:pt-8 border-t-2 border-gray-100">
-                            <div class="flex flex-col-reverse sm:flex-row items-center justify-between gap-4">
+                        <div class="pt-6 sm:pt-8 border-t border-gray-100">
+                            <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
                                 <a href="{{ url('/') }}" class="inline-flex items-center space-x-2 text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors group">
                                     <svg class="w-5 h-5 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
@@ -779,45 +730,12 @@
                                 </button>
                             </div>
                         </div>
+                        
+                        <!-- Hidden file inputs for form submission -->
+                        <div id="hiddenFileInputs"></div>
                     </form>
                 </div>
             </div>
-
-            <!-- Info Cards - Mobile Optimized -->
-            <!--<div class="mt-8 sm:mt-12 grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">-->
-                <!-- Card 1 -->
-                <!--<div class="bg-white/80 backdrop-blur-lg rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-lg border border-white/20 hover:shadow-xl transition-shadow">
-                    <div class="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg sm:rounded-xl flex items-center justify-center mb-3 sm:mb-4">
-                        <svg class="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                    </div>
-                    <h3 class="font-bold text-gray-900 mb-2 text-sm sm:text-base">Proses Cepat</h3>
-                    <p class="text-xs sm:text-sm text-gray-600">Permintaan Anda akan ditinjau oleh IT Manager dalam waktu 1x24 jam</p>
-                </div>-->
-
-                <!-- Card 2 -->
-                <!--<div class="bg-white/80 backdrop-blur-lg rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-lg border border-white/20 hover:shadow-xl transition-shadow">
-                    <div class="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-green-500 to-emerald-600 rounded-lg sm:rounded-xl flex items-center justify-center mb-3 sm:mb-4">
-                        <svg class="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                        </svg>
-                    </div>
-                    <h3 class="font-bold text-gray-900 mb-2 text-sm sm:text-base">Notifikasi Email</h3>
-                    <p class="text-xs sm:text-sm text-gray-600">Anda akan menerima notifikasi melalui email yang terdaftar</p>
-                </div>-->
-
-                <!-- Card 3 -->
-                <!--<div class="bg-white/80 backdrop-blur-lg rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-lg border border-white/20 hover:shadow-xl transition-shadow">
-                    <div class="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-purple-500 to-pink-600 rounded-lg sm:rounded-xl flex items-center justify-center mb-3 sm:mb-4">
-                        <svg class="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                    </div>
-                    <h3 class="font-bold text-gray-900 mb-2 text-sm sm:text-base">Simpan Nomor</h3>
-                    <p class="text-xs sm:text-sm text-gray-600">Catat nomor permintaan untuk tracking status permintaan Anda</p>
-                </div>-->
-            <!--</div>-->
         </div>
     </main>
 
@@ -959,6 +877,38 @@
                 countInfo.classList.add('hidden');
             }
         }
+        
+        // Handle form submission - transfer files to hidden inputs
+        document.querySelector('form').addEventListener('submit', function(e) {
+            const hiddenContainer = document.getElementById('hiddenFileInputs');
+            hiddenContainer.innerHTML = '';
+            
+            // Create hidden file inputs for each photo
+            photoPreviews.forEach((photo, index) => {
+                if (photo && photo.file) {
+                    const input = document.createElement('input');
+                    input.type = 'file';
+                    input.name = 'photos[]';
+                    input.style.display = 'none';
+                    
+                    // Create File object from the stored file
+                    const file = new File([photo.file], photo.file.name, {
+                        type: photo.file.type,
+                        lastModified: photo.file.lastModified
+                    });
+                    
+                    // Use DataTransfer to set the file
+                    const dataTransfer = new DataTransfer();
+                    dataTransfer.items.add(file);
+                    input.files = dataTransfer.files;
+                    
+                    hiddenContainer.appendChild(input);
+                }
+            });
+            
+            // Log for debugging
+            console.log('Submitting with', photoPreviews.filter(p => p && p.file).length, 'photos');
+        });
 
         // Drag and drop support
         document.addEventListener('DOMContentLoaded', function() {

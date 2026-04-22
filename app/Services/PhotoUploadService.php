@@ -57,10 +57,10 @@ class PhotoUploadService
             'filename' => $originalFilename . '.webp',
             'path' => $path,
             'mime_type' => 'image/webp',
-            'file_size' => $imageData['file_size'],
+            'file_size' => $imageData['file_size'] ?? 0,
             'original_size' => $originalSize,
-            'width' => $imageData['width'],
-            'height' => $imageData['height'],
+            'width' => $imageData['width'] ?? 0,
+            'height' => $imageData['height'] ?? 0,
             'photo_taken_at' => $photoTakenAt,
             'exif_data' => $exifData['raw'] ?? null,
         ];
@@ -71,28 +71,44 @@ class PhotoUploadService
      */
     protected static function processImage(UploadedFile $file, string $path): array
     {
-        $manager = new ImageManager(new Driver());
-        $image = $manager->decodePath($file->getRealPath());
+        try {
+            // Ensure directory exists
+            $directory = dirname($path);
+            if (!Storage::disk('public')->exists($directory)) {
+                Storage::disk('public')->makeDirectory($directory);
+            }
 
-        $originalWidth = $image->width();
-        $originalHeight = $image->height();
+            $manager = new ImageManager(Driver::class);
+            $image = $manager->decode($file->getRealPath());
 
-        // Resize if too large
-        if ($originalWidth > self::MAX_WIDTH || $originalHeight > self::MAX_HEIGHT) {
-            $image->scale(width: self::MAX_WIDTH, height: self::MAX_HEIGHT, upSize: false);
+            $originalWidth = $image->width();
+            $originalHeight = $image->height();
+
+            // Resize if too large
+            if ($originalWidth > self::MAX_WIDTH || $originalHeight > self::MAX_HEIGHT) {
+                $image->scale(width: self::MAX_WIDTH, height: self::MAX_HEIGHT, upSize: false);
+            }
+
+            // Save as WebP
+            $image->save(Storage::disk('public')->path($path), self::WEBP_QUALITY, 'webp');
+
+            return [
+                'file_size' => Storage::disk('public')->size($path),
+                'width' => $image->width(),
+                'height' => $image->height(),
+            ];
+        } catch (\Exception $e) {
+            \Log::error('Photo upload error: ' . $e->getMessage());
+            // Fallback: store original file
+            $fallbackPath = str_replace('.webp', '.jpg', $path);
+            $file->storeAs(dirname($fallbackPath), basename($fallbackPath), 'public');
+            
+            return [
+                'file_size' => Storage::disk('public')->size($fallbackPath),
+                'width' => 0,
+                'height' => 0,
+            ];
         }
-
-        // Encode to WebP with quality
-        $webpContent = (string) $image->toWebp(self::WEBP_QUALITY);
-        
-        // Save to storage
-        Storage::disk('public')->put($path, $webpContent);
-
-        return [
-            'file_size' => strlen($webpContent),
-            'width' => $image->width(),
-            'height' => $image->height(),
-        ];
     }
 
     /**

@@ -46,14 +46,23 @@ class RepairRequestController extends Controller
                 ->with('captcha_error', true);
         }
 
+        // Debug logging
+        \Log::info('Repair request submit', [
+            'has_files' => $request->hasFile('photos'),
+            'files_count' => $request->file('photos') ? count($request->file('photos')) : 0,
+        ]);
+
         // Validate photos if uploaded
         $photoPaths = [];
         if ($request->hasFile('photos')) {
             $validationError = null;
-            foreach ($request->file('photos') as $photo) {
+            foreach ($request->file('photos') as $index => $photo) {
+                \Log::info("Photo {$index}: " . $photo->getClientOriginalName() . ', size: ' . $photo->getSize() . ', mime: ' . $photo->getMimeType());
+                
                 $error = PhotoUploadService::validate($photo);
                 if ($error) {
                     $validationError = $error;
+                    \Log::error("Photo validation error: {$error}");
                     break;
                 }
             }
@@ -81,24 +90,33 @@ class RepairRequestController extends Controller
                 'location' => $request->location,
                 'asset_name' => $request->asset_name,
                 'asset_serial' => $request->asset_serial,
-                'status' => 'submitted', // Langung submitted agar bisa diverifikasi
+                'status' => 'submitted',
             ]);
+
+            \Log::info('Repair request created', ['id' => $repairRequest->id, 'request_number' => $repairRequest->request_number]);
 
             // Process and save photos
             if ($request->hasFile('photos')) {
-                foreach ($request->file('photos') as $photo) {
+                foreach ($request->file('photos') as $index => $photo) {
+                    \Log::info("Uploading photo {$index}...");
                     $photoData = PhotoUploadService::upload($photo);
-                    $repairRequest->photos()->create($photoData);
+                    \Log::info("Photo data: " . json_encode($photoData));
+                    
+                    $photo = $repairRequest->photos()->create($photoData);
+                    \Log::info("Photo saved with ID: {$photo->id}, path: {$photo->path}");
                 }
             }
 
             DB::commit();
+
+            \Log::info('Repair request completed', ['id' => $repairRequest->id]);
 
             return redirect()
                 ->route('repair-requests.success', $repairRequest->request_number)
                 ->with('success', 'Permintaan perbaikan berhasil dikirim. Nomor permintaan Anda: '.$repairRequest->request_number);
         } catch (\Exception $e) {
             DB::rollBack();
+            \Log::error('Repair request failed: ' . $e->getMessage());
 
             return back()->with('error', 'Terjadi kesalahan saat mengirim permintaan. Silakan coba lagi.');
         }
@@ -164,7 +182,7 @@ class RepairRequestController extends Controller
             abort(403, 'Unauthorized action.');
         }
 
-        $repairRequest->load(['category', 'verifier', 'ticket']);
+        $repairRequest->load(['category', 'verifier', 'ticket', 'photos']);
 
         return view('repair-requests.show', compact('repairRequest'));
     }

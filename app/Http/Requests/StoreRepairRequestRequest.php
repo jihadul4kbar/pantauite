@@ -37,6 +37,8 @@ class StoreRepairRequestRequest extends FormRequest
             'asset_name' => ['nullable', 'string', 'max:255'],
             'asset_serial' => ['nullable', 'string', 'max:255'],
             'captcha' => ['required', 'string'],
+            'photos' => ['nullable', 'array', 'max:5'],
+            'photos.*' => ['image', 'mimes:jpeg,png,jpg,webp', 'max:5120'],
         ];
     }
 
@@ -57,6 +59,10 @@ class StoreRepairRequestRequest extends FormRequest
             'priority.in' => 'Prioritas yang dipilih tidak valid.',
             'category_id.exists' => 'Kategori yang dipilih tidak valid.',
             'captcha.required' => 'CAPTCHA wajib diisi.',
+            'photos.max' => 'Maksimal upload 5 foto.',
+            'photos.*.image' => 'File harus berupa gambar.',
+            'photos.*.mimes' => 'Format gambar harus jpeg, png, jpg, atau webp.',
+            'photos.*.max' => 'Ukuran gambar maksimal 5MB.',
         ];
     }
 
