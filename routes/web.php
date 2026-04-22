@@ -5,6 +5,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\PasswordChangeController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DepartmentController;
+use App\Http\Controllers\FileDownloadController;
 use App\Http\Controllers\KbArticleController;
 use App\Http\Controllers\KbCategoryController;
 use App\Http\Controllers\Maintenance\InventoryPartController;
@@ -15,6 +16,7 @@ use App\Http\Controllers\ReportController;
 use App\Http\Controllers\TicketCategoryController;
 use App\Http\Controllers\TicketController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\VendorController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -24,7 +26,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 // Guest routes (only for non-authenticated users)
-Route::middleware("guest")->group(function () {
+Route::middleware(["guest", "throttle:login"])->group(function () {
     Route::get("login", [LoginController::class, "showLoginForm"])->name(
         "login",
     );
@@ -38,9 +40,9 @@ Route::prefix("repair-requests")
         Route::get("/create", [RepairRequestController::class, "create"])->name(
             "create",
         );
-        Route::post("/store", [RepairRequestController::class, "store"])->name(
-            "store",
-        );
+        Route::post("/store", [RepairRequestController::class, "store"])
+            ->name("store")
+            ->middleware("throttle:repair-request");
         Route::get("/success/{requestNumber}", [
             RepairRequestController::class,
             "success",
@@ -139,7 +141,8 @@ Route::middleware(["auth", "password.expired"])->group(function () {
         TicketController::class,
         "rateTicket",
     ])
-        ->name("tickets.rate");
+        ->name("tickets.rate")
+        ->middleware("throttle:ticket-rating");
 
     // SLA pause/resume
     Route::post("tickets/{ticket}/sla/pause", [
@@ -218,8 +221,29 @@ Route::middleware(["auth", "password.expired"])->group(function () {
     // User Management (IT Manager & Super Admin only)
     Route::resource("users", UserController::class);
 
-    // User Management (IT Manager & Super Admin only)
-    Route::resource('users', UserController::class);
+    // Vendor Management (IT Manager & Super Admin only)
+    Route::resource("vendors", VendorController::class);
+
+    // Secure File Download Routes (with authorization)
+    Route::get("downloads/ticket-attachments/{attachment}", [
+        FileDownloadController::class,
+        "downloadTicketAttachment",
+    ])->name("downloads.ticket-attachment");
+
+    Route::get("downloads/asset-documents/{document}", [
+        FileDownloadController::class,
+        "downloadAssetDocument",
+    ])->name("downloads.asset-document");
+
+    Route::get("downloads/maintenance-photos/{photo}", [
+        FileDownloadController::class,
+        "downloadMaintenancePhoto",
+    ])->name("downloads.maintenance-photo");
+
+    Route::get("downloads/repair-request-photos/{requestNumber}/{photo}", [
+        FileDownloadController::class,
+        "downloadRepairRequestPhoto",
+    ])->name("downloads.repair-request-photo");
 
     // Maintenance Management Module
     Route::prefix("maintenance")
@@ -295,6 +319,24 @@ Route::middleware(["auth", "password.expired"])->group(function () {
                 ReportController::class,
                 "generateKbReport",
             ])->name("kb");
+
+            // Export routes
+            Route::get("/export/tickets/pdf", [
+                ReportController::class,
+                "exportTicketReportPdf",
+            ])->name("export.tickets.pdf");
+            Route::get("/export/tickets/excel", [
+                ReportController::class,
+                "exportTicketReportExcel",
+            ])->name("export.tickets.excel");
+            Route::get("/export/assets/pdf", [
+                ReportController::class,
+                "exportAssetReportPdf",
+            ])->name("export.assets.pdf");
+            Route::get("/export/assets/excel", [
+                ReportController::class,
+                "exportAssetReportExcel",
+            ])->name("export.assets.excel");
         });
 
     // Repair Request Verification (IT Manager & Super Admin only)

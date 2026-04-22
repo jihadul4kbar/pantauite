@@ -378,13 +378,8 @@
                     <div class="p-6">
                         <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                             @foreach($ticket->repairRequest->photos as $index => $photo)
-                                @php
-                                    // Determine the correct URL for the photo
-                                    // Assuming 'file_path' holds the relative path in storage, similar to attachments
-                                    $photoUrl = isset($photo->file_path) ? Storage::url($photo->file_path) : ($photo->url ?? '#');
-                                @endphp
                                 <div class="relative group aspect-square cursor-pointer" onclick="openRepairPhotoModal({{ $index }})">
-                                    <img src="{{ $photoUrl }}" 
+                                    <img src="{{ $photo->url }}" 
                                          alt="Photo {{ $loop->iteration }}" 
                                          class="w-full h-full object-cover rounded-xl border-2 border-gray-200 group-hover:border-blue-500 transition-all shadow-md group-hover:shadow-lg"/>
                                     <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all rounded-xl flex items-center justify-center">
@@ -537,10 +532,6 @@
                 @if($ticket->resolution_notes || $ticket->comments->where('is_solution', true)->count() > 0)
                 <div class="bg-gradient-to-r from-green-50 to-emerald-50 border-2 border-green-200 rounded-2xl overflow-hidden shadow-sm">
                     <div class="px-6 py-4 bg-gradient-to-r from-green-100 to-emerald-100 border-b border-green-200">
-```
-@push('scripts')
-<script>
-
                         <h2 class="text-lg font-bold text-green-900 flex items-center">
                             <svg class="w-5 h-5 mr-2 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>

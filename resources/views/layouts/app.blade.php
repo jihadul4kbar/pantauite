@@ -144,6 +144,9 @@
                             @if(Auth::user()->hasPermission('view-assets') || Auth::user()->hasPermission('manage-assets'))
                             <a href="{{ route('assets.index') }}" class="block px-4 py-2 text-sm transition-colors {{ request()->routeIs('assets.*') ? 'text-emerald-600 font-semibold' : 'text-slate-500 hover:text-emerald-600' }}">Assets</a>
                             @endif
+                            @if(Auth::user()->hasPermission('manage-vendors') || Auth::user()->hasPermission('manage-assets'))
+                            <a href="{{ route('vendors.index') }}" class="block px-4 py-2 text-sm transition-colors {{ request()->routeIs('vendors.*') ? 'text-emerald-600 font-semibold' : 'text-slate-500 hover:text-emerald-600' }}">Vendors</a>
+                            @endif
                             @if(Auth::user()->hasPermission('manage-departments'))
                             <a href="{{ route('departments.index') }}" class="block px-4 py-2 text-sm transition-colors {{ request()->routeIs('departments.*') ? 'text-emerald-600 font-semibold' : 'text-slate-500 hover:text-emerald-600' }}">Departments</a>
                             @endif

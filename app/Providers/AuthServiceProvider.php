@@ -12,6 +12,7 @@ use App\Models\MaintenanceTask;
 use App\Models\RepairRequest;
 use App\Models\Ticket;
 use App\Models\TicketCategory;
+use App\Models\Vendor;
 use App\Policies\AssetPolicy;
 use App\Policies\DepartmentPolicy;
 use App\Policies\InventoryPartPolicy;
@@ -22,6 +23,7 @@ use App\Policies\MaintenanceTaskPolicy;
 use App\Policies\RepairRequestPolicy;
 use App\Policies\TicketCategoryPolicy;
 use App\Policies\TicketPolicy;
+use App\Policies\VendorPolicy;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 
@@ -43,6 +45,7 @@ class AuthServiceProvider extends ServiceProvider
         MaintenanceTask::class => MaintenanceTaskPolicy::class,
         InventoryPart::class => InventoryPartPolicy::class,
         RepairRequest::class => RepairRequestPolicy::class,
+        Vendor::class => VendorPolicy::class,
     ];
 
     /**

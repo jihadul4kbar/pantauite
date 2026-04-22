@@ -10,7 +10,9 @@ use App\Models\TicketCategory;
 use App\Models\User;
 use App\Models\ReportRun;
 use App\Services\ReportService;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ReportController extends Controller
 {
@@ -166,5 +168,193 @@ class ReportController extends Controller
         $filterOptions = $this->reportService->getReportFilterOptions();
 
         return view('reports.kb', compact('reportData', 'filters', 'filterOptions', 'generationTime'));
+    }
+
+    /**
+     * Export ticket report to PDF
+     */
+    public function exportTicketReportPdf(Request $request)
+    {
+        $this->authorize('export-reports', Ticket::class);
+
+        $filters = $request->validate([
+            'status' => ['nullable', 'string', 'in:open,in_progress,resolved,closed,reopened'],
+            'priority' => ['nullable', 'string', 'in:critical,high,medium,low'],
+            'category_id' => ['nullable', 'exists:ticket_categories,id'],
+            'department_id' => ['nullable', 'exists:departments,id'],
+            'assignee_id' => ['nullable', 'exists:users,id'],
+            'date_from' => ['nullable', 'date'],
+            'date_to' => ['nullable', 'date', 'after_or_equal:date_from'],
+            'sla_breached' => ['nullable', 'boolean'],
+            'report_type' => ['required', 'string', 'in:summary,by_status,by_priority,sla_compliance,staff_performance'],
+        ]);
+
+        $startTime = microtime(true);
+
+        $reportData = match ($filters['report_type']) {
+            'summary' => $this->reportService->getTicketSummary($filters),
+            'sla_compliance' => $this->reportService->generateSlaComplianceReport($filters),
+            'staff_performance' => $this->reportService->generateStaffPerformanceReport($filters),
+            default => [
+                'tickets' => $this->reportService->generateTicketReport($filters),
+                'summary' => $this->reportService->getTicketSummary($filters),
+            ],
+        };
+
+        $generationTime = round((microtime(true) - $startTime) * 1000);
+
+        $pdf = Pdf::loadView('reports.exports.ticket-pdf', compact('reportData', 'filters', 'generationTime'))
+            ->setPaper('a4', 'landscape')
+            ->setOption('isHtml5ParserEnabled', true)
+            ->setOption('isRemoteEnabled', true);
+
+        $this->reportService->logReportRun(
+            'ticket_' . $filters['report_type'],
+            $filters,
+            'pdf',
+            $generationTime
+        );
+
+        return $pdf->download('ticket-report-' . now()->format('Y-m-d') . '.pdf');
+    }
+
+    /**
+     * Export ticket report to Excel
+     */
+    public function exportTicketReportExcel(Request $request)
+    {
+        $this->authorize('export-reports', Ticket::class);
+
+        $filters = $request->validate([
+            'status' => ['nullable', 'string', 'in:open,in_progress,resolved,closed,reopened'],
+            'priority' => ['nullable', 'string', 'in:critical,high,medium,low'],
+            'category_id' => ['nullable', 'exists:ticket_categories,id'],
+            'department_id' => ['nullable', 'exists:departments,id'],
+            'assignee_id' => ['nullable', 'exists:users,id'],
+            'date_from' => ['nullable', 'date'],
+            'date_to' => ['nullable', 'date', 'after_or_equal:date_from'],
+            'sla_breached' => ['nullable', 'boolean'],
+            'report_type' => ['required', 'string', 'in:summary,by_status,by_priority,sla_compliance,staff_performance'],
+        ]);
+
+        $startTime = microtime(true);
+
+        $reportData = match ($filters['report_type']) {
+            'summary' => $this->reportService->getTicketSummary($filters),
+            'sla_compliance' => $this->reportService->generateSlaComplianceReport($filters),
+            'staff_performance' => $this->reportService->generateStaffPerformanceReport($filters),
+            default => [
+                'tickets' => $this->reportService->generateTicketReport($filters),
+                'summary' => $this->reportService->getTicketSummary($filters),
+            ],
+        };
+
+        $generationTime = round((microtime(true) - $startTime) * 1000);
+
+        $this->reportService->logReportRun(
+            'ticket_' . $filters['report_type'],
+            $filters,
+            'excel',
+            $generationTime
+        );
+
+        return Excel::download(
+            new \App\Exports\TicketReportExport($reportData, $filters),
+            'ticket-report-' . now()->format('Y-m-d') . '.xlsx'
+        );
+    }
+
+    /**
+     * Export asset report to PDF
+     */
+    public function exportAssetReportPdf(Request $request)
+    {
+        $this->authorize('export-reports', Asset::class);
+
+        $filters = $request->validate([
+            'status' => ['nullable', 'string', 'in:procurement,inventory,deployed,maintenance,retired,disposed'],
+            'asset_type' => ['nullable', 'string', 'in:hardware,software,network'],
+            'department_id' => ['nullable', 'exists:departments,id'],
+            'vendor_id' => ['nullable', 'exists:vendors,id'],
+            'warranty_expiring' => ['nullable', 'boolean'],
+            'warranty_expiring_days' => ['nullable', 'integer', 'min:1', 'max:365'],
+            'report_type' => ['required', 'string', 'in:summary,inventory,warranty_expiry'],
+        ]);
+
+        $startTime = microtime(true);
+
+        $reportData = match ($filters['report_type']) {
+            'summary' => $this->reportService->getAssetSummary($filters),
+            'inventory' => $this->reportService->generateAssetReport($filters),
+            'warranty_expiry' => [
+                'assets' => $this->reportService->generateAssetReport(array_merge($filters, ['warranty_expiring' => true])),
+                'summary' => $this->reportService->getAssetSummary($filters),
+            ],
+            default => [
+                'assets' => $this->reportService->generateAssetReport($filters),
+                'summary' => $this->reportService->getAssetSummary($filters),
+            ],
+        };
+
+        $generationTime = round((microtime(true) - $startTime) * 1000);
+
+        $pdf = Pdf::loadView('reports.exports.asset-pdf', compact('reportData', 'filters', 'generationTime'))
+            ->setPaper('a4', 'landscape');
+
+        $this->reportService->logReportRun(
+            'asset_' . $filters['report_type'],
+            $filters,
+            'pdf',
+            $generationTime
+        );
+
+        return $pdf->download('asset-report-' . now()->format('Y-m-d') . '.pdf');
+    }
+
+    /**
+     * Export asset report to Excel
+     */
+    public function exportAssetReportExcel(Request $request)
+    {
+        $this->authorize('export-reports', Asset::class);
+
+        $filters = $request->validate([
+            'status' => ['nullable', 'string', 'in:procurement,inventory,deployed,maintenance,retired,disposed'],
+            'asset_type' => ['nullable', 'string', 'in:hardware,software,network'],
+            'department_id' => ['nullable', 'exists:departments,id'],
+            'vendor_id' => ['nullable', 'exists:vendors,id'],
+            'warranty_expiring' => ['nullable', 'boolean'],
+            'warranty_expiring_days' => ['nullable', 'integer', 'min:1', 'max:365'],
+            'report_type' => ['required', 'string', 'in:summary,inventory,warranty_expiry'],
+        ]);
+
+        $startTime = microtime(true);
+
+        $reportData = match ($filters['report_type']) {
+            'summary' => $this->reportService->getAssetSummary($filters),
+            'inventory' => $this->reportService->generateAssetReport($filters),
+            'warranty_expiry' => [
+                'assets' => $this->reportService->generateAssetReport(array_merge($filters, ['warranty_expiring' => true])),
+                'summary' => $this->reportService->getAssetSummary($filters),
+            ],
+            default => [
+                'assets' => $this->reportService->generateAssetReport($filters),
+                'summary' => $this->reportService->getAssetSummary($filters),
+            ],
+        };
+
+        $generationTime = round((microtime(true) - $startTime) * 1000);
+
+        $this->reportService->logReportRun(
+            'asset_' . $filters['report_type'],
+            $filters,
+            'excel',
+            $generationTime
+        );
+
+        return Excel::download(
+            new \App\Exports\AssetReportExport($reportData, $filters),
+            'asset-report-' . now()->format('Y-m-d') . '.xlsx'
+        );
     }
 }
