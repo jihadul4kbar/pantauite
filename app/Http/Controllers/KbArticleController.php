@@ -254,7 +254,7 @@ class KbArticleController extends Controller
     protected function processImageToWebp($file, string $directory): string
     {
         $manager = new ImageManager(new Driver());
-        $image = $manager->read($file->getRealPath());
+        $image = $manager->decodePath($file->getRealPath());
 
         $originalWidth = $image->width();
         $originalHeight = $image->height();
@@ -263,7 +263,7 @@ class KbArticleController extends Controller
             $image->scale(width: 1920, height: 1080, upSize: false);
         }
 
-        $webpContent = $image->toWebp(80)->encode();
+        $webpContent = (string) $image->toWebp(80);
         
         $filename = uniqid('kb_') . '_' . time() . '.webp';
         $path = $directory . '/' . $filename;

@@ -48,6 +48,9 @@ class Ticket extends Model
         'resolution_notes',
         'satisfaction_rating',
         'satisfaction_feedback',
+        'requester_name',
+        'requester_email',
+        'requester_department',
     ];
 
     protected $casts = [

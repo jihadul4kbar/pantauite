@@ -72,7 +72,7 @@ class PhotoUploadService
     protected static function processImage(UploadedFile $file, string $path): array
     {
         $manager = new ImageManager(new Driver());
-        $image = $manager->read($file->getRealPath());
+        $image = $manager->decodePath($file->getRealPath());
 
         $originalWidth = $image->width();
         $originalHeight = $image->height();
@@ -82,8 +82,8 @@ class PhotoUploadService
             $image->scale(width: self::MAX_WIDTH, height: self::MAX_HEIGHT, upSize: false);
         }
 
-        // Encode to WebP
-        $webpContent = $image->toWebp(self::WEBP_QUALITY)->encode();
+        // Encode to WebP with quality
+        $webpContent = (string) $image->toWebp(self::WEBP_QUALITY);
         
         // Save to storage
         Storage::disk('public')->put($path, $webpContent);

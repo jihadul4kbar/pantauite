@@ -49,8 +49,16 @@ class UpdateAssetRequest extends FormRequest
 
         // Only validate images if files are actually uploaded
         if ($this->hasFile('images')) {
-            $rules['images'] = ['required', 'array', 'max:5'];
-            $rules['images.*'] = ['image', 'mimes:jpeg,png,jpg,gif', 'max:2048'];
+            $asset = $this->route('asset');
+            $existingImagesCount = $asset && $asset->images ? count($asset->images) : 0;
+            $maxNewImages = 5 - $existingImagesCount;
+            
+            if ($maxNewImages > 0) {
+                $rules['images'] = ['required', 'array', 'max:' . $maxNewImages];
+            } else {
+                $rules['images'] = ['required', 'array', 'max:0']; // No more images allowed
+            }
+            $rules['images.*'] = ['image', 'mimes:jpeg,png,jpg,gif,webp', 'max:5120'];
         }
 
         return $rules;

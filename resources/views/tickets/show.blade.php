@@ -762,15 +762,48 @@
                             @endcan
                         </div>
 
-                        <!-- Created By -->
+                        <!-- Reported By (Department or User) -->
                         <div>
                             <label class="block text-xs font-semibold text-gray-500 mb-2 uppercase tracking-wide">{{ __('tickets.reported_by') }}</label>
+                            @if($ticket->department)
+                            {{-- Display Department as Reporter --}}
+                            <div class="flex items-center space-x-3 bg-gradient-to-r from-blue-50 to-indigo-50 px-4 py-3 rounded-xl border border-blue-200">
+                                <div class="w-8 h-8 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-sm">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <p class="text-sm font-medium text-gray-900">{{ $ticket->department->name }}</p>
+                                    @if($ticket->requester_name)
+                                    <p class="text-xs text-gray-600">{{ $ticket->requester_name }}</p>
+                                    @endif
+                                </div>
+                            </div>
+                            @elseif($ticket->requester_department)
+                            {{-- Display Requester Department from Repair Request --}}
+                            <div class="flex items-center space-x-3 bg-gradient-to-r from-blue-50 to-indigo-50 px-4 py-3 rounded-xl border border-blue-200">
+                                <div class="w-8 h-8 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-sm">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <p class="text-sm font-medium text-gray-900">{{ $ticket->requester_department }}</p>
+                                    @if($ticket->requester_name)
+                                    <p class="text-xs text-gray-600">{{ $ticket->requester_name }}</p>
+                                    @endif
+                                </div>
+                            </div>
+                            @else
+                            {{-- Fallback to User --}}
                             <div class="flex items-center space-x-3 bg-gradient-to-r from-green-50 to-emerald-50 px-4 py-3 rounded-xl border border-green-200">
                                 <div class="w-8 h-8 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-sm">
                                     {{ substr($ticket->user->name, 0, 1) }}
                                 </div>
                                 <p class="text-sm font-medium text-gray-900">{{ $ticket->user->name }}</p>
                             </div>
+                            @endif
                         </div>
 
                         <!-- Created At -->

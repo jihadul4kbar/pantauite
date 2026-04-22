@@ -19,7 +19,7 @@ class StoreAssetRequest extends FormRequest
      */
     public function rules(): array
     {
-        $rules = [
+        return [
             'asset_type' => ['required', 'in:hardware,software,network'],
             'name' => ['required', 'string', 'max:255'],
             'brand' => ['nullable', 'string', 'max:100'],
@@ -45,15 +45,9 @@ class StoreAssetRequest extends FormRequest
             'depreciation_method' => ['nullable', 'in:straight_line,declining_balance,none'],
             'useful_life_years' => ['nullable', 'integer', 'min:1'],
             'notes' => ['nullable', 'string'],
+            'images' => ['required', 'array', 'min:1', 'max:5'],
+            'images.*' => ['image', 'mimes:jpeg,png,jpg,webp', 'max:5120'],
         ];
-
-        // Only validate images if files are actually uploaded
-        if ($this->hasFile('images')) {
-            $rules['images'] = ['required', 'array', 'min:5', 'max:5'];
-            $rules['images.*'] = ['image', 'mimes:jpeg,png,jpg,gif', 'max:2048'];
-        }
-
-        return $rules;
     }
 
     /**
@@ -69,11 +63,11 @@ class StoreAssetRequest extends FormRequest
             'condition.required' => 'Asset condition is required.',
             'price.numeric' => 'Price must be a valid number.',
             'warranty_end.after_or_equal' => 'Warranty end date must be after start date.',
-            'images.min' => 'Minimum 5 images required.',
-            'images.max' => 'Maximum 5 images allowed.',
-            'images.*.image' => 'Each file must be an image.',
-            'images.*.mimes' => 'Images must be: jpeg, png, jpg, or gif.',
-            'images.*.max' => 'Each image must be less than 2MB.',
+            'images.required' => 'Wajib upload minimal 1 gambar',
+            'images.min' => 'Minimal 1 gambar',
+            'images.max' => 'Maksimal 5 gambar',
+            'images.*.image' => 'File harus gambar',
+            'images.*.max' => 'Ukuran gambar maksimal 5MB',
         ];
     }
 }

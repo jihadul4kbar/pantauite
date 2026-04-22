@@ -260,14 +260,29 @@ class RepairRequestController extends Controller
                 throw new \Exception('Tidak ada user IT yang tersedia untuk membuat tiket.');
             }
 
-            // Create the ticket using TicketService
+            // Find department by name from requester_department
+            $departmentId = null;
+            if ($repairRequest->requester_department) {
+                $department = \App\Models\Department::where('name', $repairRequest->requester_department)
+                    ->orWhere('code', $repairRequest->requester_department)
+                    ->first();
+                
+                if ($department) {
+                    $departmentId = $department->id;
+                }
+            }
+
+            // Create the ticket using TicketService with department as reporter
             $ticket = $this->ticketService->createTicket([
                 'subject' => $repairRequest->subject,
                 'description' => $repairRequest->description,
                 'priority' => $repairRequest->priority,
                 'category_id' => $repairRequest->category_id,
-                'department_id' => null,
+                'department_id' => $departmentId,
                 'source' => 'web',
+                'requester_name' => $repairRequest->requester_name,
+                'requester_email' => $repairRequest->requester_email,
+                'requester_department' => $repairRequest->requester_department,
             ], $defaultUser);
 
             // Mark repair request as converted
