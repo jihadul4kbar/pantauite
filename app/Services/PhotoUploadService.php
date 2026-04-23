@@ -86,7 +86,7 @@ class PhotoUploadService
 
             // Resize if too large
             if ($originalWidth > self::MAX_WIDTH || $originalHeight > self::MAX_HEIGHT) {
-                $image->scale(width: self::MAX_WIDTH, height: self::MAX_HEIGHT, upSize: false);
+                $image->scale(width: self::MAX_WIDTH, height: self::MAX_HEIGHT, upscale: false);
             }
 
             // Save as WebP
