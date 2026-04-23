@@ -397,7 +397,8 @@ class AssetController extends Controller
             $originalHeight = $image->height();
 
             if ($originalWidth > 1920 || $originalHeight > 1080) {
-                $image->scale(width: 1920, height: 1080, upSize: false);
+                // $image->scale(width: 1920, height: 1080, upSize: false);
+                $image->scaleDown(width: 1920, height: 1080);
             }
 
             $filename = uniqid('asset_') . '_' . time() . '.webp';
