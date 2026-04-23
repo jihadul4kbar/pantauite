@@ -229,7 +229,7 @@
                 <!-- Action Buttons -->
                 <div class="flex flex-col sm:flex-row gap-3">
                     @if($repairRequest->status === 'submitted')
-                        <form action="{{ route('repair-requests.admin.approve', $repairRequest->id) }}" method="POST" class="flex-1">
+                        <form action="{{ route('repair-requests.admin.approve-convert', $repairRequest->id) }}" method="POST" class="flex-1">
                             @csrf
                             @method('POST')
                             <button 
@@ -239,57 +239,104 @@
                                 <svg class="-ml-1 mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                                 </svg>
-                                Setujui
+                                Setujui & Buat Tiket
                             </button>
                         </form>
                         
-                        <form action="{{ route('repair-requests.admin.reject', $repairRequest->id) }}" method="POST" class="flex-1">
+                        <button 
+                            type="button"
+                            onclick="openRejectModal()"
+                            class="w-full inline-flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                        >
+                            <svg class="-ml-1 mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                            Tolak
+                        </button>
+                    @endif
+                </div>
+
+                @if(auth()->user()->isSuperAdmin() && !$repairRequest->isConverted())
+                    <div class="mt-4 pt-4 border-t border-gray-200">
+                        <form 
+                            action="{{ route('repair-requests.admin.destroy', $repairRequest->id) }}" 
+                            method="POST" 
+                            onsubmit="return confirm('Apakah Anda yakin ingin menghapus permintaan perbaikan ini?')"
+                        >
                             @csrf
-                            @method('POST')
+                            @method('DELETE')
                             <button 
                                 type="submit" 
                                 class="w-full inline-flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
                             >
                                 <svg class="-ml-1 mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                 </svg>
-                                Tolak
+                                Hapus Permintaan (Super Admin Only)
                             </button>
                         </form>
-                        
-                        <form action="{{ route('repair-requests.admin.convert', $repairRequest->id) }}" method="POST" class="flex-1">
-                            @csrf
-                            @method('POST')
-                            <button 
-                                type="submit" 
-                                class="w-full inline-flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                            >
-                                <svg class="-ml-1 mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-                                </svg>
-                                Konversi ke Tiket
-                            </button>
-                        </form>
-                    @elseif($repairRequest->status === 'approved')
-                        <form action="{{ route('repair-requests.admin.convert', $repairRequest->id) }}" method="POST" class="flex-1">
-                            @csrf
-                            @method('POST')
-                            <button 
-                                type="submit" 
-                                class="w-full inline-flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                            >
-                                <svg class="-ml-1 mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-                                </svg>
-                                Konversi ke Tiket
-                            </button>
-                        </form>
-                    @endif
-                </div>
+                    </div>
+                @endif
             </div>
         </div>
     </div>
     
+    <!-- Reject Modal -->
+    <div id="rejectModal" class="fixed inset-0 z-50 hidden bg-black bg-opacity-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-semibold text-gray-900">Tolak Permintaan</h3>
+                <button 
+                    type="button" 
+                    onclick="closeRejectModal()"
+                    class="text-gray-400 hover:text-gray-600"
+                >
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            
+            <form action="{{ route('repair-requests.admin.reject', $repairRequest->id) }}" method="POST">
+                @csrf
+                @method('POST')
+                
+                <div class="mb-4">
+                    <label for="rejection_reason" class="block text-sm font-medium text-gray-700 mb-2">
+                        Alasan Penolakan <span class="text-red-500">*</span>
+                    </label>
+                    <textarea 
+                        id="rejection_reason" 
+                        name="rejection_reason" 
+                        rows="4" 
+                        class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-red-500 @error('rejection_reason') border-red-500 @enderror"
+                        placeholder="Jelaskan alasan penolakan permintaan ini..."
+                        required
+                    ></textarea>
+                    @error('rejection_reason')
+                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
+                </div>
+                
+                <div class="flex gap-3">
+                    <button 
+                        type="button" 
+                        onclick="closeRejectModal()"
+                        class="flex-1 px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500"
+                    >
+                        Batal
+                    </button>
+                    <button 
+                        type="submit" 
+                        class="flex-1 px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500"
+                    >
+                        Tolak
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- Image Modal -->
     <div id="imageModal" class="fixed inset-0 z-50 hidden bg-black bg-opacity-90 flex items-center justify-center p-4">
         <div class="relative max-w-6xl w-full">
@@ -435,6 +482,39 @@ document.addEventListener('DOMContentLoaded', function() {
             } else if (event.key === 'Escape') {
                 closeImageModal();
             }
+        }
+    });
+
+    // Reject Modal
+    const rejectModal = document.getElementById('rejectModal');
+    
+    window.openRejectModal = function() {
+        if (rejectModal) {
+            rejectModal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+    };
+
+    window.closeRejectModal = function() {
+        if (rejectModal) {
+            rejectModal.classList.add('hidden');
+            document.body.style.overflow = '';
+        }
+    };
+
+    // Close reject modal on background click
+    if (rejectModal) {
+        rejectModal.addEventListener('click', (event) => {
+            if (event.target === rejectModal) {
+                closeRejectModal();
+            }
+        });
+    }
+
+    // Close reject modal on Escape key
+    window.addEventListener('keydown', (event) => {
+        if (rejectModal && !rejectModal.classList.contains('hidden') && event.key === 'Escape') {
+            closeRejectModal();
         }
     });
 });

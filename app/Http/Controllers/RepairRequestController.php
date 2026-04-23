@@ -188,81 +188,28 @@ class RepairRequestController extends Controller
     }
 
     /**
-     * Approve a repair request (IT Manager).
+     * Approve and convert a repair request to ticket (IT Manager).
      */
-    public function approve(RepairRequest $repairRequest, Request $request)
+    public function approveAndConvert(RepairRequest $repairRequest, Request $request)
     {
         // Authorization
         if (! auth()->user()->hasAnyPermission(['repair_requests.verify', 'manage-tickets'])) {
             abort(403, 'Unauthorized action.');
         }
 
-        $repairRequest->approve(auth()->id());
-
-        return redirect()
-            ->route('repair-requests.admin.index')
-            ->with('success', 'Permintaan perbaikan berhasil disetujui.');
-    }
-
-    /**
-     * Reject a repair request (IT Manager).
-     */
-    public function reject(RepairRequest $repairRequest, Request $request)
-    {
-        // Authorization
-        if (! auth()->user()->hasAnyPermission(['repair_requests.verify', 'manage-tickets'])) {
-            abort(403, 'Unauthorized action.');
-        }
-
-        $request->validate([
-            'rejection_reason' => ['required', 'string', 'max:1000'],
-        ], [
-            'rejection_reason.required' => 'Alasan penolakan wajib diisi.',
-        ]);
-
-        $repairRequest->reject($request->rejection_reason, auth()->id());
-
-        return redirect()
-            ->route('repair-requests.admin.index')
-            ->with('success', 'Permintaan perbaikan ditolak.');
-    }
-
-    /**
-     * Delete a repair request (SUPER ADMIN ONLY).
-     */
-    public function destroy(RepairRequest $repairRequest)
-    {
-        // Cannot delete if already converted to ticket
-        if ($repairRequest->isConverted()) {
-            return back()->with('error', 'Tidak dapat menghapus permintaan yang sudah dikonversi menjadi tiket.');
-        }
-
-        $requestNumber = $repairRequest->request_number;
-        $repairRequest->delete();
-
-        return redirect()
-            ->route('repair-requests.admin.index')
-            ->with('success', "Permintaan perbaikan {$requestNumber} berhasil dihapus.");
-    }
-
-    /**
-     * Convert an approved repair request to a ticket (IT Manager).
-     */
-    public function convertToTicket(RepairRequest $repairRequest)
-    {
-        // Authorization
-        if (! auth()->user()->hasAnyPermission(['repair_requests.verify', 'manage-tickets'])) {
-            abort(403, 'Unauthorized action.');
-        }
-
-        // Can only convert if approved
-        if (! $repairRequest->isApproved()) {
-            return back()->with('error', 'Hanya permintaan yang disetujui yang dapat dikonversi menjadi tiket.');
+        // Can only approve & convert if submitted or approved
+        if (! $repairRequest->isSubmitted() && ! $repairRequest->isApproved()) {
+            return back()->with('error', 'Hanya permintaan yang submitted atau approved yang dapat dikonversi menjadi tiket.');
         }
 
         DB::beginTransaction();
 
         try {
+            // First approve if not already approved
+            if (! $repairRequest->isApproved()) {
+                $repairRequest->approve(auth()->id());
+            }
+
             // Find a default user for the ticket (IT Manager or first IT staff)
             $defaultUser = User::whereHas('role', function ($q) {
                 $q->where('name', 'it_manager');
@@ -310,12 +257,58 @@ class RepairRequestController extends Controller
 
             return redirect()
                 ->route('tickets.show', $ticket->id)
-                ->with('success', 'Permintaan perbaikan berhasil dikonversi menjadi tiket.');
+                ->with('success', 'Permintaan perbaikan berhasil disetujui dan dikonversi menjadi tiket.');
         } catch (\Exception $e) {
             DB::rollBack();
 
             return back()->with('error', 'Gagal mengkonversi permintaan menjadi tiket: '.$e->getMessage());
         }
+    }
+
+    /**
+     * Reject a repair request (IT Manager).
+     */
+    public function reject(RepairRequest $repairRequest, Request $request)
+    {
+        // Authorization
+        if (! auth()->user()->hasAnyPermission(['repair_requests.verify', 'manage-tickets'])) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $request->validate([
+            'rejection_reason' => ['required', 'string', 'max:1000'],
+        ], [
+            'rejection_reason.required' => 'Alasan penolakan wajib diisi.',
+        ]);
+
+        $repairRequest->reject($request->rejection_reason, auth()->id());
+
+        return redirect()
+            ->route('repair-requests.admin.index')
+            ->with('success', 'Permintaan perbaikan ditolak.');
+    }
+
+    /**
+     * Delete a repair request (SUPER ADMIN ONLY).
+     */
+    public function destroy(RepairRequest $repairRequest)
+    {
+        // Authorization: Only Super Admin can delete
+        if (! auth()->user()->isSuperAdmin()) {
+            abort(403, 'Unauthorized action. Only Super Admin can delete repair requests.');
+        }
+
+        // Cannot delete if already converted to ticket
+        if ($repairRequest->isConverted()) {
+            return back()->with('error', 'Tidak dapat menghapus permintaan yang sudah dikonversi menjadi tiket.');
+        }
+
+        $requestNumber = $repairRequest->request_number;
+        $repairRequest->delete();
+
+        return redirect()
+            ->route('repair-requests.admin.index')
+            ->with('success', "Permintaan perbaikan {$requestNumber} berhasil dihapus.");
     }
 
     /**

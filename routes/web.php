@@ -350,18 +350,14 @@ Route::middleware(["auth", "password.expired"])->group(function () {
                 RepairRequestController::class,
                 "show",
             ])->name("show");
-            Route::post("/{repairRequest}/approve", [
+            Route::post("/{repairRequest}/approve-convert", [
                 RepairRequestController::class,
-                "approve",
-            ])->name("approve");
+                "approveAndConvert",
+            ])->name("approve-convert");
             Route::post("/{repairRequest}/reject", [
                 RepairRequestController::class,
                 "reject",
             ])->name("reject");
-            Route::post("/{repairRequest}/convert", [
-                RepairRequestController::class,
-                "convertToTicket",
-            ])->name("convert");
             
             Route::delete("/{repairRequest}", [
                 RepairRequestController::class,
