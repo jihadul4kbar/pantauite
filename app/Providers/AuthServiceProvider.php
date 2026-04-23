@@ -12,6 +12,7 @@ use App\Models\MaintenanceTask;
 use App\Models\RepairRequest;
 use App\Models\Ticket;
 use App\Models\TicketCategory;
+use App\Models\TicketComment;
 use App\Models\Vendor;
 use App\Policies\AssetPolicy;
 use App\Policies\DepartmentPolicy;
@@ -22,6 +23,7 @@ use App\Policies\MaintenanceSchedulePolicy;
 use App\Policies\MaintenanceTaskPolicy;
 use App\Policies\RepairRequestPolicy;
 use App\Policies\TicketCategoryPolicy;
+use App\Policies\TicketCommentPolicy;
 use App\Policies\TicketPolicy;
 use App\Policies\VendorPolicy;
 use Illuminate\Support\Facades\Gate;
@@ -36,6 +38,7 @@ class AuthServiceProvider extends ServiceProvider
      */
     protected $policies = [
         Ticket::class => TicketPolicy::class,
+        TicketComment::class => TicketCommentPolicy::class,
         Asset::class => AssetPolicy::class,
         KbArticle::class => KbArticlePolicy::class,
         KbCategory::class => KbCategoryPolicy::class,

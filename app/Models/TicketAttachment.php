@@ -18,12 +18,17 @@ class TicketAttachment extends Model
     protected $fillable = [
         'ticket_id',
         'comment_id',
+        'photo_type',
         'filename',
         'original_filename',
         'file_path',
         'file_size',
         'mime_type',
         'uploaded_by',
+    ];
+
+    protected $casts = [
+        'photo_type' => 'string',
     ];
 
     // ==================== RELATIONSHIPS ====================

@@ -20,6 +20,7 @@ class TicketComment extends Model
         'comment',
         'is_internal',
         'is_solution',
+        'workflow_stage',
         'attachments',
         'ip_address',
         'user_agent',
@@ -29,6 +30,7 @@ class TicketComment extends Model
         'is_internal' => 'boolean',
         'is_solution' => 'boolean',
         'attachments' => 'array',
+        'workflow_stage' => 'string',
     ];
 
     // ==================== RELATIONSHIPS ====================
@@ -58,5 +60,26 @@ class TicketComment extends Model
     public function scopeSolution($query)
     {
         return $query->where('is_solution', true);
+    }
+
+    public function scopeByWorkflowStage($query, string $stage)
+    {
+        return $query->where('workflow_stage', $stage);
+    }
+
+    public function getWorkflowStageLabelAttribute(): string
+    {
+        return Ticket::WORKFLOW_STAGE_LABELS[$this->workflow_stage] ?? $this->workflow_stage;
+    }
+
+    public function isEditableBy(User $user): bool
+    {
+        if ($this->user_id !== $user->id) {
+            return false;
+        }
+        
+        $editWindow = config('ticket.comment_edit_window_minutes', 15);
+        
+        return now()->diffInMinutes($this->created_at) <= $editWindow;
     }
 }

@@ -24,13 +24,69 @@
         transform: scale(0.95);
     }
     
-    /* Timeline animations */
-    .timeline-item {
+    /* Horizontal Timeline Styles */
+    .timeline-step {
         transition: all 0.3s ease;
     }
     
-    .timeline-item:hover {
-        transform: translateX(4px);
+    .timeline-step:hover {
+        transform: translateY(-2px);
+    }
+    
+    @media (max-width: 1024px) {
+        .timeline-grid {
+            grid-template-columns: repeat(6, 1fr) !important;
+            gap: 0.25rem !important;
+        }
+        
+        .timeline-step .w-10 {
+            width: 2.5rem !important;
+            height: 2.5rem !important;
+        }
+        
+        .timeline-step .w-4 {
+            width: 0.875rem !important;
+            height: 0.875rem !important;
+        }
+        
+        .timeline-step p {
+            font-size: 0.6rem !important;
+        }
+    }
+    
+    @media (max-width: 640px) {
+        .timeline-grid {
+            grid-template-columns: repeat(6, 1fr) !important;
+            gap: 0.125rem !important;
+        }
+        
+        .timeline-step {
+            min-width: 0 !important;
+        }
+        
+        .timeline-step .w-10 {
+            width: 1.75rem !important;
+            height: 1.75rem !important;
+        }
+        
+        .timeline-step .mt-2 {
+            margin-top: 0.125rem !important;
+        }
+        
+        .timeline-step p {
+            font-size: 0.5rem !important;
+        }
+    }
+    
+    /* Modal Styles */
+    .modal-overlay {
+        background-color: rgba(0, 0, 0, 0.75);
+    }
+    
+    /* Photo Modal */
+    #photoModalImage {
+        background-color: #000;
+        display: block;
     }
 </style>
 @endpush
@@ -86,15 +142,13 @@
                             </div>
                         </div>
                         <div class="flex flex-wrap gap-3">
-                            @can('update', $ticket)
+                            @if(auth()->user()->hasRole('super_admin'))
                             <a href="{{ route('tickets.edit', $ticket) }}" class="group/btn inline-flex items-center space-x-2 bg-white bg-opacity-20 backdrop-blur-lg hover:bg-opacity-30 text-gray-800 font-semibold px-5 py-3 rounded-xl transition-all duration-300 shadow-lg">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
                                 </svg>
                                 <span>{{ __('common.edit') }}</span>
                             </a>
-                            @endcan
-                            @can('delete', $ticket)
                             <form action="{{ route('tickets.destroy', $ticket) }}" method="POST" onsubmit="return confirm('{{ __('common.confirm_delete') }}')">
                                 @csrf
                                 @method('DELETE')
@@ -105,124 +159,411 @@
                                     <span>{{ __('common.delete') }}</span>
                                 </button>
                             </form>
-                            @endcan
+                            @endif
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Main Layout: 3 Columns -->
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-            
-            <!-- LEFT: Timeline Progress (2 columns on desktop) -->
-            <div class="lg:col-span-2 hidden lg:block">
-                <div class="sticky top-6">
-                    <div class="bg-white shadow-sm rounded-2xl overflow-hidden">
-                        <div class="px-4 py-3 bg-gradient-to-r from-gray-50 to-white border-b border-gray-100">
-                            <h3 class="text-sm font-bold text-gray-900 flex items-center">
-                                <svg class="w-4 h-4 mr-2 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-                                </svg>
-                                {{ __('tickets.timeline') }}
-                            </h3>
+        <!-- Horizontal Workflow Timeline -->
+        <div class="mb-6">
+            <div class="bg-white shadow-sm rounded-2xl overflow-hidden">
+                <div class="px-6 py-4 bg-gradient-to-r from-gray-50 to-white border-b border-gray-100">
+                    <h3 class="text-sm font-bold text-gray-900 flex items-center">
+                        <svg class="w-4 h-4 mr-2 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                        </svg>
+                        {{ __('tickets.workflow_timeline') }}
+                    </h3>
+                </div>
+                <div class="px-6 py-6">
+                    <div class="relative">
+                        <div class="absolute top-6 left-0 right-0 h-1 bg-gray-200 rounded-full"></div>
+                        
+                        <div class="relative grid grid-cols-6 gap-2 timeline-grid">
+                            @php
+                                $workflowProgress = $ticket->workflow_progress;
+                                $stageIcons = [
+                                    'diterima' => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"></path>',
+                                    'respon' => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>',
+                                    'foto_sebelum' => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>',
+                                    'dikerjakan' => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>',
+                                    'laporan' => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>',
+                                    'selesai' => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>',
+                                ];
+                                $stageColors = [
+                                    'completed' => 'bg-green-500',
+                                    'current' => 'bg-blue-500',
+                                    'pending' => 'bg-gray-300',
+                                ];
+                            @endphp
+
+                            @foreach($workflowProgress as $stage => $data)
+                            <div class="flex flex-col items-center text-center timeline-step">
+                                <div class="w-10 h-10 rounded-full {{ $stageColors[$data['current'] ? 'current' : ($data['completed'] ? 'completed' : 'pending')] }} flex items-center justify-center flex-shrink-0 z-10 shadow-lg">
+                                    <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        {!! $stageIcons[$stage] !!}
+                                    </svg>
+                                </div>
+                                <div class="mt-2">
+                                    <p class="text-xs font-bold text-gray-900">{{ $data['label'] }}</p>
+                                    @if($data['completed'] || $data['current'])
+                                    <p class="text-xs text-gray-500 mt-0.5">
+                                        @if($stage === 'diterima' && $ticket->assignee)
+                                            {{ __('tickets.assigned_to') }}: {{ $ticket->assignee->name }}
+                                        @elseif($stage === 'respon' && $ticket->first_response_at)
+                                            {{ $ticket->first_response_at->format('M d') }}
+                                        @elseif($stage === 'foto_sebelum' && $ticket->before_photos_uploaded)
+                                            <svg class="w-3 h-3 inline text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                                        @elseif($stage === 'dikerjakan' && $ticket->after_photos_uploaded)
+                                            <svg class="w-3 h-3 inline text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                                        @elseif($stage === 'laporan' && $ticket->completion_report_submitted)
+                                            <svg class="w-3 h-3 inline text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                                        @elseif($stage === 'selesai')
+                                            {{ $ticket->closed_at?->format('M d') ?? $ticket->resolved_at?->format('M d') }}
+                                        @endif
+                                    </p>
+                                    @endif
+                                </div>
+                            </div>
+                            @endforeach
                         </div>
-                        <div class="p-4">
-                            <div class="relative">
-                                <!-- Timeline Line -->
-                                <div class="absolute left-4 top-0 bottom-0 w-0.5 bg-gray-200"></div>
-                                
-                                <!-- Timeline Items -->
-                                <div class="space-y-6 relative">
-                                    <!-- Created -->
-                                    <div class="flex items-start">
-                                        <div class="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center flex-shrink-0 z-10">
-                                            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6l4 2"></path>
-                                            </svg>
-                                        </div>
-                                        <div class="ml-3">
-                                            <p class="text-xs font-bold text-gray-900">{{ __('enums.ticket_status.open') }}</p>
-                                            <p class="text-xs text-gray-500">{{ $ticket->created_at->format('M d, H:i') }}</p>
-                                            <p class="text-xs text-gray-400">{{ $ticket->user->name }}</p>
-                                        </div>
-                                    </div>
-                                    
-                                    <!-- First Response -->
-                                    @if($ticket->first_response_at)
-                                    <div class="flex items-start">
-                                        <div class="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center flex-shrink-0 z-10">
-                                            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
-                                            </svg>
-                                        </div>
-                                        <div class="ml-3">
-                                            <p class="text-xs font-bold text-gray-900">{{ __('tickets.first_response') }}</p>
-                                            <p class="text-xs text-gray-500">{{ $ticket->first_response_at->format('M d, H:i') }}</p>
-                                            <p class="text-xs text-green-600 font-medium">{{ $ticket->created_at->diffForHumans($ticket->first_response_at, true) }}</p>
-                                        </div>
-                                    </div>
-                                    @endif
-                                    
-                                    <!-- In Progress -->
-                                    @if($ticket->status === 'in_progress' || in_array($ticket->status, ['resolved', 'closed']))
-                                    <div class="flex items-start">
-                                        <div class="w-8 h-8 rounded-full bg-yellow-500 flex items-center justify-center flex-shrink-0 z-10">
-                                            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                            </svg>
-                                        </div>
-                                        <div class="ml-3">
-                                            <p class="text-xs font-bold text-gray-900">{{ __('enums.ticket_status.in_progress') }}</p>
-                                            @if($ticket->assignee)
-                                            <p class="text-xs text-gray-500">{{ $ticket->assignee->name }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Documentation Checklist -->
+        @can('update', $ticket)
+        <div class="mb-6">
+            <div class="bg-white shadow-sm rounded-2xl overflow-hidden">
+                <div class="px-6 py-4 bg-gradient-to-r from-gray-50 to-white border-b border-gray-100">
+                    <h3 class="text-sm font-bold text-gray-900 flex items-center">
+                        <svg class="w-4 h-4 mr-2 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
+                        </svg>
+                        {{ __('tickets.documentation_checklist') }}
+                    </h3>
+                </div>
+                <div class="px-6 py-4">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <!-- Before Photos -->
+                        <div class="relative">
+                            <form action="{{ route('tickets.milestone.update', $ticket) }}" method="POST" enctype="multipart/form-data">
+                                @csrf
+                                <input type="hidden" name="milestone" value="before_photos">
+                                <div class="p-4 rounded-xl border-2 {{ $ticket->before_photos_uploaded ? 'border-green-300 bg-green-50' : 'border-gray-200 bg-gray-50' }} transition-colors">
+                                    <div class="flex items-start justify-between mb-2">
+                                        <div class="flex items-center">
+                                            @if($ticket->before_photos_uploaded)
+                                                <svg class="w-5 h-5 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                                </svg>
+                                                <span class="text-sm font-bold text-green-800">{{ __('tickets.before_photos') }}</span>
+                                            @else
+                                                <svg class="w-5 h-5 text-gray-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
+                                                </svg>
+                                                <span class="text-sm font-bold text-gray-700">{{ __('tickets.before_photos') }}</span>
                                             @endif
                                         </div>
+                                        @if(!$ticket->before_photos_uploaded && $ticket->assignee_id)
+                                            <label class="cursor-pointer">
+                                                <input type="file" name="attachments[]" accept="image/*" multiple class="hidden" onchange="this.form.submit()">
+                                                <span class="text-xs bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded-lg transition-colors">{{ __('tickets.upload') }}</span>
+                                            </label>
+                                        @elseif(!$ticket->assignee_id)
+                                            <span class="text-xs bg-gray-300 text-gray-500 px-2 py-1 rounded-lg cursor-not-allowed">{{ __('tickets.upload') }}</span>
+                                        @endif
                                     </div>
-                                    @endif
-                                    
-                                    <!-- Resolved -->
-                                    @if($ticket->status === 'resolved' || $ticket->status === 'closed')
-                                    <div class="flex items-start">
-                                        <div class="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center flex-shrink-0 z-10">
-                                            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                            </svg>
+                                    <p class="text-xs {{ $ticket->before_photos_uploaded ? 'text-green-600' : ($ticket->assignee_id ? 'text-gray-500' : 'text-orange-500') }}">
+                                        @if($ticket->before_photos_uploaded)
+                                            {{ __('tickets.documentation_complete') }}
+                                        @elseif($ticket->assignee_id)
+                                            {{ __('tickets.documentation_required') }}
+                                        @else
+                                            {{ __('tickets.waiting_assignment') }}
+                                        @endif
+                                    </p>
+                                </div>
+                            </form>
+                            @php
+                                $beforePhotos = $ticket->attachments->where('photo_type', 'before')->filter(function($attachment) {
+                                    return in_array(strtolower(pathinfo($attachment->original_filename ?? $attachment->filename, PATHINFO_EXTENSION)), ['jpg', 'jpeg', 'png', 'gif', 'webp']);
+                                })->take(4);
+                            @endphp
+                            @if($beforePhotos->count() > 0)
+                            <div class="mt-3 grid grid-cols-2 sm:grid-cols-3 gap-3">
+                                @foreach($beforePhotos as $photo)
+                                    @php
+                                        $filePath = $photo->file_path;
+                                        $fileName = $photo->original_filename ?? basename($filePath);
+                                        $fileSize = $photo->file_size;
+                                    @endphp
+                                    <button type="button" onclick="openPhotoModal('{{ asset('storage/' . $filePath) }}', '{{ $fileName }}')" class="group relative block overflow-hidden rounded-xl border-2 border-green-300 hover:border-green-500 transition-colors bg-white">
+                                        <img src="{{ asset('storage/' . $filePath) }}" alt="{{ $fileName }}" class="w-full h-24 object-contain group-hover:scale-105 transition-transform duration-300" loading="lazy" style="background: white;">
+                                        <div class="p-2 bg-white">
+                                            <p class="text-xs font-medium text-gray-900 truncate">{{ $fileName }}</p>
+                                            @if($fileSize)
+                                            <p class="text-xs text-gray-500">{{ number_format($fileSize / 1024, 1) }} KB</p>
+                                            @endif
                                         </div>
-                                        <div class="ml-3">
-                                            <p class="text-xs font-bold text-gray-900">{{ __('enums.ticket_status.resolved') }}</p>
+                                    </button>
+                                @endforeach
+                            </div>
+                            @endif
+                        </div>
+
+                        <!-- After Photos -->
+                        <div class="relative">
+                            <form action="{{ route('tickets.milestone.update', $ticket) }}" method="POST" enctype="multipart/form-data">
+                                @csrf
+                                <input type="hidden" name="milestone" value="after_photos">
+                                <div class="p-4 rounded-xl border-2 {{ $ticket->after_photos_uploaded ? 'border-green-300 bg-green-50' : 'border-gray-200 bg-gray-50' }} transition-colors">
+                                    <div class="flex items-start justify-between mb-2">
+                                        <div class="flex items-center">
+                                            @if($ticket->after_photos_uploaded)
+                                                <svg class="w-5 h-5 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                                </svg>
+                                                <span class="text-sm font-bold text-green-800">{{ __('tickets.after_photos') }}</span>
+                                            @else
+                                                <svg class="w-5 h-5 text-gray-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
+                                                </svg>
+                                                <span class="text-sm font-bold text-gray-700">{{ __('tickets.after_photos') }}</span>
+                                            @endif
+                                        </div>
+                                        @if(!$ticket->after_photos_uploaded && $ticket->before_photos_uploaded && $ticket->assignee_id)
+                                            <label class="cursor-pointer">
+                                                <input type="file" name="attachments[]" accept="image/*" multiple class="hidden" onchange="this.form.submit()">
+                                                <span class="text-xs bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded-lg transition-colors">{{ __('tickets.upload') }}</span>
+                                            </label>
+                                        @elseif(!$ticket->assignee_id)
+                                            <span class="text-xs bg-gray-300 text-gray-500 px-2 py-1 rounded-lg cursor-not-allowed">{{ __('tickets.upload') }}</span>
+                                        @endif
+                                    </div>
+                                    <p class="text-xs {{ $ticket->after_photos_uploaded ? 'text-green-600' : ($ticket->assignee_id ? 'text-gray-500' : 'text-orange-500') }}">
+                                        @if($ticket->after_photos_uploaded)
+                                            {{ __('tickets.documentation_complete') }}
+                                        @elseif($ticket->assignee_id)
+                                            {{ __('tickets.documentation_required') }}
+                                        @else
+                                            {{ __('tickets.waiting_assignment') }}
+                                        @endif
+                                    </p>
+                                </div>
+                            </form>
+                            @php
+                                $afterPhotos = $ticket->attachments->where('photo_type', 'after')->filter(function($attachment) {
+                                    return in_array(strtolower(pathinfo($attachment->original_filename ?? $attachment->filename, PATHINFO_EXTENSION)), ['jpg', 'jpeg', 'png', 'gif', 'webp']);
+                                })->take(4);
+                            @endphp
+                            @if($afterPhotos->count() > 0)
+                            <div class="mt-3 grid grid-cols-2 sm:grid-cols-3 gap-3">
+                                @foreach($afterPhotos as $photo)
+                                    @php
+                                        $filePath = $photo->file_path;
+                                        $fileName = $photo->original_filename ?? basename($filePath);
+                                        $fileSize = $photo->file_size;
+                                    @endphp
+                                    <button type="button" onclick="openPhotoModal('{{ asset('storage/' . $filePath) }}', '{{ $fileName }}')" class="group relative block overflow-hidden rounded-xl border-2 border-green-300 hover:border-green-500 transition-colors bg-white">
+                                        <img src="{{ asset('storage/' . $filePath) }}" alt="{{ $fileName }}" class="w-full h-24 object-contain group-hover:scale-105 transition-transform duration-300" loading="lazy" style="background: white;">
+                                        <div class="p-2 bg-white">
+                                            <p class="text-xs font-medium text-gray-900 truncate">{{ $fileName }}</p>
+                                            @if($fileSize)
+                                            <p class="text-xs text-gray-500">{{ number_format($fileSize / 1024, 1) }} KB</p>
+                                            @endif
+                                        </div>
+                                    </button>
+                                @endforeach
+                            </div>
+                            @endif
+                        </div>
+
+                        <!-- Completion Report -->
+                        <div class="relative">
+                            @if($ticket->completion_report_submitted)
+                            <div class="p-4 rounded-xl border-2 border-green-300 bg-green-50 transition-colors">
+                                <div class="flex items-start justify-between mb-2">
+                                    <div class="flex items-center">
+                                        <svg class="w-5 h-5 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                        </svg>
+                                        <span class="text-sm font-bold text-green-800">{{ __('tickets.completion_report') }}</span>
+                                    </div>
+                                </div>
+                                <p class="text-xs text-green-600">{{ __('tickets.documentation_complete') }}</p>
+                                @if($ticket->resolution_notes)
+                                <div class="mt-3 p-3 bg-white rounded-lg border border-green-200">
+                                    <p class="text-xs text-gray-700">{{ Str::limit($ticket->resolution_notes, 100) }}</p>
+                                    <button type="button" onclick="openViewCompletionReportModal()" class="text-xs text-green-600 hover:text-green-700 font-medium mt-1">
+                                        Lihat selengkapnya →
+                                    </button>
+                                </div>
+                                @endif
+                            </div>
+                            @else
+                            <form action="{{ route('tickets.milestone.update', $ticket) }}" method="POST">
+                                @csrf
+                                <input type="hidden" name="milestone" value="completion_report">
+                                <div class="p-4 rounded-xl border-2 {{ $ticket->after_photos_uploaded ? 'border-gray-200 bg-gray-50' : 'border-gray-100 bg-gray-25' }} transition-colors">
+                                    <div class="flex items-start justify-between mb-2">
+                                        <div class="flex items-center">
+                                            <svg class="w-5 h-5 {{ $ticket->after_photos_uploaded ? 'text-gray-400' : 'text-gray-300' }} mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                            </svg>
+                                            <span class="text-sm font-bold {{ $ticket->after_photos_uploaded ? 'text-gray-700' : 'text-gray-500' }}">{{ __('tickets.completion_report') }}</span>
+                                        </div>
+                                        @if($ticket->after_photos_uploaded && $ticket->assignee_id)
+                                            <button type="button" onclick="openCompletionReportModal()" class="text-xs bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded-lg transition-colors">
+                                                {{ __('tickets.mark_complete') }}
+                                            </button>
+                                        @elseif(!$ticket->assignee_id)
+                                            <span class="text-xs bg-gray-300 text-gray-500 px-2 py-1 rounded-lg cursor-not-allowed">{{ __('tickets.mark_complete') }}</span>
+                                        @endif
+                                    </div>
+                                    <p class="text-xs {{ $ticket->after_photos_uploaded ? 'text-gray-500' : ($ticket->assignee_id ? 'text-gray-400' : 'text-orange-500') }}">
+                                        @if($ticket->after_photos_uploaded)
+                                            {{ __('tickets.documentation_required') }}
+                                        @elseif($ticket->assignee_id)
+                                            {{ __('tickets.waiting_previous_step') }}
+                                        @else
+                                            {{ __('tickets.waiting_assignment') }}
+                                        @endif
+                                    </p>
+                                </div>
+                            </form>
+                            @endif
+                        </div>
+
+                        <!-- Photo Viewer Modal -->
+                        <div id="photoModal" class="relative z-50 hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true" style="display: none;">
+                            <div class="fixed inset-0 modal-overlay" onclick="closePhotoModal()"></div>
+                            <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
+                                <div class="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
+                                    <div class="relative transform overflow-hidden rounded-2xl bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-4xl" onclick="event.stopPropagation()">
+                                        <div class="relative">
+                                            <button type="button" onclick="closePhotoModal()" class="absolute right-4 top-4 z-10 bg-black bg-opacity-50 hover:bg-opacity-75 rounded-full p-2 text-white transition-all">
+                                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                                </svg>
+                                            </button>
+                                            <div class="flex items-center justify-center p-4 bg-black">
+                                                <img id="photoModalImage" src="" alt="Full size photo" class="max-h-[80vh] max-w-full object-contain rounded-lg">
+                                            </div>
+                                        </div>
+                                        <div class="bg-gray-50 px-6 py-4 flex justify-between items-center">
+                                            <p class="text-sm font-semibold text-gray-700" id="photoModalCaption">Photo</p>
+                                            <button type="button" onclick="closePhotoModal()" class="text-sm text-green-600 hover:text-green-700 font-medium">
+                                                {{ __('common.close') }}
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Completion Report Modal -->
+                        <div id="completionReportModal" class="relative z-50 hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true" style="display: none;">
+                            <div class="fixed inset-0 modal-overlay" onclick="closeCompletionReportModal()"></div>
+                            <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
+                                <div class="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
+                                    <div class="relative transform overflow-hidden rounded-2xl bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-sm" onclick="event.stopPropagation()">
+                                        <form action="{{ route('tickets.milestone.update', $ticket) }}" method="POST">
+                                            @csrf
+                                            <input type="hidden" name="milestone" value="completion_report">
+                                            <div class="bg-gradient-to-r from-green-500 to-emerald-600 px-6 py-4">
+                                                <h3 class="text-lg font-bold text-white flex items-center">
+                                                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                                    </svg>
+                                                    {{ __('tickets.submit_completion_report') }}
+                                                </h3>
+                                            </div>
+                                            <div class="px-6 py-5">
+                                                <div class="mb-4">
+                                                    <label for="resolution_notes" class="block text-sm font-semibold text-gray-700 mb-2">
+                                                        {{ __('tickets.resolution_notes') }} <span class="text-red-500">*</span>
+                                                    </label>
+                                                    <textarea name="resolution_notes"
+                                                              id="resolution_notes"
+                                                              rows="6"
+                                                              required
+                                                              class="w-full border-2 border-gray-200 rounded-xl shadow-sm focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors px-4 py-3 resize-none"
+                                                              placeholder="{{ __('tickets.resolution_notes_placeholder') }}"></textarea>
+                                                    <p class="text-xs text-gray-500 mt-1">
+                                                        {{ __('tickets.resolution_notes_hint') }}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        <div class="bg-gray-50 px-6 py-4 flex flex-row-reverse gap-3">
+                                            <button type="submit" class="bg-gradient-to-r from-green-500 to-emerald-600 text-white font-semibold px-5 py-2.5 rounded-xl hover:from-green-600 hover:to-emerald-700 transition-all shadow-md">
+                                                {{ __('tickets.submit_and_resolve') }}
+                                            </button>
+                                            <button type="button" onclick="closeCompletionReportModal()" class="bg-white text-gray-700 font-semibold px-5 py-2.5 rounded-xl border-2 border-gray-200 hover:bg-gray-50 transition-all">
+                                                {{ __('common.cancel') }}
+                                            </button>
+                                        </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- View Completion Report Modal -->
+                        <div id="viewCompletionReportModal" class="relative z-50 hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true" style="display: none;">
+                            <div class="fixed inset-0 modal-overlay" onclick="closeCompletionReportModal()"></div>
+                            <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
+                                <div class="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
+                                    <div class="relative transform overflow-hidden rounded-2xl bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-sm" onclick="event.stopPropagation()">
+                                        <div class="bg-gradient-to-r from-green-500 to-emerald-600 px-6 py-4">
+                                            <h3 class="text-lg font-bold text-white flex items-center">
+                                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                                </svg>
+                                                {{ __('tickets.completion_report') }}
+                                            </h3>
+                                        </div>
+                                        <div class="px-6 py-5">
+                                            <div class="mb-4">
+                                                <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                                    {{ __('tickets.resolution_notes') }}
+                                                </label>
+                                                <div class="bg-gray-50 rounded-xl p-4 border border-gray-200">
+                                                    <p class="text-sm text-gray-700 whitespace-pre-line">{{ $ticket->resolution_notes }}</p>
+                                                </div>
+                                            </div>
                                             @if($ticket->resolved_at)
-                                            <p class="text-xs text-gray-500">{{ $ticket->resolved_at->format('M d, H:i') }}</p>
+                                            <div class="flex items-center text-xs text-gray-500 mt-3">
+                                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                                </svg>
+                                                {{ __('tickets.submitted_at') }}: {{ $ticket->resolved_at->format('d M Y, H:i') }}
+                                            </div>
                                             @endif
                                         </div>
-                                    </div>
-                                    @endif
-                                    
-                                    <!-- Closed -->
-                                    @if($ticket->status === 'closed')
-                                    <div class="flex items-start">
-                                        <div class="w-8 h-8 rounded-full bg-gray-500 flex items-center justify-center flex-shrink-0 z-10">
-                                            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                                            </svg>
-                                        </div>
-                                        <div class="ml-3">
-                                            <p class="text-xs font-bold text-gray-900">{{ __('enums.ticket_status.closed') }}</p>
-                                            @if($ticket->closed_at)
-                                            <p class="text-xs text-gray-500">{{ $ticket->closed_at->format('M d, H:i') }}</p>
-                                            @endif
+                                        <div class="bg-gray-50 px-6 py-4 flex justify-end">
+                                            <button type="button" onclick="closeCompletionReportModal()" class="bg-white text-gray-700 font-semibold px-5 py-2.5 rounded-xl border-2 border-gray-200 hover:bg-gray-50 transition-all">
+                                                {{ __('common.close') }}
+                                            </button>
                                         </div>
                                     </div>
-                                    @endif
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+        </div>
+        @endcan
 
-            <!-- CENTER: Main Content (7 columns on desktop) -->
-            <div class="lg:col-span-7 space-y-6">
+        <!-- Main Layout: 2 Columns -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            
+            <!-- CENTER: Main Content (9 columns on desktop) -->
+            <div class="lg:col-span-9 space-y-6">
                 
                 <!-- Section 1: Ticket Information -->
                 <div class="bg-white shadow-sm rounded-2xl overflow-hidden">
@@ -249,16 +590,19 @@
                         </div>
 
                         <!-- Initial Attachments -->
-                        @if($ticket->attachments->where('comment_id', null)->count() > 0)
+                        @php
+                            $generalAttachments = $ticket->attachments->where('comment_id', null)->where('photo_type', 'general');
+                        @endphp
+                        @if($generalAttachments->count() > 0)
                         <div>
                             <h3 class="text-sm font-bold text-gray-700 mb-3 flex items-center">
                                 <svg class="w-4 h-4 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"></path>
                                 </svg>
-                                {{ __('tickets.attachments') }} ({{ $ticket->attachments->where('comment_id', null)->count() }})
+                                {{ __('tickets.attachments') }} ({{ $generalAttachments->count() }})
                             </h3>
                             <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                                @foreach($ticket->attachments->where('comment_id', null) as $attachment)
+                                @foreach($generalAttachments as $attachment)
                                     @php
                                         $filePath = $attachment->file_path;
                                         $fileName = $attachment->original_filename ?? basename($filePath);
@@ -266,14 +610,15 @@
                                         $isImage = in_array(strtolower(pathinfo($fileName, PATHINFO_EXTENSION)), ['jpg', 'jpeg', 'png', 'gif', 'webp']);
                                     @endphp
                                     @if($isImage)
-                                        <a href="{{ asset('storage/' . $filePath) }}" target="_blank" class="group relative block overflow-hidden rounded-xl border-2 border-gray-200 hover:border-green-400 transition-colors">
-                                            <img src="{{ asset('storage/' . $filePath) }}" alt="{{ $fileName }}" class="w-full h-32 object-cover group-hover:scale-105 transition-transform duration-300">
-                                            <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all flex items-center justify-center">
-                                                <svg class="w-8 h-8 text-white opacity-0 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                                                </svg>
+                                        <button type="button" onclick="openPhotoModal('{{ asset('storage/' . $filePath) }}', '{{ $fileName }}')" class="group relative block overflow-hidden rounded-xl border-2 border-gray-200 hover:border-green-400 transition-colors bg-white">
+                                            <img src="{{ asset('storage/' . $filePath) }}" alt="{{ $fileName }}" class="w-full h-24 object-contain group-hover:scale-105 transition-transform duration-300" loading="lazy" style="background: white;">
+                                            <div class="p-2 bg-white">
+                                                <p class="text-xs font-medium text-gray-900 truncate">{{ $fileName }}</p>
+                                                @if($fileSize)
+                                                <p class="text-xs text-gray-500">{{ number_format($fileSize / 1024, 1) }} KB</p>
+                                                @endif
                                             </div>
-                                        </a>
+                                        </button>
                                     @else
                                         <a href="{{ asset('storage/' . $filePath) }}" target="_blank" class="flex items-center space-x-3 p-3 bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl hover:from-green-100 hover:to-emerald-100 transition-all border border-green-200 group">
                                             <div class="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-600 rounded-lg flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
@@ -341,23 +686,40 @@
                     </div>
                     <div class="p-6">
                         @if($ticket->comments->count() > 0)
-                        <div class="space-y-4">
-                            @foreach($ticket->comments as $comment)
-                            @can('view', $ticket)
-                            @if(!$comment->is_internal || auth()->user()->hasPermission('manage-tickets'))
-                            <div class="group border-l-4 {{ $comment->is_internal ? 'border-yellow-400 bg-gradient-to-r from-yellow-50 to-orange-50' : 'border-green-400 bg-gradient-to-r from-green-50 to-emerald-50' }} p-5 rounded-xl hover:shadow-md transition-all">
-                                <div class="flex items-start justify-between mb-3">
-                                    <div class="flex items-center space-x-3">
-                                        <div class="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center text-white font-bold shadow-md">
-                                            {{ substr($comment->user->name, 0, 1) }}
-                                        </div>
-                                        <div>
-                                            <span class="font-bold text-gray-900">{{ $comment->user->name }}</span>
-                                            <div class="flex items-center text-sm text-gray-500 mt-0.5">
-                                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                                </svg>
-                                                {{ $comment->created_at->diffForHumans() }}
+                        @php
+                            $commentsByStage = $ticket->comments->groupBy('workflow_stage');
+                            $stageOrder = ['diterima', 'respon', 'foto_sebelum', 'dikerjakan', 'laporan', 'selesai'];
+                        @endphp
+                        <div class="space-y-6">
+                            @foreach($stageOrder as $stage)
+                                @if(isset($commentsByStage[$stage]))
+                                <div class="border rounded-xl overflow-hidden">
+                                    <div class="bg-gradient-to-r from-gray-50 to-white px-4 py-3 border-b border-gray-200">
+                                        <h3 class="text-sm font-bold text-gray-900 flex items-center">
+                                            <span class="w-2 h-2 rounded-full bg-green-500 mr-2"></span>
+                                            {{ __('tickets.workflow_stages.' . $stage) }}
+                                            <span class="ml-2 px-2 py-0.5 bg-gray-200 text-gray-700 text-xs font-semibold rounded-full">
+                                                {{ $commentsByStage[$stage]->count() }}
+                                            </span>
+                                        </h3>
+                                    </div>
+                                    <div class="p-4 space-y-3 bg-white">
+                                        @foreach($commentsByStage[$stage] as $comment)
+                                        @can('view', $ticket)
+                                        @if(!$comment->is_internal || auth()->user()->hasPermission('manage-tickets'))
+                                        <div class="group border-l-4 {{ $comment->is_internal ? 'border-yellow-400 bg-gradient-to-r from-yellow-50 to-orange-50' : 'border-green-400 bg-gradient-to-r from-green-50 to-emerald-50' }} p-4 rounded-xl hover:shadow-md transition-all">
+                                            <div class="flex items-start justify-between mb-2">
+                                                <div class="flex items-center space-x-3">
+                                                    <div class="w-9 h-9 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-md">
+                                                        {{ substr($comment->user->name, 0, 1) }}
+                                                    </div>
+                                                    <div>
+                                                        <span class="font-bold text-gray-900 text-sm">{{ $comment->user->name }}</span>
+                                                        <div class="flex items-center text-xs text-gray-500 mt-0.5">
+                                                            <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                                            </svg>
+                                                            {{ $comment->created_at->diffForHumans() }}
                     </div>
                 </div>
 
@@ -489,9 +851,9 @@
                                                 $isImage = in_array(strtolower(pathinfo($fileName, PATHINFO_EXTENSION)), ['jpg', 'jpeg', 'png', 'gif', 'webp']);
                                             @endphp
                                             @if($isImage)
-                                                <a href="{{ asset('storage/' . $filePath) }}" target="_blank" class="group relative block overflow-hidden rounded-xl border-2 border-gray-200 hover:border-green-400 transition-colors">
-                                                    <img src="{{ asset('storage/' . $filePath) }}" alt="{{ $fileName }}" class="w-full h-24 object-cover group-hover:scale-105 transition-transform duration-300">
-                                                </a>
+                                                <button type="button" onclick="openPhotoModal('{{ asset('storage/' . $filePath) }}', '{{ $fileName }}')" class="group relative block overflow-hidden rounded-xl border-2 border-gray-200 hover:border-green-400 transition-colors bg-white">
+                                                    <img src="{{ asset('storage/' . $filePath) }}" alt="{{ $fileName }}" class="w-full h-24 object-contain group-hover:scale-105 transition-transform duration-300" loading="lazy" style="background: white;">
+                                                </button>
                                             @else
                                                 <a href="{{ asset('storage/' . $filePath) }}" target="_blank" class="flex items-center space-x-2 p-2 bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg hover:from-green-100 hover:to-emerald-100 transition-all border border-green-200">
                                                     <svg class="w-5 h-5 text-green-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -514,6 +876,10 @@
                             @endcan
                             @endforeach
                         </div>
+                    </div>
+                    @endif
+                    @endforeach
+                </div>
                         @else
                         <div class="text-center py-12">
                             <div class="w-20 h-20 mx-auto bg-gradient-to-br from-gray-100 to-gray-200 rounded-full flex items-center justify-center mb-4">
@@ -577,14 +943,14 @@
                                         $isImage = in_array(strtolower(pathinfo($fileName, PATHINFO_EXTENSION)), ['jpg', 'jpeg', 'png', 'gif', 'webp']);
                                     @endphp
                                     @if($isImage)
-                                        <a href="{{ asset('storage/' . $filePath) }}" target="_blank" class="group relative block overflow-hidden rounded-xl border-2 border-green-300 hover:border-green-500 transition-colors">
-                                            <img src="{{ asset('storage/' . $filePath) }}" alt="{{ $fileName }}" class="w-full h-32 object-cover group-hover:scale-105 transition-transform duration-300">
+                                        <button type="button" onclick="openPhotoModal('{{ asset('storage/' . $filePath) }}', '{{ $fileName }}')" class="group relative block overflow-hidden rounded-xl border-2 border-green-300 hover:border-green-500 transition-colors bg-white">
+                                            <img src="{{ asset('storage/' . $filePath) }}" alt="{{ $fileName }}" class="w-full h-32 object-contain group-hover:scale-105 transition-transform duration-300" loading="lazy" style="background: white;">
                                             <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all flex items-center justify-center">
                                                 <svg class="w-8 h-8 text-white opacity-0 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                                                 </svg>
                                             </div>
-                                        </a>
+                                        </button>
                                     @endif
                                 @endforeach
                             </div>
@@ -754,7 +1120,7 @@
             </div>
 
             <!-- RIGHT: Info Panel (3 columns on desktop) -->
-            <div class="lg:col-span-3">
+            <div class="lg:col-span-3 space-y-6">
                 
                 <!-- Combined Info Card (Sticky) -->
                 <div class="bg-white shadow-sm rounded-2xl overflow-hidden sticky top-6">
@@ -1082,7 +1448,6 @@
                         </div>
                     </div>
                 </div>
-                </div>
             </div>
         </div>
     </div>
@@ -1090,6 +1455,64 @@
 
 @push('scripts')
 <script>
+// Completion Report Modal
+function openCompletionReportModal() {
+    const modal = document.getElementById('completionReportModal');
+    modal.style.display = 'block';
+    modal.classList.remove('hidden');
+}
+
+function closeCompletionReportModal() {
+    const modal1 = document.getElementById('completionReportModal');
+    const modal2 = document.getElementById('viewCompletionReportModal');
+    modal1.style.display = 'none';
+    modal1.classList.add('hidden');
+    modal2.style.display = 'none';
+    modal2.classList.add('hidden');
+}
+
+function openViewCompletionReportModal() {
+    const modal = document.getElementById('viewCompletionReportModal');
+    modal.style.display = 'block';
+    modal.classList.remove('hidden');
+}
+
+// Close modal when clicking on overlay
+document.addEventListener('DOMContentLoaded', function() {
+    const overlays = document.querySelectorAll('#completionReportModal > div:first-child, #viewCompletionReportModal > div:first-child, #photoModal > div:first-child');
+    overlays.forEach(overlay => {
+        overlay.addEventListener('click', function() {
+            closeCompletionReportModal();
+            closePhotoModal();
+        });
+    });
+});
+
+// Photo Modal
+function openPhotoModal(imageSrc, caption) {
+    const modal = document.getElementById('photoModal');
+    const img = document.getElementById('photoModalImage');
+    const captionEl = document.getElementById('photoModalCaption');
+    
+    img.src = imageSrc;
+    captionEl.textContent = caption;
+    modal.style.display = 'block';
+    modal.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+}
+
+function closePhotoModal() {
+    const modal = document.getElementById('photoModal');
+    modal.style.display = 'none';
+    modal.classList.add('hidden');
+    document.body.style.overflow = '';
+    
+    // Clear image source after closing
+    setTimeout(() => {
+        document.getElementById('photoModalImage').src = '';
+    }, 200);
+}
+
 // Rating function
 function selectRating(rating) {
     document.getElementById('rating-input').value = rating;

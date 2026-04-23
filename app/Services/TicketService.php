@@ -133,13 +133,85 @@ class TicketService
      */
     public function addComment(Ticket $ticket, array $data, User $user)
     {
-        return $ticket->comments()->create([
+        $workflowStage = $data['workflow_stage'] ?? $ticket->current_workflow_stage;
+        
+        $comment = $ticket->comments()->create([
             'user_id' => $user->id,
             'comment' => $data['comment'],
             'is_internal' => $data['is_internal'] ?? false,
             'is_solution' => $data['is_solution'] ?? false,
+            'workflow_stage' => $workflowStage,
             'ip_address' => request()->ip(),
             'user_agent' => request()->userAgent(),
+        ]);
+
+        if (!$ticket->first_response_at && $workflowStage === 'respon') {
+            $this->markFirstResponse($ticket);
+        }
+
+        return $comment;
+    }
+
+    /**
+     * Update comment
+     */
+    public function updateComment($comment, array $data, User $user)
+    {
+        if (!$comment->isEditableBy($user)) {
+            throw new \Exception('Comment cannot be edited');
+        }
+
+        $comment->update([
+            'comment' => $data['comment'],
+        ]);
+
+        return $comment->fresh();
+    }
+
+    /**
+     * Delete comment
+     */
+    public function deleteComment($comment, User $user)
+    {
+        if ($comment->user_id !== $user->id && !$user->hasPermissionTo('tickets.delete')) {
+            throw new \Exception('Unauthorized to delete this comment');
+        }
+
+        return $comment->delete();
+    }
+
+    /**
+     * Update documentation milestone
+     */
+    public function updateDocumentationMilestone(Ticket $ticket, string $milestone, User $user, ?string $resolutionNotes = null): void
+    {
+        $allowedMilestones = ['before_photos', 'after_photos', 'completion_report'];
+        
+        if (!in_array($milestone, $allowedMilestones)) {
+            throw new \Exception('Invalid milestone');
+        }
+
+        if ($milestone === 'completion_report' && empty($resolutionNotes)) {
+            throw new \Exception('Resolution notes are required for completion report');
+        }
+
+        $updateData = [];
+        
+        if ($milestone === 'completion_report' && $resolutionNotes) {
+            $updateData['resolution_notes'] = $resolutionNotes;
+            $updateData['resolved_at'] = now();
+        }
+
+        $ticket->markDocumentationMilestone($milestone);
+        
+        if (!empty($updateData)) {
+            $ticket->update($updateData);
+        }
+
+        $this->logAudit($ticket, 'documentation_milestone', [
+            'milestone' => $milestone,
+            'updated_by' => $user->name,
+            'has_resolution_notes' => (bool) $resolutionNotes,
         ]);
     }
 

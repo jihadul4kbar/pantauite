@@ -304,9 +304,116 @@ class TicketController extends Controller
     }
 
     /**
+     * Update comment.
+     */
+    public function updateComment(Request $request, Ticket $ticket, $commentId)
+    {
+        $validated = $request->validate([
+            'comment' => ['required', 'string'],
+            'attachments.*' => ['nullable', 'file', 'max:5120'],
+            'removed_attachments' => ['nullable', 'array'],
+            'removed_attachments.*' => ['integer', 'exists:ticket_attachments,id'],
+        ]);
+
+        $comment = $ticket->comments()->findOrFail($commentId);
+        
+        $this->authorize('update', $comment);
+
+        $updatedComment = $this->ticketService->updateComment(
+            $comment,
+            $validated,
+            $request->user()
+        );
+
+        // Handle new attachments
+        if ($request->hasFile('attachments')) {
+            foreach ($request->file('attachments') as $file) {
+                $this->attachFileToComment($ticket, $updatedComment, $file);
+            }
+        }
+
+        // Handle removed attachments
+        if (!empty($validated['removed_attachments'])) {
+            foreach ($validated['removed_attachments'] as $attachmentId) {
+                $attachment = $ticket->attachments()->find($attachmentId);
+                if ($attachment && $attachment->uploaded_by === $request->user()->id) {
+                    $attachment->delete();
+                }
+            }
+        }
+
+        return redirect()
+            ->route('tickets.show', $ticket)
+            ->with('success', 'Comment updated successfully.');
+    }
+
+    /**
+     * Delete comment.
+     */
+    public function deleteComment(Request $request, Ticket $ticket, $commentId)
+    {
+        $comment = $ticket->comments()->findOrFail($commentId);
+        
+        $this->ticketService->deleteComment($comment, $request->user());
+
+        return redirect()
+            ->route('tickets.show', $ticket)
+            ->with('success', 'Comment deleted successfully.');
+    }
+
+    /**
+     * Update documentation milestone.
+     */
+    public function updateMilestone(Request $request, Ticket $ticket)
+    {
+        $validated = $request->validate([
+            'milestone' => ['required', 'string', 'in:before_photos,after_photos,completion_report'],
+            'resolution_notes' => ['nullable', 'string', 'required_if:milestone,completion_report'],
+            'attachments.*' => ['nullable', 'file', 'image', 'max:5120'],
+        ]);
+
+        $this->authorize('update', $ticket);
+
+        try {
+            // Check if ticket is assigned before allowing documentation upload
+            if (!$ticket->assignee_id) {
+                throw new \Exception('Tiket harus ditugaskan kepada teknisi sebelum dapat mengisi dokumentasi.');
+            }
+
+            $this->ticketService->updateDocumentationMilestone(
+                $ticket,
+                $validated['milestone'],
+                $request->user(),
+                $validated['resolution_notes'] ?? null
+            );
+
+            // Handle attachments with photo_type
+            if ($request->hasFile('attachments')) {
+                $photoType = $validated['milestone'] === 'before_photos' ? 'before' : 'after';
+                foreach ($request->file('attachments') as $file) {
+                    $this->attachFile($ticket, $file, $photoType);
+                }
+            }
+
+            // Change status to resolved when completion report is submitted
+            if ($validated['milestone'] === 'completion_report' && !$ticket->isResolved() && !$ticket->isClosed()) {
+                $this->ticketService->changeStatus($ticket, 'resolved', $request->user());
+            }
+
+            return redirect()
+                ->route('tickets.show', $ticket)
+                ->with('success', 'Documentation milestone updated successfully.');
+        } catch (\Exception $e) {
+            return redirect()
+                ->route('tickets.show', $ticket)
+                ->with('error', $e->getMessage());
+        }
+    }
+
+    /**
      * Attach file to ticket.
      */
-    protected function attachFile(Ticket $ticket, $file): void
+    protected function attachFile(Ticket $ticket, $file, string $photoType = 'general'): void
     {
         $mimeType = $file->getMimeType();
         
@@ -318,6 +425,7 @@ class TicketController extends Controller
         }
 
         $ticket->attachments()->create([
+            'photo_type' => $photoType,
             'filename' => basename($path),
             'original_filename' => $file->getClientOriginalName(),
             'file_path' => $path,
@@ -343,6 +451,7 @@ class TicketController extends Controller
 
         $ticket->attachments()->create([
             'comment_id' => $comment->id,
+            'photo_type' => 'general',
             'filename' => basename($path),
             'original_filename' => $file->getClientOriginalName(),
             'file_path' => $path,

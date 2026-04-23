@@ -136,6 +136,27 @@ Route::middleware(["auth", "password.expired"])->group(function () {
         ->name("tickets.comments.add")
         ->can("comment", "ticket");
 
+    Route::put("tickets/{ticket}/comments/{comment}", [
+        TicketController::class,
+        "updateComment",
+    ])
+        ->name("tickets.comments.update")
+        ->can("update", "comment");
+
+    Route::delete("tickets/{ticket}/comments/{comment}", [
+        TicketController::class,
+        "deleteComment",
+    ])
+        ->name("tickets.comments.delete")
+        ->can("delete", "comment");
+
+    Route::post("tickets/{ticket}/milestone", [
+        TicketController::class,
+        "updateMilestone",
+    ])
+        ->name("tickets.milestone.update")
+        ->can("update", "ticket");
+
     // Ticket rating
     Route::post("tickets/{ticket}/rate", [
         TicketController::class,

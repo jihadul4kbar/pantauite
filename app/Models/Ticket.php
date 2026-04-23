@@ -51,6 +51,9 @@ class Ticket extends Model
         'requester_name',
         'requester_email',
         'requester_department',
+        'before_photos_uploaded',
+        'after_photos_uploaded',
+        'completion_report_submitted',
     ];
 
     protected $casts = [
@@ -64,6 +67,9 @@ class Ticket extends Model
         'closed_at' => 'datetime',
         'first_response_at' => 'datetime',
         'satisfaction_rating' => 'integer',
+        'before_photos_uploaded' => 'boolean',
+        'after_photos_uploaded' => 'boolean',
+        'completion_report_submitted' => 'boolean',
     ];
 
     // ==================== RELATIONSHIPS ====================
@@ -226,5 +232,118 @@ class Ticket extends Model
     public function scopeByStatus($query, string $status)
     {
         return $query->where('status', $status);
+    }
+
+    // ==================== WORKFLOW CONSTANTS ====================
+
+    public const WORKFLOW_STAGES = [
+        'diterima' => 'diterima',
+        'respon' => 'respon',
+        'foto_sebelum' => 'foto_sebelum',
+        'dikerjakan' => 'dikerjakan',
+        'laporan' => 'laporan',
+        'selesai' => 'selesai',
+    ];
+
+    public const WORKFLOW_STAGE_LABELS = [
+        'diterima' => 'Diterima',
+        'respon' => 'Respon',
+        'foto_sebelum' => 'Foto Sebelum',
+        'dikerjakan' => 'Dikerjakan',
+        'laporan' => 'Laporan',
+        'selesai' => 'Selesai',
+    ];
+
+    // ==================== WORKFLOW METHODS ====================
+
+    public function getCurrentWorkflowStageAttribute(): string
+    {
+        $stage = 'diterima';
+        
+        if ($this->isClosed() || $this->isResolved()) {
+            $stage = 'selesai';
+        } elseif ($this->completion_report_submitted) {
+            $stage = 'laporan';
+        } elseif ($this->after_photos_uploaded) {
+            $stage = 'dikerjakan';
+        } elseif ($this->before_photos_uploaded) {
+            $stage = 'foto_sebelum';
+        } elseif ($this->first_response_at) {
+            $stage = 'respon';
+        } elseif ($this->assignee_id) {
+            $stage = 'diterima';
+        }
+        
+        return $stage;
+    }
+
+    public function getWorkflowProgressAttribute(): array
+    {
+        $currentStage = $this->current_workflow_stage;
+        $stages = array_keys(self::WORKFLOW_STAGES);
+        $progress = [];
+        
+        foreach ($stages as $index => $stage) {
+            $currentIndex = array_search($currentStage, $stages);
+            $progress[$stage] = [
+                'label' => self::WORKFLOW_STAGE_LABELS[$stage],
+                'completed' => $currentIndex > $index,
+                'current' => $currentIndex === $index,
+                'pending' => $currentIndex < $index,
+            ];
+        }
+        
+        return $progress;
+    }
+
+    public function isWorkflowStageComplete(string $stage): bool
+    {
+        return match ($stage) {
+            'diterima' => (bool) $this->assignee_id,
+            'respon' => (bool) $this->first_response_at,
+            'foto_sebelum' => $this->before_photos_uploaded,
+            'dikerjakan' => $this->after_photos_uploaded,
+            'laporan' => $this->completion_report_submitted,
+            'selesai' => $this->isClosed() || $this->isResolved(),
+            default => false,
+        };
+    }
+
+    public function canProceedToNextStage(): bool
+    {
+        $currentStage = $this->current_workflow_stage;
+        
+        return match ($currentStage) {
+            'diterima' => true,
+            'respon' => true,
+            'foto_sebelum' => $this->before_photos_uploaded,
+            'dikerjakan' => $this->after_photos_uploaded,
+            'laporan' => $this->completion_report_submitted,
+            'selesai' => false,
+            default => false,
+        };
+    }
+
+    public function getNextWorkflowStage(): ?string
+    {
+        $stages = array_keys(self::WORKFLOW_STAGES);
+        $currentStage = $this->current_workflow_stage;
+        $currentIndex = array_search($currentStage, $stages);
+        
+        if ($currentIndex === false || $currentIndex >= count($stages) - 1) {
+            return null;
+        }
+        
+        return $stages[$currentIndex + 1];
+    }
+
+    public function markDocumentationMilestone(string $milestone): void
+    {
+        match ($milestone) {
+            'before_photos' => $this->update(['before_photos_uploaded' => true]),
+            'after_photos' => $this->update(['after_photos_uploaded' => true]),
+            'completion_report' => $this->update(['completion_report_submitted' => true]),
+            default => null,
+        };
     }
 }

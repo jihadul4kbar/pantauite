@@ -103,6 +103,7 @@ return [
 
     // New UX keys
     'timeline' => 'Timeline',
+    'workflow_timeline' => 'Alur Kerja',
     'first_response' => 'Respon Pertama',
     'solution_evidence' => 'Solusi & Bukti',
     'evidence_photos' => 'Foto Bukti',
@@ -120,6 +121,38 @@ return [
     'info' => 'Info',
     'sla_status' => 'Status SLA',
     'ticket_info' => 'Info Tiket',
+    
+    // Workflow stages
+    'workflow_stages' => [
+        'diterima' => 'Diterima',
+        'respon' => 'Respon',
+        'foto_sebelum' => 'Foto Sebelum',
+        'dikerjakan' => 'Dikerjakan',
+        'laporan' => 'Laporan',
+        'selesai' => 'Selesai',
+    ],
+    
+    // Documentation checklist
+    'documentation_checklist' => 'Dokumentasi',
+    'before_photos' => 'Foto Sebelum',
+    'after_photos' => 'Foto Sesudah',
+    'completion_report' => 'Laporan Penyelesaian',
+    'upload' => 'Unggah',
+    'mark_complete' => 'Tandai Selesai',
+    'documentation_complete' => '✓ Lengkap',
+    'documentation_required' => 'Belum lengkap',
+    'waiting_previous_step' => 'Tunggu langkah sebelumnya',
+    'waiting_assignment' => '⚠ Tunggu tiket ditugaskan',
+    'assigned_to' => 'Oleh',
+    
+    // Completion Report Modal
+    'submit_completion_report' => 'Submit Laporan Penyelesaian',
+    'resolution_notes' => 'Catatan Penyelesaian',
+    'resolution_notes_placeholder' => 'Jelaskan secara detail bagaimana tiket ini diselesaikan. Sertakan langkah-langkah yang diambil, solusi yang diterapkan, dan rekomendasi untuk mencegah masalah serupa di masa depan...',
+    'resolution_notes_hint' => 'Berikan penjelasan yang jelas dan lengkap untuk membantu dokumentasi dan referensi di masa mendatang.',
+    'submit_report' => 'Submit Laporan',
+    'submit_and_resolve' => 'Selesaikan Tiket',
+    'submitted_at' => 'Disubmit pada',
     
     // SLA Information
     'sla_information' => 'Informasi SLA',
