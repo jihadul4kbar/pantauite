@@ -166,6 +166,107 @@
             </div>
         </div>
 
+        <!-- Warning Banner for Unassigned Ticket -->
+        @if(!$ticket->assignee_id && !$ticket->assignees->count())
+        <div class="mb-6 bg-gradient-to-r from-orange-500 to-red-500 border-l-4 border-white rounded-xl shadow-lg overflow-hidden">
+            <div class="px-6 py-4">
+                <div class="flex items-start justify-between">
+                    <div class="flex items-start space-x-4">
+                        <div class="flex-shrink-0">
+                            <svg class="w-8 h-8 text-white animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                            </svg>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="text-lg font-bold text-white mb-1">⚠️ Tiket Belum Ditugaskan</h3>
+                            <p class="text-orange-100 text-sm mb-3">
+                                Tiket ini menunggu untuk ditugaskan kepada teknisi. Segera tugaskan untuk memulai pengerjaan dan tracking SLA.
+                            </p>
+                            <button type="button" onclick="openAssignmentModal()" class="inline-flex items-center space-x-2 bg-white text-orange-600 font-semibold px-4 py-2 rounded-lg hover:bg-orange-50 transition-all shadow-md">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                </svg>
+                                <span>Tugaskan Sekarang</span>
+                            </button>
+                        </div>
+                    </div>
+                    <button type="button" onclick="this.closest('.bg-gradient-to-r').remove()" class="flex-shrink-0 text-white hover:text-orange-100 transition-colors">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+        @endif
+
+        <!-- Assignment Modal -->
+        @can('assign', $ticket)
+        <div id="assignmentModal" class="relative z-50 hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true" style="display: none;">
+            <div class="fixed inset-0 modal-overlay"></div>
+            <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
+                <div class="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
+                    <div class="relative transform overflow-hidden rounded-2xl bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg" onclick="event.stopPropagation()">
+                        <form action="{{ route('tickets.assign', $ticket) }}" method="POST">
+                            @csrf
+                            <div class="bg-gradient-to-r from-orange-500 to-red-500 px-6 py-4">
+                                <h3 class="text-lg font-bold text-white flex items-center">
+                                    <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                    </svg>
+                                    @if(!$ticket->assignee_id && !$ticket->assignees->count())
+                                        ⚠️ Tugaskan Tiket
+                                    @else
+                                        👥 Kelola Penugasan
+                                    @endif
+                                </h3>
+                            </div>
+                            <div class="px-6 py-5">
+                                <div class="mb-4">
+                                    <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                        Pilih Teknisi <span class="text-red-500">*</span>
+                                    </label>
+                                    <p class="text-xs text-gray-500 mb-3">
+                                        Anda dapat memilih lebih dari satu teknisi untuk kolaborasi
+                                    </p>
+                                    <div class="space-y-2 max-h-64 overflow-y-auto border-2 border-gray-200 rounded-xl p-3">
+                                        @foreach(\App\Models\User::whereRole('it_staff', 'it_manager')->active()->get() as $user)
+                                        <label class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors {{ in_array($user->id, $ticket->assignees->pluck('id')->toArray()) ? 'bg-green-50 border-2 border-green-300' : 'border-2 border-transparent' }}">
+                                            <input type="checkbox" name="assignees[]" value="{{ $user->id }}" 
+                                                {{ in_array($user->id, $ticket->assignees->pluck('id')->toArray()) ? 'checked' : '' }}
+                                                class="w-5 h-5 text-green-600 border-2 border-gray-300 rounded focus:ring-green-500 focus:ring-2">
+                                            <div class="flex-1">
+                                                <div class="flex items-center">
+                                                    <div class="w-8 h-8 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center text-white font-bold text-sm mr-3">
+                                                        {{ substr($user->name, 0, 1) }}
+                                                    </div>
+                                                    <div>
+                                                        <p class="text-sm font-medium text-gray-900">{{ $user->name }}</p>
+                                                        <p class="text-xs text-gray-500">{{ $user->email }}</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </label>
+                                        @endforeach
+                                    </div>
+                                    <p id="assignee-error" class="text-red-500 text-xs mt-2 hidden">⚠️ Pilih minimal 1 teknisi</p>
+                                </div>
+                            </div>
+                            <div class="bg-gray-50 px-6 py-4 flex flex-row-reverse gap-3">
+                                <button type="submit" onclick="return validateAssignment()" class="bg-gradient-to-r from-green-500 to-emerald-600 text-white font-semibold px-5 py-2.5 rounded-xl hover:from-green-600 hover:to-emerald-700 transition-all shadow-md">
+                                    {{ $ticket->assignee_id || $ticket->assignees->count() ? 'Perbarui' : 'Tugaskan' }}
+                                </button>
+                                <button type="button" onclick="closeAssignmentModal()" class="bg-white text-gray-700 font-semibold px-5 py-2.5 rounded-xl border-2 border-gray-200 hover:bg-gray-50 transition-all">
+                                    Batal
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @endcan
+
         <!-- Horizontal Workflow Timeline -->
         <div class="mb-6">
             <div class="bg-white shadow-sm rounded-2xl overflow-hidden">
@@ -1150,6 +1251,11 @@
                                 </span>
                             </div>
                             @can('changeStatus', $ticket)
+                            @if($ticket->isResolved() || $ticket->isClosed())
+                            <div class="w-full text-sm bg-gray-100 text-gray-500 border-2 border-gray-200 rounded-xl px-3.5 py-2.5 cursor-not-allowed">
+                                {{ __('enums.ticket_status.' . $ticket->status) ?: ucfirst(str_replace('_', ' ', $ticket->status)) }}
+                            </div>
+                            @else
                             <form action="{{ route('tickets.status.change', $ticket) }}" method="POST">
                                 @csrf
                                 <select name="status" onchange="this.form.submit()" class="w-full text-sm border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 px-3.5 py-2.5 transition-colors">
@@ -1168,6 +1274,7 @@
                                     @endif
                                 </select>
                             </form>
+                            @endif
                             @endcan
                         </div>
 
@@ -1189,7 +1296,26 @@
                         <!-- Assignee -->
                         <div>
                             <label class="block text-xs font-semibold text-gray-500 mb-2 uppercase tracking-wide">{{ __('common.assigned_to') }}</label>
-                            @if($ticket->assignee)
+                            @if($ticket->assignees->count() > 0)
+                            <div class="space-y-2">
+                                @foreach($ticket->assignees as $assignee)
+                                <div class="flex items-center space-x-3 bg-gradient-to-r from-green-50 to-emerald-50 px-4 py-3 rounded-xl border border-green-200">
+                                    <div class="w-8 h-8 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-sm">
+                                        {{ substr($assignee->name, 0, 1) }}
+                                    </div>
+                                    <div class="flex-1">
+                                        <p class="text-sm font-medium text-gray-900">{{ $assignee->name }}</p>
+                                        @if($assignee->pivot->assigned_at)
+                                        <p class="text-xs text-gray-500">{{ \Carbon\Carbon::parse($assignee->pivot->assigned_at)->diffForHumans() }}</p>
+                                        @endif
+                                    </div>
+                                    @if($loop->first)
+                                    <span class="text-xs bg-green-200 text-green-700 px-2 py-1 rounded-full font-semibold">Primary</span>
+                                    @endif
+                                </div>
+                                @endforeach
+                            </div>
+                            @elseif($ticket->assignee)
                             <div class="flex items-center space-x-3 bg-gradient-to-r from-green-50 to-emerald-50 px-4 py-3 rounded-xl border border-green-200">
                                 <div class="w-8 h-8 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-sm">
                                     {{ substr($ticket->assignee->name, 0, 1) }}
@@ -1197,18 +1323,23 @@
                                 <p class="text-sm font-medium text-gray-900">{{ $ticket->assignee->name }}</p>
                             </div>
                             @else
-                            <p class="text-sm text-gray-500 bg-gray-50 px-4 py-2.5 rounded-xl italic border border-gray-200">{{ __('tickets.unassigned') }}</p>
+                            <div class="bg-gradient-to-r from-orange-50 to-red-50 px-4 py-3 rounded-xl border-2 border-orange-300 border-dashed">
+                                <p class="text-sm text-orange-700 font-medium">⚠️ {{ __('tickets.unassigned') }}</p>
+                            </div>
                             @endif
                             @can('assign', $ticket)
-                            <form action="{{ route('tickets.assign', $ticket) }}" method="POST" class="mt-2.5">
-                                @csrf
-                                <select name="assignee_id" onchange="this.form.submit()" class="w-full text-sm border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 px-3.5 py-2.5 transition-colors">
-                                    <option value="">{{ __('tickets.assign_to') }}</option>
-                                    @foreach(\App\Models\User::whereRole('it_staff', 'it_manager')->active()->get() as $user)
-                                    <option value="{{ $user->id }}">{{ $user->name }}</option>
-                                    @endforeach
-                                </select>
-                            </form>
+                            @if($ticket->isResolved() || $ticket->isClosed())
+                            <div class="mt-2.5 w-full text-sm bg-gray-100 text-gray-500 border-2 border-gray-200 rounded-xl px-3.5 py-2.5 cursor-not-allowed">
+                                {{ $ticket->assignees->count() > 0 ? $ticket->assignees->count() . ' teknisi' : ($ticket->assignee ? $ticket->assignee->name : __('tickets.unassigned')) }}
+                            </div>
+                            @else
+                            <button type="button" onclick="openAssignmentModal()" class="mt-2.5 w-full text-sm bg-gradient-to-r from-green-500 to-emerald-600 text-white font-semibold px-4 py-2.5 rounded-xl hover:from-green-600 hover:to-emerald-700 transition-all shadow-md flex items-center justify-center space-x-2">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                </svg>
+                                <span>{{ $ticket->assignees->count() > 0 ? 'Kelola Teknisi' : 'Tugaskan Teknisi' }}</span>
+                            </button>
+                            @endif
                             @endcan
                         </div>
 
@@ -1486,6 +1617,47 @@ document.addEventListener('DOMContentLoaded', function() {
             closePhotoModal();
         });
     });
+});
+
+// Assignment Modal
+function openAssignmentModal() {
+    const modal = document.getElementById('assignmentModal');
+    modal.style.display = 'block';
+    modal.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeAssignmentModal() {
+    const modal = document.getElementById('assignmentModal');
+    modal.style.display = 'none';
+    modal.classList.add('hidden');
+    document.body.style.overflow = '';
+}
+
+function validateAssignment() {
+    const checkboxes = document.querySelectorAll('input[name="assignees[]"]:checked');
+    const errorEl = document.getElementById('assignee-error');
+    
+    if (checkboxes.length === 0) {
+        errorEl.classList.remove('hidden');
+        return false;
+    }
+    
+    errorEl.classList.add('hidden');
+    return true;
+}
+
+// Auto-open assignment modal on page load if ticket is unassigned
+document.addEventListener('DOMContentLoaded', function() {
+    const isUnassigned = {{ !$ticket->assignee_id && !$ticket->assignees->count() ? 'true' : 'false' }};
+    const hasOpenedModal = sessionStorage.getItem('assignmentModalShown_{{ $ticket->id }}');
+    
+    if (isUnassigned && !hasOpenedModal) {
+        setTimeout(() => {
+            openAssignmentModal();
+            sessionStorage.setItem('assignmentModalShown_{{ $ticket->id }}', 'true');
+        }, 500);
+    }
 });
 
 // Photo Modal

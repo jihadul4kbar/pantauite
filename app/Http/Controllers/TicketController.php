@@ -203,7 +203,7 @@ class TicketController extends Controller
     }
 
     /**
-     * Assign ticket to user.
+     * Assign ticket to user(s).
      */
     public function assign(Request $request, Ticket $ticket)
     {
@@ -211,13 +211,25 @@ class TicketController extends Controller
 
         $validated = $request->validate([
             'assignee_id' => ['nullable', 'exists:users,id'],
+            'assignees' => ['nullable', 'array'],
+            'assignees.*' => ['exists:users,id'],
         ]);
 
-        $this->ticketService->assignTicket(
-            $ticket,
-            $validated['assignee_id'],
-            $request->user()
-        );
+        // Handle multi-assignee
+        if (!empty($validated['assignees'])) {
+            $this->ticketService->assignTicket(
+                $ticket,
+                null,
+                $request->user(),
+                $validated['assignees']
+            );
+        } elseif (isset($validated['assignee_id'])) {
+            $this->ticketService->assignTicket(
+                $ticket,
+                $validated['assignee_id'],
+                $request->user()
+            );
+        }
 
         return redirect()
             ->route('tickets.show', $ticket)

@@ -99,23 +99,54 @@ class TicketService
     }
 
     /**
-     * Assign ticket to user
+     * Assign ticket to user(s)
      */
-    public function assignTicket(Ticket $ticket, ?int $assigneeId, User $assignedBy): Ticket
+    public function assignTicket(Ticket $ticket, ?int $assigneeId, User $assignedBy, array $assigneeIds = []): Ticket
     {
         $oldAssignee = $ticket->assignee_id;
+        $oldAssignees = $ticket->assignees->pluck('user_id')->toArray();
 
-        $this->tickets->update($ticket, [
-            'assignee_id' => $assigneeId,
-        ]);
+        // Set primary assignee (for backward compatibility)
+        if ($assigneeId) {
+            $this->tickets->update($ticket, [
+                'assignee_id' => $assigneeId,
+            ]);
+        }
+
+        // Handle multi-assignees
+        if (!empty($assigneeIds)) {
+            // Use attach with pivot data instead of sync
+            $ticket->assignees()->detach();
+            
+            foreach ($assigneeIds as $index => $userId) {
+                $ticket->assignees()->attach($userId, [
+                    'assigned_at' => now(),
+                    'assigned_by' => $assignedBy->id,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+                
+                // Set first assignee as primary if not set
+                if ($index === 0 && !$assigneeId) {
+                    $this->tickets->update($ticket, [
+                        'assignee_id' => $userId,
+                    ]);
+                }
+            }
+        }
 
         // Log assignment
-        if ($assigneeId) {
-            $assignee = User::find($assigneeId);
+        $newAssigneeIds = !empty($assigneeIds) ? $assigneeIds : ($assigneeId ? [$assigneeId] : []);
+        if (!empty($newAssigneeIds)) {
+            $assignees = User::whereIn('id', $newAssigneeIds)->get();
+            $assigneeNames = $assignees->pluck('name')->join(', ');
+            
             $this->logAudit($ticket, 'assigned', [
                 'old_assignee_id' => $oldAssignee,
+                'old_assignees' => $oldAssignees,
                 'new_assignee_id' => $assigneeId,
-                'assignee_name' => $assignee?->name,
+                'new_assignees' => $newAssigneeIds,
+                'assignee_names' => $assigneeNames,
                 'assigned_by' => $assignedBy->name,
             ]);
 

@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Carbon\Carbon;
@@ -82,6 +83,18 @@ class Ticket extends Model
     public function assignee(): BelongsTo
     {
         return $this->belongsTo(User::class, 'assignee_id');
+    }
+
+    public function assignees(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'ticket_assignees', 'ticket_id', 'user_id')
+                    ->withPivot('assigned_at', 'assigned_by')
+                    ->withTimestamps();
+    }
+
+    public function primaryAssignee(): ?User
+    {
+        return $this->assignee ?? ($this->assignees->first() ?? null);
     }
 
     public function department(): BelongsTo
