@@ -32,8 +32,14 @@ class DashboardController extends Controller
             ];
         });
 
+        // Chart data (cache for 5 minutes)
+        $chartData = Cache::remember('dashboard_charts', 300, function () use ($user) {
+            return $this->getChartData();
+        });
+
         return view('dashboard', [
             'stats' => $stats,
+            'chartData' => $chartData,
         ]);
     }
 
@@ -170,5 +176,88 @@ class DashboardController extends Controller
             'rejected' => $rejected,
             'converted' => $converted,
         ];
+    }
+
+    private function getChartData()
+    {
+        $user = auth()->user();
+
+        // Base query depends on user role
+        $query = Ticket::query();
+
+        if ($user->hasRole('end_user')) {
+            $query->where('user_id', $user->id);
+        }
+
+        if ($user->hasRole('it_staff')) {
+            $query->where(function ($q) use ($user) {
+                $q->where('assignee_id', $user->id)
+                  ->orWhere('user_id', $user->id);
+            });
+        }
+
+        try {
+            // Priority Chart Data
+            $priorityData = [
+                'critical' => (clone $query)->where('priority', 'critical')->count(),
+                'high' => (clone $query)->where('priority', 'high')->count(),
+                'medium' => (clone $query)->where('priority', 'medium')->count(),
+                'low' => (clone $query)->where('priority', 'low')->count(),
+            ];
+
+            // Category Chart Data - Simplified query
+            $categoryData = \App\Models\TicketCategory::select('ticket_categories.name', \DB::raw('COUNT(tickets.id) as count'))
+                ->leftJoin('tickets', 'ticket_categories.id', '=', 'tickets.category_id')
+                ->whereNull('ticket_categories.deleted_at')
+                ->groupBy('ticket_categories.id', 'ticket_categories.name')
+                ->orderByDesc('count')
+                ->limit(5)
+                ->get()
+                ->pluck('count', 'name');
+
+            // SLA Timeline Data (last 7 days)
+            $slaTimeline = [];
+            for ($i = 6; $i >= 0; $i--) {
+                $date = now()->copy()->subDays($i);
+                $dateStr = $date->format('d M');
+                
+                $slaQuery = Ticket::whereNotNull('sla_deadline')
+                    ->whereDate('created_at', $date);
+                    
+                if ($user->hasRole('end_user')) {
+                    $slaQuery->where('user_id', $user->id);
+                }
+                
+                if ($user->hasRole('it_staff')) {
+                    $slaQuery->where(function ($q) use ($user) {
+                        $q->where('assignee_id', $user->id)
+                          ->orWhere('user_id', $user->id);
+                    });
+                }
+                
+                $total = $slaQuery->count();
+                $breached = (clone $slaQuery)->where('sla_deadline', '<', now())->count();
+                $met = max(0, $total - $breached);
+                
+                $slaTimeline[$dateStr] = [
+                    'met' => $met,
+                    'breached' => $breached,
+                ];
+            }
+
+            return [
+                'priority' => $priorityData,
+                'category' => $categoryData,
+                'sla_timeline' => $slaTimeline,
+            ];
+        } catch (\Exception $e) {
+            // Return empty data on error to prevent breaking the view
+            \Log::error('Chart data error: ' . $e->getMessage());
+            return [
+                'priority' => ['critical' => 0, 'high' => 0, 'medium' => 0, 'low' => 0],
+                'category' => [],
+                'sla_timeline' => [],
+            ];
+        }
     }
 }

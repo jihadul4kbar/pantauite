@@ -336,7 +336,7 @@
         </div>
 
         <!-- Documentation Checklist -->
-        @can('update', $ticket)
+        @if(auth()->user()->can('update', $ticket) || $ticket->assignees->pluck('id')->contains(auth()->id()) || $ticket->assignee_id === auth()->id())
         <div class="mb-6">
             <div class="bg-white shadow-sm rounded-2xl overflow-hidden">
                 <div class="px-6 py-4 bg-gradient-to-r from-gray-50 to-white border-b border-gray-100">
@@ -658,7 +658,7 @@
                 </div>
             </div>
         </div>
-        @endcan
+        @endif
 
         <!-- Main Layout: 2 Columns -->
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
@@ -1536,7 +1536,7 @@
                                                 </svg>
                                             </button>
                                         </form>
-                                        @endcan
+        @endif
                                     </div>
                                     <p class="text-xs text-gray-600 mb-3 line-clamp-2">{{ Str::limit($ticket->relatedKbArticle->summary ?? $ticket->relatedKbArticle->content, 100) }}</p>
                                     <div class="flex items-center space-x-3">

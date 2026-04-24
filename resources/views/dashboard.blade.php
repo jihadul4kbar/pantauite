@@ -119,6 +119,70 @@
         @endif
     </div>
 
+    <!-- Charts Section -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        <!-- Priority Distribution Chart -->
+        <div class="bg-white shadow-sm rounded-2xl p-6">
+            <div class="flex items-center justify-between mb-6">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-gradient-to-br from-red-500 to-orange-600 rounded-xl flex items-center justify-center">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                        </svg>
+                    </div>
+                    <h2 class="text-lg font-bold text-gray-900">Prioritas Tiket</h2>
+                </div>
+            </div>
+            <div class="relative h-64">
+                <canvas id="priorityChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Category Distribution Chart -->
+        <div class="bg-white shadow-sm rounded-2xl p-6">
+            <div class="flex items-center justify-between mb-6">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
+                        </svg>
+                    </div>
+                    <h2 class="text-lg font-bold text-gray-900">Kategori Tiket</h2>
+                </div>
+            </div>
+            <div class="relative h-64">
+                <canvas id="categoryChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLA Performance Timeline -->
+    <div class="bg-white shadow-sm rounded-2xl p-6 mb-8">
+        <div class="flex items-center justify-between mb-6">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center">
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                </div>
+                <h2 class="text-lg font-bold text-gray-900">SLA Performance (7 Hari Terakhir)</h2>
+            </div>
+            <div class="flex items-center space-x-4">
+                <div class="flex items-center space-x-2">
+                    <span class="w-3 h-3 bg-green-500 rounded-full"></span>
+                    <span class="text-xs text-gray-600">Met SLA</span>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <span class="w-3 h-3 bg-red-500 rounded-full"></span>
+                    <span class="text-xs text-gray-600">Breached</span>
+                </div>
+            </div>
+        </div>
+        <div class="relative h-72">
+            <canvas id="slaTimelineChart"></canvas>
+        </div>
+    </div>
+
         <!-- Quick Actions Section -->
         <div class="mb-8 bg-white shadow-sm hover:shadow-lg rounded-2xl transition-shadow">
             <div class="px-6 py-5 border-b border-gray-100">
@@ -338,7 +402,11 @@
 </div>
 
 @push('scripts')
+<!-- Chart.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script>
+    console.log('Chart.js loaded:', typeof Chart !== 'undefined');
+    
     // Add animation on scroll
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
@@ -353,6 +421,229 @@
         el.classList.add('transition-all', 'duration-500');
         observer.observe(el);
     });
+
+    // Chart.js Configuration
+    console.log('Chart data:', @json($chartData ?? []));
+    const chartColors = {
+        priority: {
+            critical: 'rgba(239, 68, 68, 0.8)',
+            high: 'rgba(249, 115, 22, 0.8)',
+            medium: 'rgba(251, 191, 36, 0.8)',
+            low: 'rgba(34, 197, 94, 0.8)',
+        },
+        category: [
+            'rgba(59, 130, 246, 0.8)',
+            'rgba(147, 51, 234, 0.8)',
+            'rgba(236, 72, 153, 0.8)',
+            'rgba(20, 184, 166, 0.8)',
+            'rgba(99, 102, 241, 0.8)',
+        ],
+        sla: {
+            met: 'rgba(34, 197, 94, 0.8)',
+            breached: 'rgba(239, 68, 68, 0.8)',
+        }
+    };
+
+    // Priority Chart (Doughnut)
+    const priorityElement = document.getElementById('priorityChart');
+    if (priorityElement) {
+    const priorityCtx = priorityElement.getContext('2d');
+    const priorityDataRaw = @json($chartData['priority'] ?? []);
+    const priorityData = priorityDataRaw || {};
+    console.log('Priority data:', priorityData);
+    
+    new Chart(priorityCtx, {
+        type: 'doughnut',
+        data: {
+            labels: Object.keys(priorityData).map(key => key.charAt(0).toUpperCase() + key.slice(1)),
+            datasets: [{
+                data: Object.values(priorityData),
+                backgroundColor: [
+                    chartColors.priority.critical,
+                    chartColors.priority.high,
+                    chartColors.priority.medium,
+                    chartColors.priority.low,
+                ],
+                borderWidth: 0,
+                hoverOffset: 10
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        usePointStyle: true,
+                        padding: 15,
+                        font: {
+                            size: 12,
+                            weight: '600'
+                        }
+                    }
+                },
+                tooltip: {
+                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                    padding: 12,
+                    titleFont: { size: 14, weight: 'bold' },
+                    bodyFont: { size: 13 },
+                    callbacks: {
+                        label: function(context) {
+                            const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                            const percentage = ((context.raw / total) * 100).toFixed(1);
+                            return context.label + ': ' + context.raw + ' (' + percentage + '%)';
+                        }
+                    }
+                }
+            },
+            animation: {
+                animateScale: true,
+                animateRotate: true
+            }
+        }
+    });
+    } else {
+        console.error('Priority chart canvas not found');
+    }
+
+    // Category Chart (Bar)
+    const categoryElement = document.getElementById('categoryChart');
+    if (categoryElement) {
+    const categoryCtx = categoryElement.getContext('2d');
+    const categoryDataRaw = @json($chartData['category'] ?? []);
+    const categoryData = categoryDataRaw || {};
+    console.log('Category data:', categoryData);
+    
+    new Chart(categoryCtx, {
+        type: 'bar',
+        data: {
+            labels: Object.keys(categoryData),
+            datasets: [{
+                label: 'Jumlah Tiket',
+                data: Object.values(categoryData),
+                backgroundColor: chartColors.category,
+                borderRadius: 8,
+                borderSkipped: false,
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                    padding: 12,
+                    titleFont: { size: 14, weight: 'bold' },
+                    bodyFont: { size: 13 },
+                    cornerRadius: 8
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        stepSize: 1,
+                        font: { size: 11 }
+                    },
+                    grid: {
+                        color: 'rgba(0, 0, 0, 0.05)'
+                    }
+                },
+                x: {
+                    ticks: {
+                        font: { size: 11 }
+                    },
+                    grid: {
+                        display: false
+                    }
+                }
+            }
+        }
+    });
+    } else {
+        console.error('Category chart canvas not found');
+    }
+
+    // SLA Timeline Chart (Stacked Bar)
+    const slaElement = document.getElementById('slaTimelineChart');
+    if (slaElement) {
+    const slaCtx = slaElement.getContext('2d');
+    const slaDataRaw = @json($chartData['sla_timeline'] ?? []);
+    const slaData = slaDataRaw || {};
+    console.log('SLA data:', slaData);
+    const labels = Object.keys(slaData);
+    const metData = labels.map(label => slaData[label].met);
+    const breachedData = labels.map(label => slaData[label].breached);
+    
+    new Chart(slaCtx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [
+                {
+                    label: 'Met SLA',
+                    data: metData,
+                    backgroundColor: chartColors.sla.met,
+                    borderRadius: 8,
+                    borderSkipped: false,
+                },
+                {
+                    label: 'Breached',
+                    data: breachedData,
+                    backgroundColor: chartColors.sla.breached,
+                    borderRadius: 8,
+                    borderSkipped: false,
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                    padding: 12,
+                    titleFont: { size: 14, weight: 'bold' },
+                    bodyFont: { size: 13 },
+                    cornerRadius: 8,
+                    mode: 'index',
+                    intersect: false
+                }
+            },
+            scales: {
+                x: {
+                    stacked: true,
+                    ticks: {
+                        font: { size: 11 }
+                    },
+                    grid: {
+                        display: false
+                    }
+                },
+                y: {
+                    stacked: true,
+                    beginAtZero: true,
+                    ticks: {
+                        stepSize: 1,
+                        font: { size: 11 }
+                    },
+                    grid: {
+                        color: 'rgba(0, 0, 0, 0.05)'
+                    }
+                }
+            }
+        }
+    });
+    } else {
+        console.error('SLA timeline chart canvas not found');
+    }
 </script>
 @endpush
 @endsection
