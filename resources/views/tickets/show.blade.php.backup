@@ -448,15 +448,12 @@
                             <p class="text-sm text-gray-500 bg-gray-50 px-4 py-2.5 rounded-xl italic">{{ __('tickets.unassigned') }}</p>
                             @endif
                             @can('assign', $ticket)
-                            <form action="{{ route('tickets.assign', $ticket) }}" method="POST" class="mt-3">
-                                @csrf
-                                <select name="assignee_id" onchange="this.form.submit()" class="w-full text-sm border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 px-4 py-2.5 transition-colors">
-                                    <option value="">{{ __('tickets.assign_to') }}</option>
-                                    @foreach(\App\Models\User::whereRole('it_staff', 'it_manager')->active()->get() as $user)
-                                    <option value="{{ $user->id }}">{{ $user->name }} ({{ $user->role->display_name }})</option>
-                                    @endforeach
-                                </select>
-                            </form>
+                            <button type="button" onclick="openAssignmentModal()" class="mt-3 w-full text-sm bg-gradient-to-r from-green-500 to-emerald-600 text-white font-semibold px-4 py-2.5 rounded-xl hover:from-green-600 hover:to-emerald-700 transition-all shadow-md flex items-center justify-center space-x-2">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                </svg>
+                                <span>{{ $ticket->assignee ? 'Kelola Penugasan' : 'Tugaskan Teknisi' }}</span>
+                            </button>
                             @endcan
                         </div>
 
@@ -707,4 +704,127 @@
         </div>
     </div>
 </div>
+
+<!-- Assignment Modal -->
+@can('assign', $ticket)
+<div id="assignmentModal" class="fixed inset-0 z-50 hidden overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+    <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true" onclick="closeAssignmentModal()"></div>
+        <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+        <div class="inline-block align-bottom bg-white rounded-2xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+            <form action="{{ route('tickets.assign', $ticket) }}" method="POST">
+                @csrf
+                <div class="bg-gradient-to-r from-green-500 to-emerald-600 px-6 py-4">
+                    <h3 class="text-lg font-bold text-white flex items-center">
+                        <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                        </svg>
+                        @if(!$ticket->assignee)
+                            Tugaskan Tiket
+                        @else
+                            Kelola Penugasan
+                        @endif
+                    </h3>
+                </div>
+                <div class="px-6 py-5 space-y-4">
+                    <!-- Assignee -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            Pilih Teknisi <span class="text-red-500">*</span>
+                        </label>
+                        <select name="assignee_id" id="assignee_id" required class="w-full border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 px-4 py-2.5 transition-colors">
+                            <option value="">-- Pilih Teknisi --</option>
+                            @foreach(\App\Models\User::whereRole('it_staff', 'it_manager')->active()->get() as $user)
+                            <option value="{{ $user->id }}" {{ $ticket->assignee_id == $user->id ? 'selected' : '' }}>
+                                {{ $user->name }} ({{ $user->role->display_name }})
+                            </option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <!-- Priority -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            Prioritas <span class="text-red-500">*</span>
+                        </label>
+                        <select name="priority" id="priority" required class="w-full border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 px-4 py-2.5 transition-colors">
+                            <option value="">-- Pilih Prioritas --</option>
+                            <option value="critical" {{ $ticket->priority == 'critical' ? 'selected' : '' }}>🔴 Critical - Sangat Mendesak</option>
+                            <option value="high" {{ $ticket->priority == 'high' ? 'selected' : '' }}>🟠 High - Tinggi</option>
+                            <option value="medium" {{ $ticket->priority == 'medium' ? 'selected' : '' }}>🟡 Medium - Sedang</option>
+                            <option value="low" {{ $ticket->priority == 'low' ? 'selected' : '' }}>🟢 Low - Rendah</option>
+                        </select>
+                    </div>
+
+                    <!-- Category -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            Kategori <span class="text-gray-400 font-normal">(Opsional)</span>
+                        </label>
+                        <select name="category_id" id="category_id" class="w-full border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 px-4 py-2.5 transition-colors">
+                            <option value="">-- Pilih Kategori --</option>
+                            @foreach(\App\Models\TicketCategory::active()->get() as $category)
+                            <option value="{{ $category->id }}" {{ $ticket->category_id == $category->id ? 'selected' : '' }}>
+                                {{ $category->name }}
+                            </option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <!-- Department -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            Departemen <span class="text-gray-400 font-normal">(Opsional)</span>
+                        </label>
+                        <select name="department_id" id="department_id" class="w-full border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 px-4 py-2.5 transition-colors">
+                            <option value="">-- Pilih Departemen --</option>
+                            @foreach(\App\Models\Department::active()->get() as $department)
+                            <option value="{{ $department->id }}" {{ $ticket->department_id == $department->id ? 'selected' : '' }}>
+                                {{ $department->name }}
+                            </option>
+                            @endforeach
+                        </select>
+                        <p class="text-xs text-gray-500 mt-1">
+                            <a href="{{ route('departments.create') }}" target="_blank" class="text-green-600 hover:text-green-700 font-medium">+ Tambah Departemen Baru</a>
+                        </p>
+                    </div>
+                </div>
+                <div class="bg-gray-50 px-6 py-4 flex flex-row-reverse gap-3">
+                    <button type="submit" class="bg-gradient-to-r from-green-500 to-emerald-600 text-white font-semibold px-5 py-2.5 rounded-xl hover:from-green-600 hover:to-emerald-700 transition-all shadow-md">
+                        {{ $ticket->assignee ? 'Perbarui' : 'Tugaskan' }}
+                    </button>
+                    <button type="button" onclick="closeAssignmentModal()" class="bg-white text-gray-700 font-semibold px-5 py-2.5 rounded-xl border-2 border-gray-200 hover:bg-gray-50 transition-all">
+                        Batal
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+@endcan
+
+<script>
+function openAssignmentModal() {
+    const modal = document.getElementById('assignmentModal');
+    if (modal) {
+        modal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    }
+}
+
+function closeAssignmentModal() {
+    const modal = document.getElementById('assignmentModal');
+    if (modal) {
+        modal.classList.add('hidden');
+        document.body.style.overflow = '';
+    }
+}
+
+// Close modal on Escape key
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        closeAssignmentModal();
+    }
+});
+</script>
 @endsection

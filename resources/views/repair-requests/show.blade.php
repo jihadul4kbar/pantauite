@@ -227,56 +227,68 @@
                 @endif
 
                 <!-- Action Buttons -->
-                <div class="flex flex-col sm:flex-row gap-3">
-                    @if($repairRequest->status === 'submitted')
-                        <form action="{{ route('repair-requests.admin.approve-convert', $repairRequest->id) }}" method="POST" class="flex-1">
+                @if($repairRequest->status === 'submitted')
+                <div class="bg-gray-50 rounded-xl p-6 border border-gray-200">
+                    <h3 class="text-sm font-semibold text-gray-700 mb-4 flex items-center">
+                        <svg class="w-4 h-4 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                        </svg>
+                        Aksi Verifikasi
+                    </h3>
+                    
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <!-- Approve Button -->
+                        <form action="{{ route('repair-requests.admin.approve-convert', $repairRequest->id) }}" method="POST">
                             @csrf
-                            @method('POST')
                             <button 
                                 type="submit" 
-                                class="w-full inline-flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                                class="w-full inline-flex justify-center items-center px-6 py-3 border border-transparent text-sm font-semibold rounded-xl shadow-sm text-white bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all transform hover:scale-[1.02]"
                             >
                                 <svg class="-ml-1 mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>
                                 Setujui & Buat Tiket
                             </button>
                         </form>
                         
+                        <!-- Reject Button -->
                         <button 
                             type="button"
                             onclick="openRejectModal()"
-                            class="w-full inline-flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                            class="w-full inline-flex justify-center items-center px-6 py-3 border-2 border-red-300 text-sm font-semibold rounded-xl shadow-sm text-red-700 bg-white hover:bg-red-50 hover:border-red-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-all"
                         >
                             <svg class="-ml-1 mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
-                            Tolak
+                            Tolak Permintaan
                         </button>
-                    @endif
+                    </div>
                 </div>
+                @endif
 
+                <!-- Delete Button (Super Admin Only) -->
                 @if(auth()->user()->isSuperAdmin() && !$repairRequest->isConverted())
-                    <div class="mt-4 pt-4 border-t border-gray-200">
+                    <div class="mt-6">
                         <form 
                             action="{{ route('repair-requests.admin.destroy', $repairRequest->id) }}" 
                             method="POST" 
-                            onsubmit="return confirm('Apakah Anda yakin ingin menghapus permintaan perbaikan ini?')"
+                            onsubmit="return confirm('⚠️ PERINGATAN: Tindakan ini tidak dapat dibatalkan. Apakah Anda yakin ingin menghapus permintaan perbaikan ini?')"
                         >
                             @csrf
                             @method('DELETE')
                             <button 
                                 type="submit" 
-                                class="w-full inline-flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                                class="w-full inline-flex justify-center items-center px-4 py-2.5 border border-red-200 text-xs font-medium rounded-lg shadow-sm text-red-600 bg-red-50 hover:bg-red-100 hover:border-red-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-all"
                             >
-                                <svg class="-ml-1 mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="-ml-1 mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                 </svg>
                                 Hapus Permintaan (Super Admin Only)
                             </button>
                         </form>
                     </div>
-                @endif
+                @endif               
             </div>
         </div>
     </div>

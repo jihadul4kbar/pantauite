@@ -85,7 +85,7 @@ class RepairRequestController extends Controller
                 'requester_department' => $request->requester_department,
                 'subject' => $request->subject,
                 'description' => $request->description,
-                'priority' => $request->priority,
+                'priority' => $request->priority ?? 'medium',
                 'category_id' => $request->category_id,
                 'location' => $request->location,
                 'asset_name' => $request->asset_name,

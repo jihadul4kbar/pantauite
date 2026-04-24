@@ -213,7 +213,26 @@ class TicketController extends Controller
             'assignee_id' => ['nullable', 'exists:users,id'],
             'assignees' => ['nullable', 'array'],
             'assignees.*' => ['exists:users,id'],
+            'priority' => ['nullable', 'in:critical,high,medium,low'],
+            'category_id' => ['nullable', 'exists:ticket_categories,id'],
+            'department_id' => ['nullable', 'exists:departments,id'],
         ]);
+
+        // Update ticket properties if provided
+        $updateData = [];
+        if (isset($validated['priority'])) {
+            $updateData['priority'] = $validated['priority'];
+        }
+        if (isset($validated['category_id'])) {
+            $updateData['category_id'] = $validated['category_id'];
+        }
+        if (isset($validated['department_id'])) {
+            $updateData['department_id'] = $validated['department_id'];
+        }
+
+        if (!empty($updateData)) {
+            $ticket->update($updateData);
+        }
 
         // Handle multi-assignee
         if (!empty($validated['assignees'])) {

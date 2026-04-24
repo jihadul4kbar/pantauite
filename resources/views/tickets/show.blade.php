@@ -221,7 +221,7 @@
                                     @endif
                                 </h3>
                             </div>
-                            <div class="px-6 py-5">
+                            <div class="px-6 py-5 space-y-4">
                                 <div class="mb-4">
                                     <label class="block text-sm font-semibold text-gray-700 mb-2">
                                         Pilih Teknisi <span class="text-red-500">*</span>
@@ -229,7 +229,7 @@
                                     <p class="text-xs text-gray-500 mb-3">
                                         Anda dapat memilih lebih dari satu teknisi untuk kolaborasi
                                     </p>
-                                    <div class="space-y-2 max-h-64 overflow-y-auto border-2 border-gray-200 rounded-xl p-3">
+                                    <div class="space-y-2 max-h-48 overflow-y-auto border-2 border-gray-200 rounded-xl p-3">
                                         @foreach(\App\Models\User::whereRole('it_staff', 'it_manager')->active()->get() as $user)
                                         <label class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors {{ in_array($user->id, $ticket->assignees->pluck('id')->toArray()) ? 'bg-green-50 border-2 border-green-300' : 'border-2 border-transparent' }}">
                                             <input type="checkbox" name="assignees[]" value="{{ $user->id }}" 
@@ -250,6 +250,57 @@
                                         @endforeach
                                     </div>
                                     <p id="assignee-error" class="text-red-500 text-xs mt-2 hidden">⚠️ Pilih minimal 1 teknisi</p>
+                                </div>
+
+                                <div class="border-t border-gray-200 pt-4">
+                                    <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">Detail Tambahan</p>
+                                    
+                                    <!-- Priority -->
+                                    <div class="mb-3">
+                                        <label for="priority" class="block text-sm font-semibold text-gray-700 mb-1">
+                                            Prioritas <span class="text-red-500">*</span>
+                                        </label>
+                                        <select name="priority" id="priority" required class="w-full border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 px-3 py-2 text-sm transition-colors">
+                                            <option value="">-- Pilih Prioritas --</option>
+                                            <option value="critical" {{ $ticket->priority == 'critical' ? 'selected' : '' }}>🔴 Critical</option>
+                                            <option value="high" {{ $ticket->priority == 'high' ? 'selected' : '' }}>🟠 High</option>
+                                            <option value="medium" {{ $ticket->priority == 'medium' ? 'selected' : '' }}>🟡 Medium</option>
+                                            <option value="low" {{ $ticket->priority == 'low' ? 'selected' : '' }}>🟢 Low</option>
+                                        </select>
+                                    </div>
+
+                                    <!-- Category -->
+                                    <div class="mb-3">
+                                        <label for="category_id" class="block text-sm font-semibold text-gray-700 mb-1">
+                                            Kategori <span class="text-gray-400 font-normal">(Opsional)</span>
+                                        </label>
+                                        <select name="category_id" id="category_id" class="w-full border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 px-3 py-2 text-sm transition-colors">
+                                            <option value="">-- Pilih Kategori --</option>
+                                            @foreach(\App\Models\TicketCategory::active()->get() as $category)
+                                            <option value="{{ $category->id }}" {{ $ticket->category_id == $category->id ? 'selected' : '' }}>
+                                                {{ $category->name }}
+                                            </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+
+                                    <!-- Department -->
+                                    <div>
+                                        <label for="department_id" class="block text-sm font-semibold text-gray-700 mb-1">
+                                            Departemen <span class="text-gray-400 font-normal">(Opsional)</span>
+                                        </label>
+                                        <select name="department_id" id="department_id" class="w-full border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 px-3 py-2 text-sm transition-colors">
+                                            <option value="">-- Pilih Departemen --</option>
+                                            @foreach(\App\Models\Department::active()->get() as $department)
+                                            <option value="{{ $department->id }}" {{ $ticket->department_id == $department->id ? 'selected' : '' }}>
+                                                {{ $department->name }}
+                                            </option>
+                                            @endforeach
+                                        </select>
+                                        <p class="text-xs text-gray-500 mt-1">
+                                            <a href="{{ route('departments.create') }}" target="_blank" class="text-green-600 hover:text-green-700 font-medium">+ Tambah Departemen Baru</a>
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
                             <div class="bg-gray-50 px-6 py-4 flex flex-row-reverse gap-3">
@@ -336,7 +387,7 @@
         </div>
 
         <!-- Documentation Checklist -->
-        @if(auth()->user()->can('update', $ticket) || $ticket->assignees->pluck('id')->contains(auth()->id()) || $ticket->assignee_id === auth()->id())
+        @can('update', $ticket)
         <div class="mb-6">
             <div class="bg-white shadow-sm rounded-2xl overflow-hidden">
                 <div class="px-6 py-4 bg-gradient-to-r from-gray-50 to-white border-b border-gray-100">
@@ -658,7 +709,7 @@
                 </div>
             </div>
         </div>
-        @endif
+        @endcan
 
         <!-- Main Layout: 2 Columns -->
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
