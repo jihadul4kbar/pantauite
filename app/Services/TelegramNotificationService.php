@@ -36,6 +36,10 @@ class TelegramNotificationService
                 'parse_mode' => 'HTML',
             ], $options));
 
+            if (!$response->successful()) {
+                Log::error('Telegram API error: ' . $response->body() . ' | Chat ID: ' . $chatId);
+            }
+
             return $response->successful();
         } catch (\Exception $e) {
             Log::error('Telegram notification failed: ' . $e->getMessage());
