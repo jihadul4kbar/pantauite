@@ -56,6 +56,9 @@ class TelegramNotificationService
             $q->whereIn('name', ['it_manager', 'super_admin']);
         })->get();
 
+        Log::info('Telegram sendNewTicketAlert: ' . $managers->count() . ' managers found');
+        Log::info('Telegram config - bot_token: ' . ($this->botToken ? 'SET' : 'NULL') . ', group_chat_id: ' . config('services.telegram.group_chat_id'));
+
         $assigneeInfo = $ticket->assignee ? $ticket->assignee->name : 'Belum ditugaskan';
 
         $message = "🎫 <b>Ticket Baru Dibuat</b>\n\n";
@@ -73,9 +76,13 @@ class TelegramNotificationService
         $sentChatIds = [];
         foreach ($managers as $manager) {
             $chatId = $this->getUserChatId($manager);
+            Log::info('Telegram manager chat_id: ' . ($chatId ?: 'NULL') . ' (user: ' . $manager->name . ')');
             if ($chatId && !in_array($chatId, $sentChatIds)) {
-                $this->sendMessage($chatId, $message);
-                $sentChatIds[] = $chatId;
+                $result = $this->sendMessage($chatId, $message);
+                Log::info('Telegram sendMessage result: ' . ($result ? 'OK' : 'FAILED') . ' for chat ' . $chatId);
+                if ($result) {
+                    $sentChatIds[] = $chatId;
+                }
             }
         }
 
@@ -90,8 +97,10 @@ class TelegramNotificationService
                 $assigneeMessage .= "⚡ Priority: " . ucfirst($ticket->priority) . "\n";
                 $assigneeMessage .= "📅 Waktu: " . $ticket->created_at->format('d M Y H:i');
 
-                $this->sendMessage($assigneeChatId, $assigneeMessage);
-                $sentChatIds[] = $assigneeChatId;
+                $result = $this->sendMessage($assigneeChatId, $assigneeMessage);
+                if ($result) {
+                    $sentChatIds[] = $assigneeChatId;
+                }
             }
         }
 
