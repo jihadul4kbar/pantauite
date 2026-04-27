@@ -6,13 +6,16 @@ use App\Models\Ticket;
 use App\Models\TicketAuditLog;
 use App\Models\User;
 use App\Repositories\TicketRepository;
+use App\Services\TelegramNotificationService;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class TicketService
 {
     public function __construct(
         private TicketRepository $tickets,
-        private SlaService $sla
+        private SlaService $sla,
+        private TelegramNotificationService $telegram
     ) {}
 
     /**
@@ -45,6 +48,14 @@ class TicketService
                 'ticket_number' => $ticketNumber,
                 'source' => $ticket->source,
             ]);
+
+            // Send Telegram notification
+            try {
+                $sent = $this->telegram->sendNewTicketAlert($ticket);
+                Log::info('Telegram ticket notification: ' . ($sent ? 'sent' : 'failed') . ' for ' . $ticket->ticket_number);
+            } catch (\Exception $e) {
+                Log::error('Telegram ticket notification error: ' . $e->getMessage());
+            }
 
             return $ticket;
         });
@@ -94,6 +105,16 @@ class TicketService
             'old_status' => $oldStatus,
             'new_status' => $newStatus,
         ]);
+
+        // Send Telegram notification if ticket is completed
+        if (in_array($newStatus, ['resolved', 'closed'])) {
+            try {
+                $this->telegram->sendTicketCompleted($ticket, $newStatus);
+                Log::info('Telegram ticket completed notification sent for ' . $ticket->ticket_number);
+            } catch (\Exception $e) {
+                Log::error('Telegram ticket completed notification error: ' . $e->getMessage());
+            }
+        }
 
         return $ticket->fresh();
     }
@@ -153,6 +174,19 @@ class TicketService
             // Auto change status to in_progress if was open
             if ($ticket->status === 'open') {
                 $this->changeStatus($ticket, 'in_progress', $assignedBy);
+            }
+
+            // Send Telegram notification to assignees
+            foreach ($newAssigneeIds as $userId) {
+                $assignee = User::find($userId);
+                if ($assignee) {
+                    // Notify assignee
+                    if ($assignee->telegram_chat_id) {
+                        $this->telegram->sendTicketAssignment($ticket, $assignee);
+                    }
+                    // Notify managers about assignment
+                    $this->telegram->sendTicketAssignedAlert($ticket, $assignee);
+                }
             }
         }
 

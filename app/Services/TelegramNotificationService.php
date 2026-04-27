@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\MaintenanceTask;
+use App\Models\Ticket;
 use App\Models\User;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
@@ -40,6 +41,152 @@ class TelegramNotificationService
             Log::error('Telegram notification failed: ' . $e->getMessage());
             return false;
         }
+    }
+
+    /**
+     * Send new ticket notification
+     */
+    public function sendNewTicketAlert(Ticket $ticket): bool
+    {
+        $managers = User::whereHas('role', function($q) {
+            $q->whereIn('name', ['it_manager', 'super_admin']);
+        })->get();
+
+        $assigneeInfo = $ticket->assignee ? $ticket->assignee->name : 'Belum ditugaskan';
+
+        $message = "🎫 <b>Ticket Baru Dibuat</b>\n\n";
+        $message .= "🔖 Nomor: {$ticket->ticket_number}\n";
+        $message .= "📝 Subject: {$ticket->subject}\n";
+        $message .= "📄 Deskripsi: " . ($ticket->description ?? '-') . "\n";
+        $message .= "👤 Dibuat oleh: {$ticket->user->name}\n";
+        $message .= "🔧 Ditugaskan ke: {$assigneeInfo}\n";
+        $message .= "⚡ Priority: " . ucfirst($ticket->priority) . "\n";
+        $message .= "📂 Kategori: " . ($ticket->category->name ?? '-') . "\n";
+        $message .= "🏢 Departemen: " . ($ticket->department->name ?? '-') . "\n";
+        $message .= "📅 Waktu: " . $ticket->created_at->format('d M Y H:i');
+
+        // Collect unique chat IDs to avoid duplicate messages
+        $sentChatIds = [];
+        foreach ($managers as $manager) {
+            $chatId = $this->getUserChatId($manager);
+            if ($chatId && !in_array($chatId, $sentChatIds)) {
+                $this->sendMessage($chatId, $message);
+                $sentChatIds[] = $chatId;
+            }
+        }
+
+        // Also notify assignee if already assigned
+        if ($ticket->assignee && $ticket->assignee->telegram_chat_id) {
+            $assigneeChatId = $ticket->assignee->telegram_chat_id;
+            if (!in_array($assigneeChatId, $sentChatIds)) {
+                $assigneeMessage = "📋 <b>Anda Ditugaskan Ticket Baru</b>\n\n";
+                $assigneeMessage .= "🔖 Nomor: {$ticket->ticket_number}\n";
+                $assigneeMessage .= "📝 Subject: {$ticket->subject}\n";
+                $assigneeMessage .= "👤 Dibuat oleh: {$ticket->user->name}\n";
+                $assigneeMessage .= "⚡ Priority: " . ucfirst($ticket->priority) . "\n";
+                $assigneeMessage .= "📅 Waktu: " . $ticket->created_at->format('d M Y H:i');
+
+                $this->sendMessage($assigneeChatId, $assigneeMessage);
+                $sentChatIds[] = $assigneeChatId;
+            }
+        }
+
+        return count($sentChatIds) > 0;
+    }
+
+    /**
+     * Send ticket assignment notification
+     */
+    public function sendTicketAssignment(Ticket $ticket, User $assignee): bool
+    {
+        if (!$assignee->telegram_chat_id) return false;
+
+        $message = "📋 <b>Anda Ditugaskan Ticket</b>\n\n";
+        $message .= "🔖 Nomor: {$ticket->ticket_number}\n";
+        $message .= "📝 Subject: {$ticket->subject}\n";
+        $message .= "👤 Dibuat oleh: {$ticket->user->name}\n";
+        $message .= "⚡ Priority: " . ucfirst($ticket->priority) . "\n";
+        $message .= "📂 Kategori: " . ($ticket->category->name ?? '-') . "\n";
+        $message .= "📅 Dibuat: " . $ticket->created_at->format('d M Y H:i');
+
+        return $this->sendMessage($assignee->telegram_chat_id, $message);
+    }
+
+    /**
+     * Send ticket assigned notification to managers
+     */
+    public function sendTicketAssignedAlert(Ticket $ticket, User $assignee): bool
+    {
+        $managers = User::whereHas('role', function($q) {
+            $q->whereIn('name', ['it_manager', 'super_admin']);
+        })->get();
+
+        $message = "🔧 <b>Ticket Ditugaskan</b>\n\n";
+        $message .= "🔖 Nomor: {$ticket->ticket_number}\n";
+        $message .= "📝 Subject: {$ticket->subject}\n";
+        $message .= "👷 Ditugaskan ke: {$assignee->name}\n";
+        $message .= "⚡ Priority: " . ucfirst($ticket->priority) . "\n";
+        $message .= "📂 Kategori: " . ($ticket->category->name ?? '-') . "\n";
+        $message .= "📅 Waktu: " . now()->format('d M Y H:i');
+
+        $sentChatIds = [];
+        foreach ($managers as $manager) {
+            $chatId = $this->getUserChatId($manager);
+            if ($chatId && !in_array($chatId, $sentChatIds)) {
+                $this->sendMessage($chatId, $message);
+                $sentChatIds[] = $chatId;
+            }
+        }
+
+        return count($sentChatIds) > 0;
+    }
+
+    /**
+     * Send ticket completed notification
+     */
+    public function sendTicketCompleted(Ticket $ticket, string $status): bool
+    {
+        $managers = User::whereHas('role', function($q) {
+            $q->whereIn('name', ['it_manager', 'super_admin']);
+        })->get();
+
+        $assigneeInfo = $ticket->assignee ? $ticket->assignee->name : 'N/A';
+        $statusLabel = $status === 'resolved' ? '✅ Selesai (Resolved)' : '🔒 Ditutup (Closed)';
+
+        $message = "{$statusLabel}\n\n";
+        $message .= "🔖 Nomor: {$ticket->ticket_number}\n";
+        $message .= "📝 Subject: {$ticket->subject}\n";
+        $message .= "👤 Dibuat oleh: {$ticket->user->name}\n";
+        $message .= "👷 Teknisi: {$assigneeInfo}\n";
+        $message .= "⚡ Priority: " . ucfirst($ticket->priority) . "\n";
+        $message .= "📂 Kategori: " . ($ticket->category->name ?? '-') . "\n";
+        $message .= "📅 Selesai: " . now()->format('d M Y H:i');
+
+        $sentChatIds = [];
+        foreach ($managers as $manager) {
+            $chatId = $this->getUserChatId($manager);
+            if ($chatId && !in_array($chatId, $sentChatIds)) {
+                $this->sendMessage($chatId, $message);
+                $sentChatIds[] = $chatId;
+            }
+        }
+
+        // Also notify the ticket creator
+        if ($ticket->user && $ticket->user->telegram_chat_id) {
+            $creatorChatId = $ticket->user->telegram_chat_id;
+            if (!in_array($creatorChatId, $sentChatIds)) {
+                $creatorMessage = "🎉 <b>Ticket Anda Telah Selesai</b>\n\n";
+                $creatorMessage .= "🔖 Nomor: {$ticket->ticket_number}\n";
+                $creatorMessage .= "📝 Subject: {$ticket->subject}\n";
+                $creatorMessage .= "👷 Teknisi: {$assigneeInfo}\n";
+                $creatorMessage .= "📅 Selesai: " . now()->format('d M Y H:i');
+
+                $this->sendMessage($creatorChatId, $creatorMessage);
+                $sentChatIds[] = $creatorChatId;
+            }
+        }
+
+        return count($sentChatIds) > 0;
     }
 
     /**
@@ -98,16 +245,16 @@ class TelegramNotificationService
         $message .= "💰 Est. Cost: Rp " . number_format($task->estimated_cost ?? 0, 0, ',', '.') . "\n";
         $message .= "\n⏳ Awaiting your approval.";
 
-        $sent = false;
+        $sentChatIds = [];
         foreach ($managers as $manager) {
             $chatId = $this->getUserChatId($manager);
-            if ($chatId) {
+            if ($chatId && !in_array($chatId, $sentChatIds)) {
                 $this->sendMessage($chatId, $message);
-                $sent = true;
+                $sentChatIds[] = $chatId;
             }
         }
 
-        return $sent;
+        return count($sentChatIds) > 0;
     }
 
     /**
@@ -143,16 +290,16 @@ class TelegramNotificationService
         $message .= "Reorder Point: {$reorderPoint}\n";
         $message .= "\n⚠️ Please reorder this part.";
 
-        $sent = false;
+        $sentChatIds = [];
         foreach ($managers as $manager) {
             $chatId = $this->getUserChatId($manager);
-            if ($chatId) {
+            if ($chatId && !in_array($chatId, $sentChatIds)) {
                 $this->sendMessage($chatId, $message);
-                $sent = true;
+                $sentChatIds[] = $chatId;
             }
         }
 
-        return $sent;
+        return count($sentChatIds) > 0;
     }
 
     /**
@@ -164,10 +311,12 @@ class TelegramNotificationService
             $q->whereIn('name', ['it_manager', 'super_admin']);
         })->get();
 
+        $sentChatIds = [];
         foreach ($managers as $manager) {
             $chatId = $this->getUserChatId($manager);
-            if ($chatId) {
+            if ($chatId && !in_array($chatId, $sentChatIds)) {
                 $this->sendMessage($chatId, $message);
+                $sentChatIds[] = $chatId;
             }
         }
     }
