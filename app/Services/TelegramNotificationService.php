@@ -331,7 +331,7 @@ class TelegramNotificationService
     protected function getUserChatId(?User $user): ?string
     {
         if (!$user) return null;
-        return $user->telegram_chat_id ?? config('services.telegram.default_chat_id');
+        return $user->telegram_chat_id ?? config('services.telegram.group_chat_id');
     }
 
     /**
